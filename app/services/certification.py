@@ -10,6 +10,7 @@ Whatever fails, a test post that was created is always deleted (cleanup step), s
 import logging
 import time
 import uuid
+from datetime import timedelta
 
 import httpx
 
@@ -19,8 +20,10 @@ from app.connectors.registry import get_connector
 from app.connectors.router import call_method
 from app.db import session_scope
 from app.errors import AppError, ErrorCode
-from app.jobs import JobContext, handler
-from app.models import CertificationRun, Connection, Destination, Publication, utcnow
+from app.jobs import JobContext, create_job, handler
+from sqlalchemy import select
+
+from app.models import CertificationRun, Connection, Destination, Publication, Ticket, utcnow
 from app.output_manifest import build_manifest
 from app.services.publishing import connection_ref, destination_ref
 from app.storage import get_storage, put_json
@@ -235,6 +238,25 @@ def _cleanup(run: Run, dest, dref, cref, key, published, rendition) -> None:
         run.steps.append({"step": "cleanup", "ok": False, "problem": f"{type(e).__name__}: {e}"[:300]})
 
 
+def _inconclusive(ctx, dest, run: Run, duration: float, evidence_url: str, failed: dict, reason: str):
+    """A temporary problem (rate limit, timeout, platform down) says nothing about whether the destination works:
+    keep its level, open no ticket, and certify again after the platform's reset time."""
+    retry_s = float(failed["error"].get("details", {}).get("retry_after_s") or 900)
+    follow = create_job("certification", {"destination_id": dest.id, "trigger": "retry_after_inconclusive"},
+                        run_after=utcnow() + timedelta(seconds=retry_s + 5))
+    with session_scope() as db:
+        db.add(CertificationRun(id=uuid.uuid4().hex, destination_id=dest.id, job_id=ctx.job_id, passed=False,
+                                steps=run.steps, evidence_url=evidence_url, duration_s=round(duration, 2)))
+        level = db.get(Destination, dest.id).level
+    log.warning("certification inconclusive", extra={"destination_id": dest.id, "reason": reason})
+    raise AppError(ErrorCode.CERTIFICATION_FAILED,
+                   f"Certification inconclusive at {reason}; temporary problem, so the destination keeps level "
+                   f"{level}; retry queued", {"inconclusive": True, "destination_id": dest.id, "level": level,
+                                              "rescheduled_job_id": follow.id, "retry_after_s": retry_s,
+                                              "steps": run.steps, "links": {"evidence": evidence_url}},
+                   retryable=True)
+
+
 def _finish(ctx, dest, connector, run: Run, passed: bool, duration: float, snapshot_url, tier) -> dict:
     run_record = {"certification_run_id": ctx.job_id, "destination_id": dest.id, "destination": dest.name,
                   "connector": {"key": connector.key, "version": connector.manifest.version, "tier": tier},
@@ -248,6 +270,8 @@ def _finish(ctx, dest, connector, run: Run, passed: bool, duration: float, snaps
     reason = None
     if failed:
         reason = f"{failed['step']}: " + (failed.get("problem") or failed.get("error", {}).get("message", "failed"))
+    if not passed and failed and failed.get("error", {}).get("retryable") is True:
+        return _inconclusive(ctx, dest, run, duration, evidence_url, failed, reason)
     alert_url = None
     with session_scope() as db:
         d = db.get(Destination, dest.id)
@@ -259,6 +283,20 @@ def _finish(ctx, dest, connector, run: Run, passed: bool, duration: float, snaps
         else:
             d.level, d.certification_status = "L0", "failed"
         level = d.level
+        open_tickets = db.execute(select(Ticket).where(Ticket.destination_id == dest.id,
+                                                       Ticket.status == "open")).scalars().all()
+        if passed:
+            for t in open_tickets:  # the destination works again: close what was opened when it failed
+                t.status, t.resolved_at = "resolved", utcnow()
+                t.details = {**t.details, "resolved_by_run": ctx.job_id}
+        elif open_tickets:
+            open_tickets[0].occurrences += 1
+            open_tickets[0].details = {**open_tickets[0].details, "last_run": ctx.job_id, "last_reason": reason}
+        else:
+            db.add(Ticket(destination_id=dest.id, title=f"Certification failed: {dest.name}",
+                          details={"reason": reason, "first_run": ctx.job_id, "last_run": ctx.job_id,
+                                   "evidence": evidence_url, "connector": connector.key,
+                                   "action": "Investigate the failing step, fix, then recertify"}))
         db.add(CertificationRun(id=uuid.uuid4().hex, destination_id=dest.id, job_id=ctx.job_id, passed=passed,
                                 steps=run.steps, evidence_url=evidence_url, duration_s=round(duration, 2)))
     if not passed:

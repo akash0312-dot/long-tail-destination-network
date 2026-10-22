@@ -622,6 +622,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/recertifications/run:
+    post:
+      tags:
+      - certification
+      summary: Queue certification for every destination due (the worker also does this on a schedule)
+      operationId: run_recertification_api_v1_recertifications_run_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Run Recertification Api V1 Recertifications Run Post
+  /api/v1/tickets:
+    get:
+      tags:
+      - certification
+      summary: Tickets opened when destinations were demoted
+      operationId: list_tickets_api_v1_tickets_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - name: destination_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Destination Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Tickets Api V1 Tickets Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/publications/{publication_id}/metrics:
     post:
       tags:

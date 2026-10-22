@@ -130,6 +130,20 @@ class RuleProposal(Base):
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
+class Ticket(Base):
+    """Opened when a destination is demoted; resolved automatically when it certifies again."""
+    __tablename__ = "tickets"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    destination_id: Mapped[str] = mapped_column(ForeignKey("destinations.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(64), default="certification_failed")
+    status: Mapped[str] = mapped_column(String(16), default="open", index=True)  # open | resolved
+    title: Mapped[str] = mapped_column(String(300))
+    details: Mapped[dict] = mapped_column(JSON, default=dict)
+    occurrences: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
 class CertificationRun(Base):
     __tablename__ = "certification_runs"
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)

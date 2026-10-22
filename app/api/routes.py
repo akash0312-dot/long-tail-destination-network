@@ -22,7 +22,8 @@ from app.connectors.router import call_method
 from app.db import get_db
 from app.errors import AppError, ErrorCode
 from app.jobs import create_job, job_view
-from app.models import CertificationRun, Connection, Destination, Job, Publication, RuleProposal, utcnow
+from app.models import CertificationRun, Connection, Destination, Job, Publication, RuleProposal, Ticket, utcnow
+from app.services.scheduler import recertify_due
 from app.services.publishing import connection_ref, destination_ref
 from app.storage import LocalStorage, get_storage
 from app.urls import normalize_url
@@ -282,6 +283,23 @@ def create_certification(body: CertificationCreate, db: Session = Depends(get_db
     job = create_job("certification", {"destination_id": body.destination_id},
                      str(body.callback_url) if body.callback_url else None)
     return JSONResponse(jsonable_encoder(job_view(job)), status_code=202, headers={"Location": f"/api/v1/jobs/{job.id}"})
+
+
+@router.post("/recertifications/run", tags=["certification"],
+             summary="Queue certification for every destination due (the worker also does this on a schedule)")
+def run_recertification() -> dict:
+    return recertify_due()
+
+
+@router.get("/tickets", tags=["certification"], summary="Tickets opened when destinations were demoted")
+def list_tickets(status: str | None = None, destination_id: str | None = None,
+                 db: Session = Depends(get_db)) -> dict:
+    q = select(Ticket).order_by(Ticket.created_at.desc())
+    if status:
+        q = q.where(Ticket.status == status)
+    if destination_id:
+        q = q.where(Ticket.destination_id == destination_id)
+    return {"items": [_row(t) for t in db.execute(q.limit(200)).scalars()]}
 
 
 @router.get("/certifications", tags=["certification"], summary="Certification runs with evidence links")

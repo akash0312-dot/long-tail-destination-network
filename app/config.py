@@ -80,6 +80,8 @@ class Settings(BaseSettings):
     require_certification: bool = True  # only certified destinations receive real posts
     certification_max_cleanup_s: int = 600  # test posts must be deleted within 10 minutes
     alert_webhook_url: str = ""  # optional: POST a JSON alert here when a destination is demoted
+    recertify_after_days: int = 25  # re-test before the 30-day validity runs out
+    scheduler_interval_s: int = 3600  # how often the worker looks for destinations due
     # short, rights-cleared clip used when certifying video destinations (PeerTube imports it from this URL)
     certification_test_video_url: str = "https://example.com/certification-test.mp4"
 
