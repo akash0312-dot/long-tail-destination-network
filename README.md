@@ -4,7 +4,7 @@ Containerised connector service that publishes creator content to long-tail dest
 developer blogs, Ghost, partner sites…) through a standard connector contract — with idempotent retries, rate-limit
 backoff, error mapping to shared codes, and a mock platform server for simulation.
 
-> Status: Day 1 of the build. See [PROGRESS.md](PROGRESS.md) for what works today and [docs/PLAN.md](docs/PLAN.md) for
+> Status: Day 2 of the build. See [PROGRESS.md](PROGRESS.md) for what works today and [docs/PLAN.md](docs/PLAN.md) for
 > requirements, architecture and plan.
 
 ## Quick start (≤ 10 commands)
@@ -12,7 +12,7 @@ backoff, error mapping to shared codes, and a mock platform server for simulatio
 ```bash
 cp .env.example .env
 docker compose up -d --build          # api, worker, postgres, S3 (SeaweedFS), mock platforms, Ghost, Lemmy, bootstrap
-docker compose wait bootstrap         # provisions Ghost/Lemmy test accounts and seeds the catalogue
+docker compose wait bootstrap         # test accounts, 6 seeded destinations (one per Core connector), certifies them
 curl http://localhost:8000/ready
 open http://localhost:8000/docs       # interactive API docs
 ```
@@ -20,9 +20,33 @@ open http://localhost:8000/docs       # interactive API docs
 ## Tests (one command, no API keys)
 
 ```bash
-docker compose --profile test run --rm tests       # unit + integration (simulation mode)
+docker compose --profile test run --rm tests       # unit + integration + simulated end-to-end
 RUN_E2E=1 E2E_API_URL=http://localhost:8000 pytest tests/test_e2e_local.py   # real posts on local Ghost + Lemmy
 ```
+
+## Batch runner
+
+```bash
+python -m app.batch --input test_inputs --output test_pack/my_run    # all hard-case scenarios against the stack
+```
+Each scenario in `test_inputs/` creates its own destination, certifies it, then exercises one hard case. Results go
+to `<output>/<scenario>/steps.json` plus `summary.json` / `summary.md`; the exit code is 1 if any check fails.
+
+## How a post flows
+
+1. `POST /api/v1/publications` (with `Idempotency-Key`) → `202` + `job_id`.
+2. Worker: **certification gate** (only certified destinations; demoted ones are excluded) → **posting rules**
+   (frequency cap → reschedule; self-promotion, link policy, language → block with reason; AI disclosure → appended
+   in the community's language) → **format validation** → **publish** (timeouts retried with the same key; long
+   rate limits rescheduled to the platform's reset time) → ledger + manifest.
+3. Destinations that ban automation get an **assist pack** (caption, deep link, rules checklist) instead of a post.
+
+## Certification
+
+`POST /api/v1/certifications {"destination_id"}` runs: rules recorded → format limits → real test post → live URL
+answers → status published → delete → status deleted, within 10 minutes. Evidence (`run.json`, live snapshot) goes to
+object storage. Pass → level L1/L2/L3 by tier; fail → demoted to L0, excluded, alert written. A created test post is
+always cleaned up, even when a step fails.
 
 ## Architecture
 
@@ -42,8 +66,12 @@ Adding a connector = a new folder with `manifest.yaml` + `connector.py`. Adding 
 
 | Connector | Tier | Status |
 |---|---|---|
-| ghost | native | publish / status / delete / refresh_auth — verified on local Ghost 5 |
-| lemmy | native | publish / status / delete / refresh_auth — verified on local Lemmy 0.19.8 |
+| ghost | native | publish / status / delete / refresh_auth — certified on local Ghost 5 |
+| lemmy | native | publish / status / delete / refresh_auth — certified on local Lemmy 0.19.8 |
+| discourse | native | publish / status / delete — certified on the mock (Discourse API) |
+| devto | native | publish / status / delete (= unpublish; the Forem API cannot delete) — certified on the mock |
+| webhook | protocol | partner sites, HMAC-signed ([protocol](docs/PARTNER_WEBHOOK.md)) — certified on the mock partner |
+| assisted | assisted | build_assist_pack for communities where a person must post |
 
 ## Error codes
 
@@ -59,6 +87,13 @@ All errors: `{"error": {"code", "message", "retryable", "details"}}`.
 | `PLATFORM_CONTENT_REJECTED` | 422 | no | Platform refused the content; `details.platform_message` |
 | `PLATFORM_UNAVAILABLE` | 503 | yes | Timeout / 5xx / unreachable; circuit opens after 5 consecutive failures |
 | `CONNECTOR_DISABLED` | 503 | no | Kill switch on (`DISABLED_CONNECTORS`) |
+| `DEST_RULE_SELF_PROMO` | 422 | no | *Extension:* destination bans self-promotion and the content is (or may be) promotional |
+| `DEST_RULE_LINK_POLICY` | 422 | no | *Extension:* links banned, too many, disallowed domain or URL shortener |
+| `DEST_RULE_DISCLOSURE_REQUIRED` | 422 | no | *Extension:* AI-content disclosure required but missing (contract path) |
+| `DEST_RULE_LANGUAGE_MISMATCH` | 422 | no | *Extension:* content language differs from the community's |
+| `DEST_RULE_AUTOMATION_NOT_ALLOWED` | 422 | no | *Extension:* a person must post; use an assist pack |
+| `DEST_NOT_CERTIFIED` | 409 | no | *Extension:* destination not certified, or demoted after a failed certification |
+| `CERTIFICATION_FAILED` | 422 | no | *Extension:* a certification step failed; destination demoted to L0 |
 | `PLATFORM_SCHEMA_CHANGED` | 502 | no | *Extension:* platform response lost an expected field (renamed API) |
 | `CONNECTOR_NOT_FOUND` | 404 | no | *Extension:* unknown connector key |
 | `METHOD_NOT_SUPPORTED` | 405 | no | *Extension:* connector lacks this optional method |
