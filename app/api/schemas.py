@@ -71,6 +71,13 @@ class DestinationUpdate(BaseModel):
     level: str | None = Field(default=None, pattern="^L[0-4]$")
 
 
+class RecommendationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    content: Rendition
+    limit: int = Field(default=10, ge=1, le=100)
+    include_excluded: bool = Field(default=False, description="Also list excluded destinations with the reason")
+
+
 class TailorRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     content: Rendition

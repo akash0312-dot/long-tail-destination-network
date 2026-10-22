@@ -515,6 +515,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/recommendations:
+    post:
+      tags:
+      - publishing
+      summary: Rank destinations for one content item by audience, rules and past results, with reasons
+      operationId: recommend_api_v1_recommendations_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Recommend Api V1 Recommendations Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/tailor:
     post:
       tags:
@@ -1130,6 +1157,26 @@ components:
       - destination_id
       - rendition
       title: PublicationCreate
+    RecommendationRequest:
+      properties:
+        content:
+          $ref: '#/components/schemas/Rendition'
+        limit:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Limit
+          default: 10
+        include_excluded:
+          type: boolean
+          title: Include Excluded
+          description: Also list excluded destinations with the reason
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - content
+      title: RecommendationRequest
     Rendition:
       properties:
         title:

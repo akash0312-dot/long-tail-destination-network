@@ -7,9 +7,12 @@ from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app import recommender
 from app.ai import get_provider
 from app.api.schemas import (CertificationCreate, ConnectionCreate, ConnectionUpdate, DestinationCreate,
-                             DestinationUpdate, PublicationCreate, RulesCaptureCreate, RuleReview, TailorRequest)
+                             DestinationUpdate, PublicationCreate, RecommendationRequest, RulesCaptureCreate,
+                             RuleReview, TailorRequest)
+from app.output_manifest import build_manifest
 from app.catalogue.rules_capture import review
 from app.connectors.schemas import ConnectionRef, Rendition
 from app.tailoring import tailor
@@ -227,6 +230,30 @@ def score_destination(destination_id: str, db: Session = Depends(get_db)) -> dic
     d.relevance_score, d.relevance_reason = res.data["score"], res.data["reason"]
     return {"destination_id": d.id, "relevance_score": d.relevance_score, "relevance_reason": d.relevance_reason,
             "provider": res.manifest_entry("relevance"), "warnings": res.warnings}
+
+
+# ---------------------------------------------------------------- recommendations
+@router.post("/recommendations", tags=["publishing"],
+             summary="Rank destinations for one content item by audience, rules and past results, with reasons")
+def recommend(body: RecommendationRequest, db: Session = Depends(get_db)) -> dict:
+    dests = [_row(d) for d in db.execute(select(Destination)).scalars()]
+    history: dict[str, list[dict]] = {}
+    for p in db.execute(select(Publication).where(Publication.status == "published")).scalars():
+        created = p.created_at if p.created_at.tzinfo else p.created_at.replace(tzinfo=utcnow().tzinfo)
+        history.setdefault(p.destination_id, []).append(
+            {"created_at": created, "status": p.status, "is_test": p.is_test, "metrics": p.metrics})
+    surfaces = {k: sorted({t for s in c.manifest.surfaces for t in s.content_types})
+                for k, c in all_connectors().items()}
+    ranked = recommender.rank(body.content.model_dump(), dests, history, utcnow(), surfaces,
+                              get_settings().own_domain_list())
+    eligible = [recommender.as_dict(c) for c in ranked if not c.excluded][: body.limit]
+    out = {"items": eligible, "considered": len(dests),
+           "excluded_count": sum(1 for c in ranked if c.excluded),
+           "manifest": build_manifest(job_id=None, kind="recommendation",
+                                      providers=[{"task": "ranking", "provider": "rules+metrics", "model": "v1"}])}
+    if body.include_excluded:
+        out["excluded"] = [recommender.as_dict(c) for c in ranked if c.excluded]
+    return out
 
 
 # ---------------------------------------------------------------- tailoring
