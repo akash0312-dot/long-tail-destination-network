@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
@@ -76,3 +76,6 @@ class PublicationCreate(BaseModel):
     rendition: Rendition
     callback_url: HttpUrl | None = None
     is_test: bool = False
+    on_cap: Literal["reschedule", "reject"] = Field(
+        default="reschedule", description="When the destination's frequency cap is reached: queue the post for "
+                                          "the next free slot, or reject it")

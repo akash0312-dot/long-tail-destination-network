@@ -33,6 +33,8 @@ os.environ.update({
     "RATE_LIMIT_PER_MINUTE": "0",
     "API_TOKEN": "",
     "CALLBACK_SIGNING_SECRET": "test-callback-secret",
+    "REQUIRE_CERTIFICATION": "false",  # certification gating has its own tests
+    "OWN_DOMAINS": "creatorstudio.example",
     "LOG_LEVEL": "INFO",
 })
 

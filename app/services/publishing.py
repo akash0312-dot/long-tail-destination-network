@@ -1,16 +1,21 @@
-"""Publication orchestrator: load destination + connection -> validate -> publish -> ledger -> manifest."""
+"""Publication orchestrator:
+certification gate -> posting rules (block / reschedule / fix disclosure) -> validate -> publish -> ledger -> manifest."""
 import logging
 import time
+from datetime import timedelta
 
 from sqlalchemy import select
 
+from app import rules as rules_engine
+from app.config import get_settings
+from app.connectors.base import violation_error
 from app.connectors.registry import get_connector
 from app.connectors.router import call_method
 from app.connectors.schemas import ConnectionRef, DestinationRef
 from app.db import session_scope
 from app.errors import AppError, ErrorCode
-from app.jobs import JobContext, handler
-from app.models import Connection, Destination, Publication
+from app.jobs import JobContext, create_job, handler
+from app.models import Connection, Destination, Publication, utcnow
 from app.output_manifest import build_manifest
 from app.storage import put_json
 
@@ -19,7 +24,22 @@ log = logging.getLogger("app.publishing")
 
 def destination_ref(d: Destination) -> DestinationRef:
     return DestinationRef(id=d.id, name=d.name, url=d.url, surface=d.surface, language=d.language,
-                          params=dict(d.params or {}))
+                          params=dict(d.params or {}), rules_url=d.rules_url,
+                          self_promo_allowed=d.self_promo_allowed, link_policy=d.link_policy,
+                          disclosure_required=d.disclosure_required, automation_allowed=d.automation_allowed,
+                          frequency_cap=d.frequency_cap)
+
+
+def recent_post_times(destination_id: str, cap: dict | None) -> list:
+    """Real (non-test) posts inside the cap window, from our own ledger."""
+    if not cap:
+        return []
+    since = utcnow() - rules_engine.cap_window(cap)
+    with session_scope() as db:
+        rows = db.execute(select(Publication.created_at).where(
+            Publication.destination_id == destination_id, Publication.status == "published",
+            Publication.is_test.is_(False), Publication.created_at >= since)).scalars().all()
+    return [t if t.tzinfo else t.replace(tzinfo=utcnow().tzinfo) for t in rows]
 
 
 def connection_ref(c: Connection | None) -> ConnectionRef:
@@ -80,8 +100,40 @@ def run_publication(ctx: JobContext) -> dict:
                     "live_url": prior.live_url, "status": "published",
                     "warnings": ["IDEMPOTENT_REPLAY: already published for this idempotency key"]}
 
+    is_test = p.get("is_test", False)
     dest, conn = load_targets(dest_id)
+    s = get_settings()
+    if dest.certification_status == "failed" or (s.require_certification and not is_test
+                                                  and dest.certification_status != "certified"):
+        raise AppError(ErrorCode.DEST_NOT_CERTIFIED,
+                       f"Destination is {dest.certification_status}; only certified destinations receive posts",
+                       {"destination_id": dest_id, "certification_status": dest.certification_status,
+                        "level": dest.level})
     connector = get_connector(dest.connector_key)
+
+    # posting rules: checked before every post
+    decision = rules_engine.evaluate(rendition, rules_engine.rules_of(dest),
+                                     recent_post_times(dest_id, dest.frequency_cap), utcnow(),
+                                     s.own_domain_list(), is_test=is_test)
+    checks = [c.as_dict() for c in decision.checks]
+    timings["rules"] = round((time.monotonic() - t0) * 1000)
+    if decision.action == "block":
+        _record(dest_id, key, ctx.job_id, "blocked", rendition, is_test=is_test,
+                error={"code": decision.code, "reason": decision.reason, "checks": checks})
+        raise AppError(ErrorCode(decision.code), decision.reason, {"checks": checks})
+    if decision.action == "reschedule":
+        details = {"checks": checks, "retry_at": decision.not_before.isoformat(),
+                   "retry_after_s": max(1, int((decision.not_before - utcnow()).total_seconds()))}
+        if p.get("on_cap", "reschedule") == "reschedule":
+            follow_up = create_job("publication", p, run_after=decision.not_before + timedelta(seconds=1))
+            details["rescheduled_job_id"] = follow_up.id
+        _record(dest_id, key, ctx.job_id, "rescheduled" if "rescheduled_job_id" in details else "blocked",
+                rendition, is_test=is_test, error={"code": decision.code, "reason": decision.reason, **details})
+        message = decision.reason + ("; post rescheduled" if "rescheduled_job_id" in details else "")
+        raise AppError(ErrorCode.DEST_RULE_FREQUENCY_CAP, message, details)
+    rendition = decision.rendition  # may carry an appended AI disclosure
+    rule_warnings = list(decision.warnings)
+
     body = {"rendition": rendition, "destination": destination_ref(dest).model_dump(),
             "connection": connection_ref(conn).model_dump(), "idempotency_key": key}
     ctx.progress(20)
@@ -89,10 +141,10 @@ def run_publication(ctx: JobContext) -> dict:
     v = call_method(dest.connector_key, "validate", body)
     timings["validate"] = round((time.monotonic() - t0) * 1000)
     if not v["ok"]:
-        _record(dest_id, key, ctx.job_id, "blocked", rendition, is_test=p.get("is_test", False),
-                error={"code": "DEST_SPEC_VIOLATION", "violations": v["violations"]})
-        raise AppError(ErrorCode.DEST_SPEC_VIOLATION, "Content breaks the destination's format limits",
-                       {"violations": v["violations"]})
+        err = violation_error(v["violations"])
+        _record(dest_id, key, ctx.job_id, "blocked", rendition, is_test=is_test,
+                error={"code": err.code.value, "violations": v["violations"]})
+        raise err
     ctx.progress(40)
 
     t1 = time.monotonic()
@@ -101,12 +153,11 @@ def run_publication(ctx: JobContext) -> dict:
     except AppError as e:
         if e.code == ErrorCode.CONNECTION_AUTH_EXPIRED:
             _mark_connection(conn.id if conn else None, "expired")
-        _record(dest_id, key, ctx.job_id, "failed", rendition, is_test=p.get("is_test", False),
-                error=e.to_dict()["error"])
+        _record(dest_id, key, ctx.job_id, "failed", rendition, is_test=is_test, error=e.to_dict()["error"])
         raise
     timings["publish"] = round((time.monotonic() - t1) * 1000)
-    warnings = list(result.get("warnings", []))
-    pub_id = _record(dest_id, key, ctx.job_id, "published", rendition, is_test=p.get("is_test", False),
+    warnings = rule_warnings + list(result.get("warnings", []))
+    pub_id = _record(dest_id, key, ctx.job_id, "published", rendition, is_test=is_test,
                      result=result, warnings=warnings)
     ctx.progress(90)
 
@@ -115,7 +166,8 @@ def run_publication(ctx: JobContext) -> dict:
                               connectors=[{"key": connector.key, "version": connector.manifest.version}],
                               ai_generated=bool(rendition.get("ai_generated")))
     out = {"publication_id": pub_id, "destination_id": dest_id, "platform_post_id": result["platform_post_id"],
-           "live_url": result["live_url"], "status": result["status"], "warnings": warnings, "manifest": manifest}
+           "live_url": result["live_url"], "status": result["status"], "warnings": warnings,
+           "rule_checks": checks, "manifest": manifest}
     manifest_url = put_json(f"publications/{pub_id}/result.json", out)
     out["links"] = {"manifest": manifest_url, "live_url": result["live_url"]}
     log.info("published", extra={"destination_id": dest_id, "connector": connector.key,

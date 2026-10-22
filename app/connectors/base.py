@@ -9,6 +9,7 @@ from app.connectors.http import PlatformHttp
 from app.connectors.manifest import Manifest, Surface
 from app.connectors.schemas import ConnectionRef, DestinationRef, Rendition
 from app.errors import AppError, ErrorCode
+from app.rules import rules_of, stateless_checks
 
 URL_RE = re.compile(r"https?://[^\s)>\]]+", re.IGNORECASE)
 
@@ -29,6 +30,15 @@ def schema_error(op: str, missing: str, payload: Any) -> AppError:
     return AppError(ErrorCode.PLATFORM_SCHEMA_CHANGED,
                     f"Platform response for {op} no longer has expected field '{missing}'",
                     {"op": op, "missing_field": missing, "received_keys": keys})
+
+
+def violation_error(violations: list[dict]) -> AppError:
+    """A posting-rule violation outranks a format violation: it is the reason a person needs to see."""
+    rule = next((v for v in violations if v.get("field") == "rules"), None)
+    if rule:
+        return AppError(ErrorCode(rule["code"]), rule["message"], {"violations": violations})
+    return AppError(ErrorCode.DEST_SPEC_VIOLATION, "Content breaks the destination's format limits",
+                    {"violations": violations})
 
 
 def require(data: Any, path: str, op: str) -> Any:
@@ -52,7 +62,18 @@ class BaseConnector:
     def validate(self, rendition: Rendition, destination: DestinationRef, connection: ConnectionRef) -> dict:
         surface = self.surface_for(rendition, destination)
         violations = self.spec_violations(rendition, surface)
+        violations += self.rule_violations(rendition, destination)
         return {"ok": not violations, "violations": violations}
+
+    @staticmethod
+    def rule_violations(rendition: Rendition, destination: DestinationRef) -> list[dict]:
+        """Posting rules carried on the destination (no history needed, so no frequency cap here)."""
+        rules = rules_of(destination)
+        if all(v is None for v in rules.values()):
+            return []
+        checks, _, _ = stateless_checks(rendition.model_dump(), rules, get_settings().own_domain_list())
+        return [{"field": "rules", "rule": c.rule, "code": c.code, "message": c.detail}
+                for c in checks if not c.passed]
 
     def publish(self, rendition: Rendition, destination: DestinationRef, connection: ConnectionRef,
                 idempotency_key: str) -> dict:
@@ -119,8 +140,7 @@ class BaseConnector:
     def ensure_valid(self, rendition: Rendition, destination: DestinationRef, connection: ConnectionRef) -> None:
         result = self.validate(rendition, destination, connection)
         if not result["ok"]:
-            raise AppError(ErrorCode.DEST_SPEC_VIOLATION, "Content breaks the destination's format limits",
-                           {"violations": result["violations"]})
+            raise violation_error(result["violations"])
 
     def base_url(self, destination: DestinationRef | None, connection: ConnectionRef) -> str:
         """Instance URL from destination params (instance_param), else connection params; simulation rewrites it."""

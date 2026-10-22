@@ -10,6 +10,7 @@ import logging
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -50,22 +51,24 @@ def job_view(job: Job) -> dict:
     links = {"self": f"/api/v1/jobs/{job.id}"}
     links.update(result.get("links", {}) if isinstance(result, dict) else {})
     return {"job_id": job.id, "kind": job.kind, "status": job.status, "progress": job.progress,
-            "result": job.result, "error": job.error, "links": links,
+            "result": job.result, "error": job.error, "links": links, "run_after": job.run_after,
             "created_at": job.created_at, "started_at": job.started_at, "finished_at": job.finished_at}
 
 
-def create_job(kind: str, payload: dict, callback_url: str | None = None) -> Job:
+def create_job(kind: str, payload: dict, callback_url: str | None = None, run_after: datetime | None = None) -> Job:
+    """run_after = a scheduled job (e.g. a post rescheduled after a frequency cap); only the worker runs those."""
     if kind not in HANDLERS:
         raise AppError(ErrorCode.INTERNAL_ERROR, f"No handler for job kind '{kind}'")
     with session_scope() as db:
-        job = Job(kind=kind, payload=payload, callback_url=callback_url, correlation_id=correlation_id_var.get())
+        job = Job(kind=kind, payload=payload, callback_url=callback_url, correlation_id=correlation_id_var.get(),
+                  run_after=run_after)
         db.add(job)
         db.flush()
         job_id = job.id
     executor = get_settings().job_executor
-    if executor == "sync":
+    if run_after is None and executor == "sync":
         run_job(job_id)
-    elif executor == "inprocess":
+    elif run_after is None and executor == "inprocess":
         _pool.submit(run_job, job_id)
     with session_scope() as db:
         return db.get(Job, job_id)
@@ -133,9 +136,10 @@ def send_callback(url: str, view: dict) -> None:
 
 def claim_next_job() -> str | None:
     """Worker: claim the oldest queued job (SKIP LOCKED on Postgres so several workers can run)."""
-    from sqlalchemy import select
+    from sqlalchemy import or_, select
     with session_scope() as db:
-        job = db.execute(select(Job).where(Job.status == "queued").order_by(Job.created_at).limit(1)
+        due = or_(Job.run_after.is_(None), Job.run_after <= utcnow())
+        job = db.execute(select(Job).where(Job.status == "queued", due).order_by(Job.created_at).limit(1)
                          .with_for_update(skip_locked=True)).scalar_one_or_none()
         if job is None:
             return None

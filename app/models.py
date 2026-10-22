@@ -91,6 +91,7 @@ class Job(Base):
     callback_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     correlation_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     attempts: Mapped[int] = mapped_column(Integer, default=0)
+    run_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -55,6 +55,14 @@ class Settings(BaseSettings):
     # idempotency
     idempotency_ttl_hours: int = 72
 
+    # posting rules and certification
+    own_domains: str = ""  # comma-separated domains that count as self-promotion when linked
+    require_certification: bool = True  # only certified destinations receive real posts
+    certification_max_cleanup_s: int = 600  # test posts must be deleted within 10 minutes
+
+    def own_domain_list(self) -> list[str]:
+        return [d.strip().lower() for d in self.own_domains.split(",") if d.strip()]
+
     def disabled_connector_set(self) -> set[str]:
         return {c.strip() for c in self.disabled_connectors.split(",") if c.strip()}
 

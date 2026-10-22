@@ -41,6 +41,13 @@ class DestinationRef(BaseModel):
     surface: str | None = None
     language: str | None = None
     params: dict[str, Any] = Field(default_factory=dict)
+    # posting rules: when present, validate() checks them too (frequency cap needs history: orchestrator only)
+    rules_url: str | None = None
+    self_promo_allowed: bool | None = None
+    link_policy: dict[str, Any] | None = None
+    disclosure_required: bool | None = None
+    automation_allowed: bool | None = None
+    frequency_cap: dict[str, Any] | None = None
 
 
 class ConnectionRef(BaseModel):
