@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 
-from mock_platforms import ghost, lemmy, state
+from mock_platforms import devto, discourse, ghost, lemmy, state
 
 app = FastAPI(title="Long-tail mock platforms", version="0.1.0")
 
@@ -59,6 +59,8 @@ async def callback_list():
 
 app.include_router(ghost.router)
 app.include_router(lemmy.router)
+app.include_router(discourse.router)
+app.include_router(devto.router)
 
 
 # public "live" pages, registered last so API routes win

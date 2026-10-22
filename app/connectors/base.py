@@ -115,10 +115,21 @@ class BaseConnector:
             v.append({"field": "title", "code": "TITLE_TOO_LONG", "limit": spec.title_max_chars,
                       "actual": len(r.title),
                       "message": f"Title is {len(r.title)} characters; limit is {spec.title_max_chars}"})
+        if spec.title_min_chars is not None and r.title.strip() and len(r.title.strip()) < spec.title_min_chars:
+            v.append({"field": "title", "code": "TITLE_TOO_SHORT", "limit": spec.title_min_chars,
+                      "actual": len(r.title.strip()),
+                      "message": f"Title is {len(r.title.strip())} characters; minimum is {spec.title_min_chars}"})
         body = r.body_html or r.body
         if spec.body_max_chars is not None and len(body) > spec.body_max_chars:
             v.append({"field": "body", "code": "BODY_TOO_LONG", "limit": spec.body_max_chars, "actual": len(body),
                       "message": f"Body is {len(body)} characters; limit is {spec.body_max_chars}"})
+        if spec.body_min_chars is not None and len(body.strip()) < spec.body_min_chars:
+            v.append({"field": "body", "code": "BODY_TOO_SHORT", "limit": spec.body_min_chars,
+                      "actual": len(body.strip()),
+                      "message": f"Body is {len(body.strip())} characters; minimum is {spec.body_min_chars}"})
+        if spec.max_tags is not None and len(r.tags) > spec.max_tags:
+            v.append({"field": "tags", "code": "TOO_MANY_TAGS", "limit": spec.max_tags, "actual": len(r.tags),
+                      "message": f"{len(r.tags)} tags; this destination allows {spec.max_tags}"})
         if r.content_type not in surface.content_types:
             v.append({"field": "content_type", "code": "CONTENT_TYPE_UNSUPPORTED", "actual": r.content_type,
                       "limit": surface.content_types,

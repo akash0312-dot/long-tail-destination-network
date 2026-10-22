@@ -12,6 +12,13 @@ TARGETS = {
                                                             "community": "longtail_test"}},
               "connection": {"credentials": {"username": "longtail_bot", "password": "pw-test-123"}},
               "instance": "sim/lemmy/lemmy-a-example"},
+    "discourse": {"destination": {"name": "Forum A", "params": {"base_url": "https://forum-a.example",
+                                                                "category_id": 5}},
+                  "connection": {"credentials": {"api_key": "k-test-123456", "api_username": "longtail_bot"}},
+                  "instance": "sim/discourse/forum-a-example"},
+    "devto": {"destination": {"name": "Forem A", "params": {"base_url": "https://forem-a.example"}},
+              "connection": {"credentials": {"api_key": "devto-test-key-1"}},
+              "instance": "sim/devto/forem-a-example"},
 }
 RENDITION = {"title": "How small creator teams ship video weekly", "body": "A short **discussion** starter.",
              "content_type": "text", "tags": ["video"]}
@@ -44,7 +51,7 @@ def test_full_certification_cycle(client, mock, key):
     assert status == 200 and st["status"] == "published"
 
     status, d = call(client, key, "delete", **post_ref(key, res["platform_post_id"]))
-    assert status == 200 and d == {"deleted": True}
+    assert status == 200 and d["deleted"] is True
 
     status, st = call(client, key, "get_status", **post_ref(key, res["platform_post_id"]))
     assert st["status"] == "deleted"

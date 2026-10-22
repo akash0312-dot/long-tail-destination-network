@@ -1,0 +1,27 @@
+key: discourse
+version: 1.0.0
+name: Discourse (forum topics)
+tier: native
+auth: api_key   # Api-Key + Api-Username headers
+surfaces:
+  - key: topic
+    content_types: [text, image, video_link, article]
+    spec:
+      title_max_chars: 255     # Discourse default max_topic_title_length
+      title_min_chars: 15      # Discourse default min_topic_title_length
+      body_max_chars: 31900    # max_post_length 32000 minus the hidden idempotency marker
+      body_min_chars: 20       # min_first_post_length
+      links_allowed: true
+      title_required: true
+      media_types: [image/jpeg, image/png, image/gif, image/webp]
+      max_media: 4
+      max_tags: 5
+rate_limits:
+  per_connection: {requests: 60, per_seconds: 60}   # Discourse default admin API limit
+capabilities: [publish, status, delete]
+error_map:
+  "401": CONNECTION_AUTH_EXPIRED
+  "403": CONNECTION_AUTH_EXPIRED
+  "422": PLATFORM_CONTENT_REJECTED
+  "429": PLATFORM_RATE_LIMIT
+instance_param: base_url

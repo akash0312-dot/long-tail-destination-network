@@ -1,0 +1,24 @@
+key: devto
+version: 1.0.0
+name: Dev.to / Forem articles
+tier: native
+auth: api_key   # "api-key" header; works for dev.to and any Forem community (instance = base_url)
+surfaces:
+  - key: article
+    content_types: [article, text]
+    spec:
+      title_max_chars: 128
+      title_required: true
+      links_allowed: true
+      media_types: [image/jpeg, image/png, image/gif, image/webp]
+      max_media: 1   # becomes the cover image (main_image)
+      max_tags: 4
+rate_limits:
+  per_connection: {requests: 10, per_seconds: 30}   # Forem article endpoints: 10 requests per 30 s
+capabilities: [publish, status, delete]
+error_map:
+  "401": CONNECTION_AUTH_EXPIRED
+  "403": CONNECTION_AUTH_EXPIRED
+  "422": PLATFORM_CONTENT_REJECTED
+  "429": PLATFORM_RATE_LIMIT
+instance_param: base_url

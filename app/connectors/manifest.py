@@ -13,7 +13,10 @@ CAPABILITIES = {"publish", "status", "delete", "metrics", "refresh_auth", "assis
 class SurfaceSpec(BaseModel):
     model_config = ConfigDict(extra="allow")
     title_max_chars: int | None = None
+    title_min_chars: int | None = None
     body_max_chars: int | None = None
+    body_min_chars: int | None = None
+    max_tags: int | None = None
     links_allowed: bool = True
     title_required: bool = False
     media_types: list[str] | None = None  # accepted MIME types; None = any
