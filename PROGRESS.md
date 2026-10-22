@@ -77,7 +77,7 @@ form disqualifies; "Partial" with a reason does not.
 | Demo video | ⬜ |
 | Live demo deployed | ⬜ |
 | Clarification email sent to the hiring team | ⬜ (questions drafted in `docs/PLAN.md` §5) |
-| Git repo with real commit history | 🟡 7 commits on `main`; push to private GitHub repo `long-tail-destination-network` waiting on `gh auth login` |
+| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, `main` pushed. Reviewer invite ⬜ (username comes in the invitation email) |
 | Submission Form filled | ⬜ |
 
 ## Decisions log
