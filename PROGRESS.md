@@ -15,6 +15,36 @@ form disqualifies; "Partial" with a reason does not.
 - Fresh stack bootstrap → **6/6 seeded destinations certified**
 - **1,000-row catalogue import: ~10 s** with reachability checks on (limit 5 min) — `test_one_thousand_rows_under_five_minutes`
 
+## Remaining before submission
+Ordered by risk: a single failed must-have means "not selected", so those come first.
+
+**A. Must-have gaps**
+- [ ] **Live demo** deployed and kept up for the whole review (must-have 9): VM with ≥ 4 GB RAM, `API_TOKEN`, rate limit, `CALLBACK_SIGNATURE_HEADER` set to the brief's header name, cold-start time noted — *you: choose/pay for the VM; me: deploy config + steps*
+- [ ] **Clean-machine test** of `docker compose up` + tests (must-have 8) — *me: GitHub Actions run on a fresh Ubuntu runner (doubles as CI evidence)*
+- [ ] **Secret scan** (gitleaks) in CI + repeat log scan (must-have 7) — *me*
+- [ ] **Certification pack** exported into the repo: run.json, live snapshot, deletion confirmation per destination, plus screenshots (must-have 2) — *me*
+- [ ] **No-spam evidence** written up: log review + policy in REPORT (must-have 5) — *me*
+- [ ] **Clarification email** (contract JSON shape; is mock certification accepted for Discourse/Dev.to/webhook) (must-haves 1, 2) — *you send; questions drafted in docs/PLAN.md §5*
+- [ ] Re-run the real-instance E2E (`RUN_E2E=1`) on the final build — *me*
+
+**B. Outstanding level (counts only if every item is verified)**
+- [ ] Review and correct `catalogue_data/labelled_set.json`, set `reviewed_by`, re-run `python scripts/eval_recommender.py` — *you*
+- [ ] Catalogue rules: 175 of 199 rows use defaults — run Claude rules capture (needs `ANTHROPIC_API_KEY`, small cost) or review by hand — *your decision*
+- [ ] Optional: one live run of the Claude provider to replace "fake-client only" with real evidence and a real cost per page — *needs your key*
+
+**C. Documents and evidence**
+- [ ] README: recommender, metrics, scheduler/tickets, real catalogue — *me*
+- [ ] REPORT.md (2–4 pages), SOURCES.md, AI_USE.md — *me drafts; you check AI_USE describes how you worked*
+- [ ] Test-pack index: each claim → its file — *me*
+- [ ] Missing metrics: certification time per run, cost per 1,000 publications, Claude cost per rules page — *me (Claude cost needs your key)*
+- [ ] Decide on local-only default passwords in `.env.example` (generate them, or keep and justify) — *your call*
+
+**D. Only you can do**
+- [ ] Demo video: unedited, ≤ 8 min (clean run, a failure handled, tests running, one design decision in code)
+- [ ] Invite the reviewer to the GitHub repo (username from the email)
+- [ ] Fill and sign the Submission Form (I can pre-fill a draft from this tracker); send before the deadline in the email
+- [ ] Practise the live session: architecture walkthrough, predict-and-run, debugging from logs, adding a connector test-first
+
 ## Must-haves
 | # | Must-have | Status | Evidence | Notes |
 |---|---|---|---|---|
@@ -83,17 +113,17 @@ form disqualifies; "Partial" with a reason does not.
 ## Deliverables
 | Item | Status |
 |---|---|
-| README.md | 🟡 (Day 3 version) |
+| README.md | 🟡 Day 3 version: recommender, metrics, scheduler/tickets and the real catalogue are not documented yet |
 | openapi.yaml | ✅ |
 | REPORT.md | ⬜ |
 | SOURCES.md / AI_USE.md | ⬜ |
 | Test pack | 🟡 `test_pack/` batch runs incl. failed runs; claim → file index ⬜ |
 | Certification pack | 🟡 evidence in object storage; export to repo + screenshots ⬜ |
-| Catalogue files | 🟡 import reports in storage; real 150-destination CSV ⬜ |
+| Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json`; labels need your review |
 | Demo video | ⬜ |
 | Live demo deployed | ⬜ |
 | Clarification email sent to the hiring team | ⬜ (questions drafted in `docs/PLAN.md` §5) |
-| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network (Day 3 pushed; Outstanding commits local until pushed). Reviewer invite ⬜ |
+| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, 19 commits, all pushed (2026-10-23). Reviewer invite ⬜ (username comes in the invitation email) |
 | Submission Form filled | ⬜ |
 
 ## Decisions log
