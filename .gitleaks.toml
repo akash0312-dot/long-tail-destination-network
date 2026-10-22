@@ -1,0 +1,15 @@
+title = "longtail-network secret scan"
+
+[extend]
+useDefault = true  # all of gitleaks' built-in rules stay on
+
+# Narrow allowlist, reviewed 2026-10-23: the only findings were not secrets.
+# - "idempotency_key": random request ids recorded in the test pack (high entropy, so the generic rule fires)
+# - "hunter2-plain": a deliberately fake password in tests/test_api.py proving inline secrets are rejected
+[allowlist]
+description = "Idempotency keys in test evidence; a fake password in a negative test"
+regexTarget = "line"
+regexes = [
+  '''"idempotency_key"''',
+  '''hunter2-plain''',
+]

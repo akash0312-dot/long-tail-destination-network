@@ -1,0 +1,72 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: Secret scan (gitleaks, full history)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # every commit, not just the latest
+      - name: gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.18.4 \
+            detect --source /repo --config /repo/.gitleaks.toml --redact --no-banner -v
+
+  clean-machine:
+    name: Clean machine (compose up, bootstrap, tests, E2E, batch)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Settings from the example file only
+        run: cp .env.example .env
+
+      - name: docker compose up on a fresh machine
+        run: docker compose up -d --build
+
+      - name: Bootstrap provisions Ghost + Lemmy, seeds and certifies every destination
+        run: |
+          docker compose wait bootstrap
+          docker compose logs bootstrap --no-log-prefix > bootstrap.log
+          grep '"certification"' bootstrap.log
+          grep -q '"all_certified": true' bootstrap.log
+
+      - name: One-command test suite (no API keys)
+        run: docker compose --profile test run --rm tests
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Client dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: End-to-end against the real local Ghost and Lemmy
+        run: RUN_E2E=1 E2E_API_URL=http://localhost:8000 python -m pytest -p no:cacheprovider tests/test_e2e_local.py
+
+      - name: Batch runner over every hard-case scenario
+        run: python -m app.batch --input test_inputs --output ci_batch
+
+      - name: Collect logs
+        if: always()
+        run: docker compose logs --no-color > compose.log 2>&1 || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: clean-machine-evidence
+          path: |
+            bootstrap.log
+            compose.log
+            ci_batch/
