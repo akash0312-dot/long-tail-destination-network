@@ -78,6 +78,8 @@ class Publication(Base):
     error: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     warnings: Mapped[list] = mapped_column(JSON, default=list)
     rendition: Mapped[dict] = mapped_column(JSON, default=dict)
+    metrics: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # latest normalised snapshot
+    metrics_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
 
 

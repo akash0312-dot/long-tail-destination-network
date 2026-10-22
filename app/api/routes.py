@@ -19,7 +19,7 @@ from app.connectors.router import call_method
 from app.db import get_db
 from app.errors import AppError, ErrorCode
 from app.jobs import create_job, job_view
-from app.models import CertificationRun, Connection, Destination, Job, Publication, RuleProposal
+from app.models import CertificationRun, Connection, Destination, Job, Publication, RuleProposal, utcnow
 from app.services.publishing import connection_ref, destination_ref
 from app.storage import LocalStorage, get_storage
 from app.urls import normalize_url
@@ -263,6 +263,27 @@ def list_certifications(destination_id: str | None = None, db: Session = Depends
     if destination_id:
         q = q.where(CertificationRun.destination_id == destination_id)
     return {"items": [_row(r) for r in db.execute(q.limit(200)).scalars()]}
+
+
+@router.post("/publications/{publication_id}/metrics", tags=["publishing"],
+             summary="Fetch normalised metrics from the platform and store them on the publication")
+def refresh_metrics(publication_id: str, db: Session = Depends(get_db)) -> dict:
+    p = db.get(Publication, publication_id)
+    if p is None:
+        raise AppError(ErrorCode.NOT_FOUND, "Publication not found")
+    if p.status != "published" or not p.platform_post_id:
+        raise AppError(ErrorCode.VALIDATION_ERROR, f"Publication is {p.status}; only published posts have metrics")
+    dest = db.get(Destination, p.destination_id)
+    connector = get_connector(dest.connector_key)
+    if "metrics" not in connector.manifest.capabilities:
+        raise AppError(ErrorCode.METHOD_NOT_SUPPORTED, f"Connector '{dest.connector_key}' has no metrics")
+    conn = db.get(Connection, dest.connection_id) if dest.connection_id else None
+    m = call_method(dest.connector_key, "fetch_metrics", {
+        "platform_post_id": p.platform_post_id, "since": None, "connection": connection_ref(conn).model_dump(),
+        "destination": destination_ref(dest).model_dump()})
+    p.metrics, p.metrics_at = m, utcnow()
+    return {"publication_id": p.id, "metrics": m, "fetched_at": p.metrics_at,
+            "unavailable": sorted(k for k, v in m.items() if v is None)}
 
 
 # ---------------------------------------------------------------- jobs

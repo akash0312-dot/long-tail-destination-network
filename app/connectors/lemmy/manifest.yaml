@@ -16,7 +16,7 @@ surfaces:
 rate_limits:
   per_connection: {requests: 180, per_seconds: 60}   # Lemmy default "message" (general API) limit;
                                                      # post creation limit (6/600s) is enforced by Lemmy -> 429 backoff
-capabilities: [publish, status, delete, refresh_auth]
+capabilities: [publish, status, delete, refresh_auth, metrics]
 error_map:
   "401": CONNECTION_AUTH_EXPIRED
   "403": CONNECTION_AUTH_EXPIRED

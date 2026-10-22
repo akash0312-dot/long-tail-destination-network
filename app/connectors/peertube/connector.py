@@ -8,7 +8,7 @@ name and read their full description.
 import threading
 import time
 
-from app.connectors.base import BaseConnector, key_marker, require
+from app.connectors.base import BaseConnector, key_marker, metrics, require
 from app.connectors.schemas import ConnectionRef, DestinationRef, Rendition
 from app.errors import AppError, ErrorCode
 
@@ -112,6 +112,21 @@ class Connector(BaseConnector):
         def run(http):
             http.request("DELETE", f"{API}/videos/{platform_post_id}", op="delete", allow_status=(404,))
             return {"deleted": True}
+
+        return self._authed(base, connection, run)
+
+    def fetch_metrics(self, platform_post_id: str, connection: ConnectionRef, since: str | None,
+                      destination: DestinationRef | None = None) -> dict:
+        """Views, likes and comments from the video; total watch time from the owner's stats (best effort)."""
+        base = self.base_url(destination, connection)
+
+        def run(http):
+            v = http.request("GET", f"{API}/videos/{platform_post_id}", op="metrics").json()
+            stats = http.request("GET", f"{API}/videos/{platform_post_id}/stats/overall", op="metrics",
+                                 allow_status=(403, 404))
+            watch = stats.json().get("totalWatchTime") if stats.status_code == 200 else None
+            return metrics(views=require(v, "views", "metrics"), likes=require(v, "likes", "metrics"),
+                           comments=v.get("comments"), watch_time_s=watch)
 
         return self._authed(base, connection, run)
 

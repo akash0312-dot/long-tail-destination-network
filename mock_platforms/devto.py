@@ -27,6 +27,7 @@ def _fault(f):
 
 def _view(a: dict, f=None) -> dict:
     body = {k: a[k] for k in ("id", "title", "url", "published", "body_markdown", "tags", "slug")}
+    body.update(page_views_count=340, public_reactions_count=21, comments_count=5)
     return state.rename(body, "id", "article_id") if f and f.kind == "rename_field" else body
 
 

@@ -9,8 +9,9 @@ feeds) and says so in `note`.
 """
 import re
 
-from app.connectors.base import BaseConnector, key_marker, require, schema_error
+from app.connectors.base import BaseConnector, key_marker, metrics, require, schema_error
 from app.connectors.schemas import ConnectionRef, DestinationRef, Rendition
+from app.errors import AppError, ErrorCode
 
 HEADERS = {"Accept": "application/vnd.forem.api-v1+json"}
 
@@ -73,6 +74,23 @@ class Connector(BaseConnector):
                 return {"status": "deleted", "live_url": None}
             r = self._result(resp.json(), "get_status")
             return {"status": r["status"], "live_url": r["live_url"]}
+        finally:
+            http.close()
+
+    def fetch_metrics(self, platform_post_id: str, connection: ConnectionRef, since: str | None,
+                      destination: DestinationRef | None = None) -> dict:
+        """Page views are only visible to the author, so they come from the author's own article list."""
+        http = self._client(destination, connection)
+        try:
+            mine = http.request("GET", "/api/articles/me/all", op="metrics", params={"per_page": 100}).json()
+            if not isinstance(mine, list):
+                raise schema_error("metrics", "[articles]", mine)
+            a = next((x for x in mine if str(x.get("id")) == str(platform_post_id)), None)
+            if a is None:
+                raise AppError(ErrorCode.PLATFORM_CONTENT_REJECTED, "Article not found among the account's articles",
+                               {"platform_post_id": platform_post_id})
+            return metrics(views=a.get("page_views_count"), likes=require(a, "public_reactions_count", "metrics"),
+                           comments=require(a, "comments_count", "metrics"))
         finally:
             http.close()
 

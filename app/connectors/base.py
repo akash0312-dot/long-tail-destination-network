@@ -32,6 +32,14 @@ def schema_error(op: str, missing: str, payload: Any) -> AppError:
                     {"op": op, "missing_field": missing, "received_keys": keys})
 
 
+METRIC_KEYS = ("views", "likes", "comments", "shares", "saves", "watch_time_s", "clicks")
+
+
+def metrics(**values) -> dict:
+    """The contract's normalised metrics. A value the platform does not expose is None, never a made-up 0."""
+    return {k: (int(values[k]) if values.get(k) is not None else None) for k in METRIC_KEYS}
+
+
 def violation_error(violations: list[dict]) -> AppError:
     """A posting-rule violation outranks a format violation: it is the reason a person needs to see."""
     rule = next((v for v in violations if v.get("field") == "rules"), None)

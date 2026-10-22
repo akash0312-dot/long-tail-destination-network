@@ -92,6 +92,9 @@ async def get_topic(inst: str, tid: int, request: Request):
     if not t or t["deleted_at"]:
         return JSONResponse({"errors": ["The requested URL or resource could not be found."]}, status_code=404)
     body = {"id": t["id"], "title": t["title"], "slug": t["slug"], "visible": t["visible"], "deleted_at": None,
+            "views": 120, "like_count": 9, "posts_count": 4,
+            "details": {"links": [{"url": "https://example.org/a", "clicks": 7}, {"url": "https://example.org/b",
+                                                                                 "clicks": 2}]},
             "post_stream": {"posts": [{"id": t["first_post_id"], "post_number": 1}]}}
     return state.rename(body, "slug", "topic_slug") if f and f.kind == "rename_field" else body
 

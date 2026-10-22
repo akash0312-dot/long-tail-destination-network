@@ -41,9 +41,9 @@ def certify(client, dest_id):
     return client.get(f"/api/v1/jobs/{r.json()['job_id']}").json()
 
 
-@pytest.mark.parametrize("key,level", [("ghost", "L3"), ("lemmy", "L3"), ("discourse", "L3"), ("devto", "L3"),
+@pytest.mark.parametrize("key,level", [("ghost", "L3"), ("lemmy", "L4"), ("discourse", "L4"), ("devto", "L4"),
                                        ("webhook", "L3"), ("assisted", "L1"), ("hashnode", "L3"),
-                                       ("peertube", "L3")])
+                                       ("peertube", "L4")])  # L4 = native + metrics verified
 def test_certification_passes_and_promotes(client, mock, key, level):
     d, _ = make_dest(client, key)
     job = certify(client, d["id"])
@@ -53,8 +53,9 @@ def test_certification_passes_and_promotes(client, mock, key, level):
     assert all(s["ok"] for s in res["steps"]), res["steps"]
     if key != "assisted":
         names = [s["step"] for s in res["steps"]]
-        assert names[-5:] == ["confirm_live_url", "status_published", "delete_test_post", "status_deleted",
-                              "cleaned_within_limit"]
+        expected = ["confirm_live_url", "status_published", *(["fetch_metrics"] if level == "L4" else []),
+                    "delete_test_post", "status_deleted", "cleaned_within_limit"]
+        assert names[-len(expected):] == expected
         assert client.get(res["links"]["live_snapshot"].replace("http://testserver", "")).status_code == 200
     evidence = client.get(res["links"]["evidence"].replace("http://testserver", "")).json()
     assert evidence["passed"] and evidence["manifest"]["kind"] == "certification"

@@ -14,6 +14,7 @@ import uuid
 import httpx
 
 from app.config import get_settings
+from app.connectors.base import METRIC_KEYS
 from app.connectors.registry import get_connector
 from app.connectors.router import call_method
 from app.db import session_scope
@@ -167,6 +168,10 @@ def run_certification(ctx: JobContext) -> dict:
             ref = {"platform_post_id": published["platform_post_id"], "connection": cref, "destination": dref}
             run.step("status_published", lambda: call_method(dest.connector_key, "get_status", ref),
                      lambda r: None if r.get("status") == "published" else f"status is {r.get('status')}")
+            if "metrics" in connector.manifest.capabilities:
+                run.step("fetch_metrics", lambda: call_method(dest.connector_key, "fetch_metrics",
+                                                              {**ref, "since": None}),
+                         lambda r: None if set(r) >= set(METRIC_KEYS) else "metrics missing contract fields")
             ctx.progress(60)
             run.step("delete_test_post", lambda: call_method(dest.connector_key, "delete", ref),
                      lambda r: None if r.get("deleted") else "platform did not confirm deletion")
@@ -247,7 +252,10 @@ def _finish(ctx, dest, connector, run: Run, passed: bool, duration: float, snaps
     with session_scope() as db:
         d = db.get(Destination, dest.id)
         if passed:
-            d.level, d.certification_status, d.last_certified_at = TIER_LEVEL.get(tier, "L1"), "certified", utcnow()
+            level = TIER_LEVEL.get(tier, "L1")
+            if level == "L3" and any(st["step"] == "fetch_metrics" and st["ok"] for st in run.steps):
+                level = "L4"  # native + metrics
+            d.level, d.certification_status, d.last_certified_at = level, "certified", utcnow()
         else:
             d.level, d.certification_status = "L0", "failed"
         level = d.level

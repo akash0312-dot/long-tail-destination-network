@@ -595,6 +595,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/publications/{publication_id}/metrics:
+    post:
+      tags:
+      - publishing
+      summary: Fetch normalised metrics from the platform and store them on the publication
+      operationId: refresh_metrics_api_v1_publications__publication_id__metrics_post
+      parameters:
+      - name: publication_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Publication Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Refresh Metrics Api V1 Publications  Publication Id  Metrics Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/jobs/{job_id}:
     get:
       tags:

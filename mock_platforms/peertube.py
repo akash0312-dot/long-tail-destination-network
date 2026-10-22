@@ -31,7 +31,7 @@ def _authed(request: Request, inst: str) -> bool:
 
 def _view(v: dict, f=None) -> dict:
     out = {"id": v["id"], "uuid": v["uuid"], "shortUUID": v["shortUUID"], "name": v["name"],
-           "state": {"id": 1, "label": "Published"}}
+           "state": {"id": 1, "label": "Published"}, "views": 512, "likes": 33, "dislikes": 1, "comments": 6}
     return state.rename(out, "shortUUID", "short_uuid") if f and f.kind == "rename_field" else out
 
 
@@ -84,6 +84,14 @@ async def import_video(inst: str, request: Request):
     state.instance(P, inst).posts[vid] = v
     await state.apply_delay(f)
     return {"id": state.next_id(), "state": {"id": 1}, "video": _view(v, f)}
+
+
+@router.get("/{inst:path}/api/v1/videos/{vid:int}/stats/overall")
+async def stats(inst: str, vid: int, request: Request):
+    if not _authed(request, inst):
+        return _err(401, "Token is invalid", "invalid_token")
+    v = state.instance(P, inst).posts.get(vid)
+    return {"totalWatchTime": 4096, "averageWatchTime": 8, "totalViewers": 90} if v else _err(404, "Video not found")
 
 
 @router.get("/{inst:path}/api/v1/videos/{vid:int}/description")

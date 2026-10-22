@@ -8,7 +8,7 @@ import threading
 
 import httpx
 
-from app.connectors.base import BaseConnector, key_marker, require
+from app.connectors.base import BaseConnector, key_marker, metrics, require
 from app.connectors.schemas import ConnectionRef, DestinationRef, Rendition
 from app.errors import AppError, ErrorCode
 
@@ -146,6 +146,18 @@ class Connector(BaseConnector):
             resp = http.request("POST", f"{API}/post/delete", op="delete",
                                 json={"post_id": int(platform_post_id), "deleted": True})
             return {"deleted": bool(require(resp.json(), "post_view.post.deleted", "delete"))}
+
+        return self._authed(base, connection, run)
+
+    def fetch_metrics(self, platform_post_id: str, connection: ConnectionRef, since: str | None,
+                      destination: DestinationRef | None = None) -> dict:
+        """Lemmy exposes votes and comment counts (lifetime totals); no views, shares or clicks."""
+        base = self.base_url(destination, connection)
+
+        def run(http):
+            resp = http.request("GET", f"{API}/post", op="metrics", params={"id": platform_post_id})
+            counts = require(resp.json(), "post_view.counts", "metrics")
+            return metrics(likes=require(counts, "upvotes", "metrics"), comments=require(counts, "comments", "metrics"))
 
         return self._authed(base, connection, run)
 
