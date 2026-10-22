@@ -1,0 +1,179 @@
+{
+  "certification_run_id": "8eb6a517aea04b3d9d69c35180bb0c33",
+  "destination_id": "c010872cab004bd8a4c2c4a0fa494914",
+  "destination": "Creator channel (local mock PeerTube)",
+  "connector": {
+    "key": "peertube",
+    "version": "1.0.0",
+    "tier": "native"
+  },
+  "passed": true,
+  "duration_s": 0.18,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 3,
+          "per_days": 7
+        },
+        "link_policy": {
+          "allowed": true
+        },
+        "self_promo_allowed": true,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "language": "en",
+        "rules_url": "http://mock:9000/local/peertube-demo/about/instance"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "video",
+        "content_types": [
+          "video",
+          "video_link"
+        ],
+        "spec": {
+          "title_max_chars": 120,
+          "title_min_chars": 3,
+          "body_max_chars": 9900,
+          "body_min_chars": null,
+          "max_tags": 5,
+          "links_allowed": true,
+          "title_required": true,
+          "media_types": [
+            "video/mp4",
+            "video/webm",
+            "video/quicktime",
+            "image/jpeg",
+            "image/png"
+          ],
+          "max_media": 2,
+          "min_video": 1
+        }
+      }
+    },
+    {
+      "step": "connection_active",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "status": "active"
+      }
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true,
+      "ms": 51,
+      "result": {
+        "platform_post_id": "6",
+        "live_url": "http://mock:9000/local/peertube-demo/w/8ff50dcf0de343719bea4e",
+        "status": "published",
+        "warnings": []
+      }
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true,
+      "ms": 14,
+      "result": {
+        "status": 200,
+        "accept": "text/html,application/xhtml+xml",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 88,
+        "attempts": [
+          {
+            "accept": "text/html,application/xhtml+xml",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "step": "status_published",
+      "ok": true,
+      "ms": 15,
+      "result": {
+        "status": "published",
+        "live_url": "http://mock:9000/local/peertube-demo/w/8ff50dcf0de343719bea4e"
+      }
+    },
+    {
+      "step": "fetch_metrics",
+      "ok": true,
+      "ms": 20,
+      "result": {
+        "views": 512,
+        "likes": 33,
+        "comments": 6,
+        "shares": null,
+        "saves": null,
+        "watch_time_s": 4096,
+        "clicks": null
+      }
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true,
+      "ms": 14,
+      "result": {
+        "deleted": true
+      }
+    },
+    {
+      "step": "status_deleted",
+      "ok": true,
+      "ms": 15,
+      "result": {
+        "status": "deleted",
+        "live_url": null
+      }
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "seconds": 0.2,
+        "limit_s": 600
+      }
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "8eb6a517aea04b3d9d69c35180bb0c33",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:16.796804+00:00",
+    "connectors": [
+      {
+        "key": "peertube",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 178
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}

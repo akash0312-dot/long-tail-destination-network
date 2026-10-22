@@ -1,0 +1,56 @@
+{
+  "destination": "Builders blog (local mock Hashnode)",
+  "destination_id": "46455732fab648b89d339546aa62742c",
+  "connector": "hashnode",
+  "level": "L3",
+  "certified_at": "2026-10-22T19:07:16.573868Z",
+  "run_id": "dc7281de08eb42ec84873cdfe204c6f7",
+  "duration_s": 0.13,
+  "platform_post_id": "000000000000000000000005",
+  "live_url": "http://mock:9000/local/hashnode-demo/__live/hashnode/000000000000000000000005",
+  "live_http_status": 200,
+  "live_content_type": "text/html; charset=utf-8",
+  "deleted": {
+    "deleted": true
+  },
+  "status_after_delete": "deleted",
+  "cleanup_seconds": 0.1,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true
+    },
+    {
+      "step": "connection_active",
+      "ok": true
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true
+    },
+    {
+      "step": "status_published",
+      "ok": true
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true
+    },
+    {
+      "step": "status_deleted",
+      "ok": true
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "destination": "Dev community (local mock Forem)",
+  "destination_id": "7cb8d14a3b134b7b84e02f06e0e7c4b5",
+  "connector": "devto",
+  "level": "L4",
+  "certified_at": "2026-10-22T19:07:15.930363Z",
+  "run_id": "606fd5661c964c28adaa057b19137f18",
+  "duration_s": 0.18,
+  "platform_post_id": "3",
+  "live_url": "http://mock:9000/local/forem-demo/__live/devto/3",
+  "live_http_status": 200,
+  "live_content_type": "text/html; charset=utf-8",
+  "deleted": {
+    "deleted": true,
+    "note": "Forem API cannot delete articles; the article was unpublished"
+  },
+  "status_after_delete": "deleted",
+  "cleanup_seconds": 0.2,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true
+    },
+    {
+      "step": "connection_active",
+      "ok": true
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true
+    },
+    {
+      "step": "status_published",
+      "ok": true
+    },
+    {
+      "step": "fetch_metrics",
+      "ok": true
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true
+    },
+    {
+      "step": "status_deleted",
+      "ok": true
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true
+    }
+  ]
+}

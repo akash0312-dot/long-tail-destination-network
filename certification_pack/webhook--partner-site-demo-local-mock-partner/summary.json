@@ -1,0 +1,56 @@
+{
+  "destination": "Partner site demo (local mock partner)",
+  "destination_id": "98014ec401324fd3b99706940fbec5be",
+  "connector": "webhook",
+  "level": "L3",
+  "certified_at": "2026-10-22T19:07:16.086431Z",
+  "run_id": "6d936210f5fd48ae8cb385cfaa5512f2",
+  "duration_s": 0.1,
+  "platform_post_id": "4",
+  "live_url": "http://mock:9000/__live/partner/partner/partner-demo/4",
+  "live_http_status": 200,
+  "live_content_type": "text/html; charset=utf-8",
+  "deleted": {
+    "deleted": true
+  },
+  "status_after_delete": "deleted",
+  "cleanup_seconds": 0.1,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true
+    },
+    {
+      "step": "connection_active",
+      "ok": true
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true
+    },
+    {
+      "step": "status_published",
+      "ok": true
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true
+    },
+    {
+      "step": "status_deleted",
+      "ok": true
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true
+    }
+  ]
+}

@@ -20,9 +20,9 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 
 **A. Must-have gaps**
 - [ ] **Live demo** deployed and kept up for the whole review (must-have 9): VM with ≥ 4 GB RAM, `API_TOKEN`, rate limit, `CALLBACK_SIGNATURE_HEADER` set to the brief's header name, cold-start time noted — *you: choose/pay for the VM; me: deploy config + steps*
-- [ ] **Clean-machine test** of `docker compose up` + tests (must-have 8) — *me: GitHub Actions run on a fresh Ubuntu runner (doubles as CI evidence)*
-- [ ] **Secret scan** (gitleaks) in CI + repeat log scan (must-have 7) — *me*
-- [ ] **Certification pack** exported into the repo: run.json, live snapshot, deletion confirmation per destination, plus screenshots (must-have 2) — *me*
+- [ ] **Clean-machine test** of `docker compose up` + tests (must-have 8) — workflow written (`.github/workflows/ci.yml`); *first run result on GitHub ⬜ — check the Actions tab (the CLI here is not signed in)*
+- [x] **Secret scan** (gitleaks) — clean locally over the full history; also runs in CI. Repeat log scan still ⬜
+- [x] **Certification pack** exported into the repo (must-have 2 evidence) — [certification_pack/](certification_pack/README.md): 9 destinations, one per connector (L1–L4), each with run.json, live snapshot, screenshot and deletion confirmation; cleanup 0.1–2.1 s. Credentials in captured pages are redacted (Ghost embeds its Content API key). Re-export: `python scripts/export_certification_pack.py`
 - [ ] **No-spam evidence** written up: log review + policy in REPORT (must-have 5) — *me*
 - [ ] **Clarification email** (contract JSON shape; is mock certification accepted for Discourse/Dev.to/webhook) (must-haves 1, 2) — *you send; questions drafted in docs/PLAN.md §5*
 - [ ] Re-run the real-instance E2E (`RUN_E2E=1`) on the final build — *me*
@@ -49,13 +49,13 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | # | Must-have | Status | Evidence | Notes |
 |---|---|---|---|---|
 | 1 | Exact connector contract | 🟡 | `app/connectors/router.py`, `tests/test_contract.py`, 9 manifests | All 7 methods routed, manifests validated, shared codes. Exact JSON field names unconfirmed → clarification email |
-| 2 | Six Core connectors certified | 🟡 | `tests/test_certification.py`, bootstrap log, `tests/test_e2e_local.py` | All 6 certify. Ghost + Lemmy on real local instances; Discourse, Dev.to, webhook on faithful mocks — **ask whether mock certification is accepted**. Certification pack export to repo ⬜ |
+| 2 | Six Core connectors certified | 🟡 | `tests/test_certification.py`, bootstrap log, `tests/test_e2e_local.py`, [certification_pack/](certification_pack/README.md) | All 6 certify (plus MRSS, Hashnode, PeerTube). Ghost + Lemmy on real local instances; Discourse, Dev.to, webhook on faithful mocks — **ask whether mock certification is accepted** |
 | 3 | Configuration, not code | ✅ | `test_one_connector_many_destinations` (7 posting connectors); every batch scenario adds its destination as one API row | |
 | 4 | Rules checked before every post | ✅ | `tests/test_rules.py` (21-case rule set + API tests), batch `04a`, `04b`, `07` | Also enforced on the raw contract path via `validate()` |
 | 5 | Never spam, never cheat | 🟡 | 429 reset-time backoff, certification cleanup always deletes test posts, robots.txt honoured by rules capture, SSRF guard, only own instances/mocks used | Log review evidence + written policy in REPORT ⬜ |
 | 6 | Safe retries (no duplicate after timeout) | ✅ | `test_timeout_then_retry_same_key_never_duplicates` (7 connectors), `test_publication_job_retries_timeout_with_same_key_and_never_duplicates`, batch `01` | Mutation-checked on Day 1 |
-| 7 | Secrets protected + simulation mode | 🟡 | `tests/test_logging.py`; container log scan clean on Day 1; `SIMULATION_MODE=true` | gitleaks in CI ⬜; repeat log scan ⬜ |
-| 8 | `docker compose up` with local Lemmy + Ghost + mocks | 🟡 | `docker-compose.yml`, `bootstrap/bootstrap.py`; fresh-volume start worked 3 times | **Clean-machine test ⬜** |
+| 7 | Secrets protected + simulation mode | 🟡 | `tests/test_logging.py`; container log scan clean on Day 1; `SIMULATION_MODE=true`; **gitleaks v8.18.4 over all 19 commits: no leaks** (`.gitleaks.toml`: default rules + a 2-pattern allowlist for idempotency keys and one fake test password; a planted fake key is still caught); CI job `secret-scan` in `.github/workflows/ci.yml` | First CI run result ⬜; repeat log scan ⬜ |
+| 8 | `docker compose up` with local Lemmy + Ghost + mocks | 🟡 | `docker-compose.yml`, `bootstrap/bootstrap.py`; fresh-volume start worked 4 times locally; CI job `clean-machine` (fresh Ubuntu runner: `.env` from `.env.example`, compose up, bootstrap must certify all 9 seeds, test suite, real E2E, batch; logs uploaded as an artifact) | **First CI run result ⬜** |
 | 9 | Integration Standard + live demo up | ⬜ | | Live demo not deployed |
 
 ## Levels
@@ -118,7 +118,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | REPORT.md | ⬜ |
 | SOURCES.md / AI_USE.md | ⬜ |
 | Test pack | 🟡 `test_pack/` batch runs incl. failed runs; claim → file index ⬜ |
-| Certification pack | 🟡 evidence in object storage; export to repo + screenshots ⬜ |
+| Certification pack | ✅ [certification_pack/](certification_pack/README.md) — 9 destinations with run record, live snapshot, screenshot, deletion confirmation |
 | Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json`; labels need your review |
 | Demo video | ⬜ |
 | Live demo deployed | ⬜ |

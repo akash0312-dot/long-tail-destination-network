@@ -1,0 +1,60 @@
+{
+  "destination": "Creator channel (local mock PeerTube)",
+  "destination_id": "c010872cab004bd8a4c2c4a0fa494914",
+  "connector": "peertube",
+  "level": "L4",
+  "certified_at": "2026-10-22T19:07:16.813047Z",
+  "run_id": "8eb6a517aea04b3d9d69c35180bb0c33",
+  "duration_s": 0.18,
+  "platform_post_id": "6",
+  "live_url": "http://mock:9000/local/peertube-demo/w/8ff50dcf0de343719bea4e",
+  "live_http_status": 200,
+  "live_content_type": "text/html; charset=utf-8",
+  "deleted": {
+    "deleted": true
+  },
+  "status_after_delete": "deleted",
+  "cleanup_seconds": 0.2,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true
+    },
+    {
+      "step": "connection_active",
+      "ok": true
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true
+    },
+    {
+      "step": "status_published",
+      "ok": true
+    },
+    {
+      "step": "fetch_metrics",
+      "ok": true
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true
+    },
+    {
+      "step": "status_deleted",
+      "ok": true
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true
+    }
+  ]
+}

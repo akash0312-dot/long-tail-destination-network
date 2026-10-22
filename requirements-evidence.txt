@@ -1,0 +1,2 @@
+# Evidence tooling only (not part of the service): screenshots in the certification pack
+playwright==1.52.0

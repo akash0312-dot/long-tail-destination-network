@@ -1,0 +1,157 @@
+{
+  "certification_run_id": "ed036fc9a91848d7b238685372b2f6cd",
+  "destination_id": "6968d6d81c844966879d4d663e111daa",
+  "destination": "Creator video feed (hosted MRSS)",
+  "connector": {
+    "key": "mrss",
+    "version": "1.0.0",
+    "tier": "feed"
+  },
+  "passed": true,
+  "duration_s": 0.16,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 10,
+          "per_days": 1
+        },
+        "link_policy": {
+          "allowed": true
+        },
+        "self_promo_allowed": true,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "language": "en",
+        "rules_url": "http://api:8000/api/v1/feeds/creator-video.xml"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "feed_item",
+        "content_types": [
+          "video"
+        ],
+        "spec": {
+          "title_max_chars": 200,
+          "title_min_chars": null,
+          "body_max_chars": 5000,
+          "body_min_chars": null,
+          "max_tags": null,
+          "links_allowed": true,
+          "title_required": true,
+          "media_types": [
+            "video/mp4",
+            "video/quicktime",
+            "video/webm",
+            "application/x-mpegURL",
+            "image/jpeg",
+            "image/png"
+          ],
+          "max_media": 2,
+          "min_video": 1
+        }
+      }
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true,
+      "ms": 37,
+      "result": {
+        "platform_post_id": "ltn-5848caf2f3a95d660b57",
+        "live_url": "http://localhost:8000/api/v1/feeds/creator-video.xml#ltn-5848caf2f3a95d660b57",
+        "status": "published",
+        "warnings": []
+      }
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true,
+      "ms": 31,
+      "result": {
+        "status": 200,
+        "accept": "text/html,application/xhtml+xml",
+        "content_type": "application/rss+xml",
+        "bytes": 801,
+        "attempts": [
+          {
+            "accept": "text/html,application/xhtml+xml",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "step": "status_published",
+      "ok": true,
+      "ms": 6,
+      "result": {
+        "status": "published",
+        "live_url": "http://localhost:8000/api/v1/feeds/creator-video.xml#ltn-5848caf2f3a95d660b57"
+      }
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true,
+      "ms": 26,
+      "result": {
+        "deleted": true
+      }
+    },
+    {
+      "step": "status_deleted",
+      "ok": true,
+      "ms": 7,
+      "result": {
+        "status": "deleted",
+        "live_url": null
+      }
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "seconds": 0.2,
+        "limit_s": 600
+      }
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "ed036fc9a91848d7b238685372b2f6cd",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:16.384119+00:00",
+    "connectors": [
+      {
+        "key": "mrss",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 159
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}

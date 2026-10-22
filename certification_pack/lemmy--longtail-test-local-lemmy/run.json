@@ -1,0 +1,183 @@
+{
+  "certification_run_id": "fda8b226f84f4854a3e3602632bbf61a",
+  "destination_id": "c312b949e8af48598087283d54e2fe15",
+  "destination": "!longtail_test (local Lemmy)",
+  "connector": {
+    "key": "lemmy",
+    "version": "1.0.0",
+    "tier": "native"
+  },
+  "passed": true,
+  "duration_s": 1.23,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 7
+        },
+        "link_policy": {
+          "allowed": true,
+          "max_links": 2
+        },
+        "self_promo_allowed": false,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "language": "en",
+        "rules_url": "http://lemmy:8536/c/longtail_test"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "post",
+        "content_types": [
+          "text",
+          "image",
+          "video_link",
+          "article"
+        ],
+        "spec": {
+          "title_max_chars": 200,
+          "title_min_chars": null,
+          "body_max_chars": 49900,
+          "body_min_chars": null,
+          "max_tags": null,
+          "links_allowed": true,
+          "title_required": true,
+          "media_types": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "video/mp4",
+            "video/webm"
+          ],
+          "max_media": 1,
+          "min_video": null
+        }
+      }
+    },
+    {
+      "step": "connection_active",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "status": "active"
+      }
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true,
+      "ms": 835,
+      "result": {
+        "platform_post_id": "2",
+        "live_url": "http://lemmy:8536/post/2",
+        "status": "published",
+        "warnings": []
+      }
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true,
+      "ms": 33,
+      "result": {
+        "status": 200,
+        "accept": "text/html,application/xhtml+xml",
+        "content_type": "application/activity+json",
+        "bytes": 1037,
+        "attempts": [
+          {
+            "accept": "text/html,application/xhtml+xml",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "step": "status_published",
+      "ok": true,
+      "ms": 71,
+      "result": {
+        "status": "published",
+        "live_url": "http://lemmy:8536/post/2"
+      }
+    },
+    {
+      "step": "fetch_metrics",
+      "ok": true,
+      "ms": 53,
+      "result": {
+        "views": null,
+        "likes": 1,
+        "comments": 0,
+        "shares": null,
+        "saves": null,
+        "watch_time_s": null,
+        "clicks": null
+      }
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true,
+      "ms": 42,
+      "result": {
+        "deleted": true
+      }
+    },
+    {
+      "step": "status_deleted",
+      "ok": true,
+      "ms": 149,
+      "result": {
+        "status": "deleted",
+        "live_url": "http://lemmy:8536/post/2"
+      }
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "seconds": 1.2,
+        "limit_s": 600
+      }
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "fda8b226f84f4854a3e3602632bbf61a",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:15.478149+00:00",
+    "connectors": [
+      {
+        "key": "lemmy",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 1229
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}

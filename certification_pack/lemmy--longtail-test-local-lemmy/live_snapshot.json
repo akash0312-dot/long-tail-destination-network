@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://join-lemmy.org/context.json",
+    "https://www.w3.org/ns/activitystreams"
+  ],
+  "type": "Page",
+  "id": "http://localhost/post/2",
+  "attributedTo": "http://localhost/u/longtail_admin",
+  "to": [
+    "http://localhost/c/longtail_test",
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "name": "Connector certification test fda8b226 - please ignore",
+  "cc": [],
+  "content": "<p>Automated connectivity test from the Long-Tail Destination Network. This post is deleted within seconds.</p>\n",
+  "mediaType": "text/html",
+  "source": {
+    "content": "Automated connectivity test from the Long-Tail Destination Network. This post is deleted within seconds.\n\n[//]: # (ltn:d2d99f70283a13381524)",
+    "mediaType": "text/markdown"
+  },
+  "attachment": [],
+  "sensitive": false,
+  "published": "2026-10-22T19:07:14.953852Z",
+  "audience": "http://localhost/c/longtail_test",
+  "tag": [
+    {
+      "href": "http://localhost/post/2",
+      "name": "#longtail_test",
+      "type": "Hashtag"
+    }
+  ]
+}

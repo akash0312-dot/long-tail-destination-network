@@ -1,0 +1,52 @@
+{
+  "destination": "Creator video feed (hosted MRSS)",
+  "destination_id": "6968d6d81c844966879d4d663e111daa",
+  "connector": "mrss",
+  "level": "L2",
+  "certified_at": "2026-10-22T19:07:16.400149Z",
+  "run_id": "ed036fc9a91848d7b238685372b2f6cd",
+  "duration_s": 0.16,
+  "platform_post_id": "ltn-5848caf2f3a95d660b57",
+  "live_url": "http://localhost:8000/api/v1/feeds/creator-video.xml#ltn-5848caf2f3a95d660b57",
+  "live_http_status": 200,
+  "live_content_type": "application/rss+xml",
+  "deleted": {
+    "deleted": true
+  },
+  "status_after_delete": "deleted",
+  "cleanup_seconds": 0.2,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true
+    },
+    {
+      "step": "status_published",
+      "ok": true
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true
+    },
+    {
+      "step": "status_deleted",
+      "ok": true
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true
+    }
+  ]
+}

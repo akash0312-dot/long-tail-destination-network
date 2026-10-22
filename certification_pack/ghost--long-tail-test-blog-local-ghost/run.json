@@ -1,0 +1,168 @@
+{
+  "certification_run_id": "cc11f5bcf9df4d148938c61c1bf1d8cc",
+  "destination_id": "faf7ceb1ba43450cbb28dcee8a2c7277",
+  "destination": "Long-Tail Test Blog (local Ghost)",
+  "connector": {
+    "key": "ghost",
+    "version": "1.0.0",
+    "tier": "native"
+  },
+  "passed": true,
+  "duration_s": 2.09,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 10,
+          "per_days": 1
+        },
+        "link_policy": {
+          "allowed": true,
+          "max_links": 10
+        },
+        "self_promo_allowed": true,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "language": "en",
+        "rules_url": "http://ghost:2368/"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "post",
+        "content_types": [
+          "text",
+          "article",
+          "image",
+          "video_link"
+        ],
+        "spec": {
+          "title_max_chars": 255,
+          "title_min_chars": null,
+          "body_max_chars": 200000,
+          "body_min_chars": null,
+          "max_tags": null,
+          "links_allowed": true,
+          "title_required": true,
+          "media_types": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "image/svg+xml"
+          ],
+          "max_media": 1,
+          "min_video": null
+        }
+      }
+    },
+    {
+      "step": "connection_active",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "status": "active"
+      }
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true,
+      "ms": 398,
+      "result": {
+        "platform_post_id": "6ada5ee08ba8bb00019d9e52",
+        "live_url": "http://ghost:2368/ltn-d71286ed70446407b8d8/",
+        "status": "published",
+        "warnings": []
+      }
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true,
+      "ms": 335,
+      "result": {
+        "status": 200,
+        "accept": "text/html,application/xhtml+xml",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 18233,
+        "attempts": [
+          {
+            "accept": "text/html,application/xhtml+xml",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "step": "status_published",
+      "ok": true,
+      "ms": 163,
+      "result": {
+        "status": "published",
+        "live_url": "http://ghost:2368/ltn-d71286ed70446407b8d8/"
+      }
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true,
+      "ms": 209,
+      "result": {
+        "deleted": true
+      }
+    },
+    {
+      "step": "status_deleted",
+      "ok": true,
+      "ms": 142,
+      "result": {
+        "status": "deleted",
+        "live_url": null
+      }
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "seconds": 2.1,
+        "limit_s": 600
+      }
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "cc11f5bcf9df4d148938c61c1bf1d8cc",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:14.195521+00:00",
+    "connectors": [
+      {
+        "key": "ghost",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 2085
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}

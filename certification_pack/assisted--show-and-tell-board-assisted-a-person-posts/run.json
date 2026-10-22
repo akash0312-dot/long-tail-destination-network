@@ -1,0 +1,136 @@
+{
+  "certification_run_id": "e21e7827eae34f9187269d985402dd28",
+  "destination_id": "e6ac4cb55d8643bcac8208431d8d7316",
+  "destination": "Show-and-tell board (assisted, a person posts)",
+  "connector": {
+    "key": "assisted",
+    "version": "1.0.0",
+    "tier": "assisted"
+  },
+  "passed": true,
+  "duration_s": 0.06,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 30
+        },
+        "link_policy": {
+          "allowed": true,
+          "max_links": 1
+        },
+        "self_promo_allowed": false,
+        "disclosure_required": false,
+        "automation_allowed": false,
+        "language": "en",
+        "rules_url": "https://news.example/guidelines"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "post",
+        "content_types": [
+          "text",
+          "article",
+          "image",
+          "video",
+          "video_link"
+        ],
+        "spec": {
+          "title_max_chars": null,
+          "title_min_chars": null,
+          "body_max_chars": null,
+          "body_min_chars": null,
+          "max_tags": null,
+          "links_allowed": true,
+          "title_required": false,
+          "media_types": null,
+          "max_media": null,
+          "min_video": null
+        }
+      }
+    },
+    {
+      "step": "build_assist_pack",
+      "ok": true,
+      "ms": 19,
+      "result": {
+        "files": [
+          {
+            "name": "post.md",
+            "mime_type": "text/markdown",
+            "kind": "caption",
+            "storage_key": "assist-packs/e6ac4cb55d8643bcac8208431d8d7316/1f0d8533739653c3/post.md",
+            "url": "http://localhost:8333/longtail-network/assist-packs/e6ac4cb55d8643bcac8208431d8d7316/1f0d8533739653c3/post.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T190716Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ac54cd6e1b0f02a9649929315aa2806b2eb9e2477fd6578b6dc7b935cf188a5b"
+          },
+          {
+            "name": "pack.json",
+            "mime_type": "application/json",
+            "kind": "pack",
+            "storage_key": "assist-packs/e6ac4cb55d8643bcac8208431d8d7316/1f0d8533739653c3/pack.json",
+            "url": "http://localhost:8333/longtail-network/assist-packs/e6ac4cb55d8643bcac8208431d8d7316/1f0d8533739653c3/pack.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T190716Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=84e084001be1a8a66be33aa191939e8d03748f8bd90bf9b3b04f66428ad99c2e"
+          }
+        ],
+        "caption": "Connector certification test e21e7827 - please ignore\n\nAutomated connectivity test from the Long-Tail Destination Network. This post is deleted within seconds.",
+        "deep_link": "https://news.example/submit?url=&title=Connector%20certification%20test%20e21e7827%20-%20please%20ignore",
+        "checklist": [
+          "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+          "Read the community rules first: https://news.example/guidelines",
+          "Post at most 1 time(s) per 30 day(s) here.",
+          "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+          "Use at most 1 link(s).",
+          "Write in the community's language (en).",
+          "After posting, paste the live URL back so the post is tracked."
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "step": "pack_files_downloadable",
+      "ok": true,
+      "ms": 22,
+      "result": [
+        "post.md",
+        "pack.json"
+      ]
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "e21e7827eae34f9187269d985402dd28",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:16.180384+00:00",
+    "connectors": [
+      {
+        "key": "assisted",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 57
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}

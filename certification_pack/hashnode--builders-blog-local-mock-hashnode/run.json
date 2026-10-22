@@ -1,0 +1,164 @@
+{
+  "certification_run_id": "dc7281de08eb42ec84873cdfe204c6f7",
+  "destination_id": "46455732fab648b89d339546aa62742c",
+  "destination": "Builders blog (local mock Hashnode)",
+  "connector": {
+    "key": "hashnode",
+    "version": "1.0.0",
+    "tier": "native"
+  },
+  "passed": true,
+  "duration_s": 0.13,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 2,
+          "per_days": 7
+        },
+        "link_policy": {
+          "allowed": true
+        },
+        "self_promo_allowed": true,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "language": "en",
+        "rules_url": "http://mock:9000/local/hashnode-demo/guidelines"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "article",
+        "content_types": [
+          "article",
+          "text"
+        ],
+        "spec": {
+          "title_max_chars": 250,
+          "title_min_chars": 6,
+          "body_max_chars": null,
+          "body_min_chars": null,
+          "max_tags": 5,
+          "links_allowed": true,
+          "title_required": true,
+          "media_types": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+          ],
+          "max_media": 1,
+          "min_video": null
+        }
+      }
+    },
+    {
+      "step": "connection_active",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "status": "active"
+      }
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true,
+      "ms": 25,
+      "result": {
+        "platform_post_id": "000000000000000000000005",
+        "live_url": "http://mock:9000/local/hashnode-demo/__live/hashnode/000000000000000000000005",
+        "status": "published",
+        "warnings": []
+      }
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true,
+      "ms": 11,
+      "result": {
+        "status": 200,
+        "accept": "text/html,application/xhtml+xml",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 88,
+        "attempts": [
+          {
+            "accept": "text/html,application/xhtml+xml",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "step": "status_published",
+      "ok": true,
+      "ms": 21,
+      "result": {
+        "status": "published",
+        "live_url": "http://mock:9000/local/hashnode-demo/__live/hashnode/000000000000000000000005"
+      }
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true,
+      "ms": 13,
+      "result": {
+        "deleted": true
+      }
+    },
+    {
+      "step": "status_deleted",
+      "ok": true,
+      "ms": 13,
+      "result": {
+        "status": "deleted",
+        "live_url": null
+      }
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "seconds": 0.1,
+        "limit_s": 600
+      }
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "dc7281de08eb42ec84873cdfe204c6f7",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:16.561703+00:00",
+    "connectors": [
+      {
+        "key": "hashnode",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 126
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}

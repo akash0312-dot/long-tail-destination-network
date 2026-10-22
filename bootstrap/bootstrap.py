@@ -172,6 +172,26 @@ SEEDS = [
       "category": "aggregator", "audience_tags": ["founders"], "self_promo_allowed": False,
       "automation_allowed": False, "frequency_cap": {"posts": 1, "per_days": 30},
       "link_policy": {"allowed": True, "max_links": 1}, "rules_url": "https://news.example/guidelines"}),
+    # Advanced connectors: our own hosted MRSS feed, and Hashnode / PeerTube on the mock platform server
+    ("mrss",
+     None,
+     {"name": "Creator video feed (hosted MRSS)", "url": "https://feeds.longtail.test/creator-video",
+      "params": {"feed_key": "creator-video"}, "category": "feed", "audience_tags": ["video", "creators"],
+      "self_promo_allowed": True, "frequency_cap": {"posts": 10, "per_days": 1}, "link_policy": {"allowed": True},
+      "rules_url": f"{API}/api/v1/feeds/creator-video.xml"}),
+    ("hashnode",
+     {"name": "Mock Hashnode token", "secret_refs": {"api_key": "env:MOCK_API_KEY"}},
+     {"name": "Builders blog (local mock Hashnode)", "url": f"{MOCK}/local/hashnode-demo",
+      "params": {"publication_id": "pub-demo"}, "category": "developer_blog", "audience_tags": ["ai", "saas"],
+      "self_promo_allowed": True, "frequency_cap": {"posts": 2, "per_days": 7}, "link_policy": {"allowed": True},
+      "rules_url": f"{MOCK}/local/hashnode-demo/guidelines"}),
+    ("peertube",
+     {"name": "Mock PeerTube account", "secret_refs": {"password": "env:MOCK_API_KEY"},
+      "params": {"username": "longtail_bot"}},
+     {"name": "Creator channel (local mock PeerTube)", "url": f"{MOCK}/local/peertube-demo",
+      "params": {"channel_id": 1}, "category": "video_platform", "audience_tags": ["video", "creators"],
+      "self_promo_allowed": True, "frequency_cap": {"posts": 3, "per_days": 7}, "link_policy": {"allowed": True},
+      "rules_url": f"{MOCK}/local/peertube-demo/about/instance"}),
 ]
 
 

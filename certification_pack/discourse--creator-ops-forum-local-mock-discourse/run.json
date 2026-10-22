@@ -1,0 +1,181 @@
+{
+  "certification_run_id": "b5601ab9fcdb4a85891c826a660f904e",
+  "destination_id": "48abfe8c5c17403eb18203b8462fb1eb",
+  "destination": "Creator Ops Forum (local mock Discourse)",
+  "connector": {
+    "key": "discourse",
+    "version": "1.0.0",
+    "tier": "native"
+  },
+  "passed": true,
+  "duration_s": 0.14,
+  "steps": [
+    {
+      "step": "rules_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 3
+        },
+        "link_policy": {
+          "allowed": true,
+          "max_links": 1
+        },
+        "self_promo_allowed": false,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "language": "en",
+        "rules_url": "http://mock:9000/local/discourse-demo/guidelines"
+      }
+    },
+    {
+      "step": "format_limits_recorded",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "key": "topic",
+        "content_types": [
+          "text",
+          "image",
+          "video_link",
+          "article"
+        ],
+        "spec": {
+          "title_max_chars": 255,
+          "title_min_chars": 15,
+          "body_max_chars": 31900,
+          "body_min_chars": 20,
+          "max_tags": 5,
+          "links_allowed": true,
+          "title_required": true,
+          "media_types": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+          ],
+          "max_media": 4,
+          "min_video": null
+        }
+      }
+    },
+    {
+      "step": "connection_active",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "status": "active"
+      }
+    },
+    {
+      "step": "publish_test_post",
+      "ok": true,
+      "ms": 24,
+      "result": {
+        "platform_post_id": "1",
+        "live_url": "http://mock:9000/local/discourse-demo/t/connector-certification-test-b5601ab9-please-ignore/1",
+        "status": "published",
+        "warnings": []
+      }
+    },
+    {
+      "step": "confirm_live_url",
+      "ok": true,
+      "ms": 18,
+      "result": {
+        "status": 200,
+        "accept": "text/html,application/xhtml+xml",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 238,
+        "attempts": [
+          {
+            "accept": "text/html,application/xhtml+xml",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "step": "status_published",
+      "ok": true,
+      "ms": 12,
+      "result": {
+        "status": "published",
+        "live_url": "http://mock:9000/local/discourse-demo/t/connector-certification-test-b5601ab9-please-ignore/1"
+      }
+    },
+    {
+      "step": "fetch_metrics",
+      "ok": true,
+      "ms": 13,
+      "result": {
+        "views": 120,
+        "likes": 9,
+        "comments": 3,
+        "shares": null,
+        "saves": null,
+        "watch_time_s": null,
+        "clicks": 9
+      }
+    },
+    {
+      "step": "delete_test_post",
+      "ok": true,
+      "ms": 10,
+      "result": {
+        "deleted": true
+      }
+    },
+    {
+      "step": "status_deleted",
+      "ok": true,
+      "ms": 11,
+      "result": {
+        "status": "deleted",
+        "live_url": null
+      }
+    },
+    {
+      "step": "cleaned_within_limit",
+      "ok": true,
+      "ms": 0,
+      "result": {
+        "seconds": 0.1,
+        "limit_s": 600
+      }
+    }
+  ],
+  "manifest": {
+    "manifest_version": "1",
+    "service": {
+      "name": "longtail-network",
+      "version": "0.1.0"
+    },
+    "job_id": "b5601ab9fcdb4a85891c826a660f904e",
+    "kind": "certification",
+    "created_at": "2026-10-22T19:07:15.698891+00:00",
+    "connectors": [
+      {
+        "key": "discourse",
+        "version": "1.0.0"
+      }
+    ],
+    "providers": [],
+    "settings": {
+      "simulation_mode": false,
+      "environment": "local"
+    },
+    "seed": null,
+    "timings_ms": {
+      "total": 143
+    },
+    "cost_estimate_usd": 0.0,
+    "warnings": [],
+    "rights": {
+      "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+      "ai_generated": false
+    }
+  }
+}
