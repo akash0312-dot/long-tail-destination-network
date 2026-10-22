@@ -20,12 +20,12 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 
 **A. Must-have gaps**
 - [ ] **Live demo** deployed and kept up for the whole review (must-have 9): VM with ≥ 4 GB RAM, `API_TOKEN`, rate limit, `CALLBACK_SIGNATURE_HEADER` set to the brief's header name, cold-start time noted — *you: choose/pay for the VM; me: deploy config + steps*
-- [ ] **Clean-machine test** of `docker compose up` + tests (must-have 8) — workflow written (`.github/workflows/ci.yml`); *first run result on GitHub ⬜ — check the Actions tab (the CLI here is not signed in)*
-- [x] **Secret scan** (gitleaks) — clean locally over the full history; also runs in CI. Repeat log scan still ⬜
+- [x] **Clean-machine test** of `docker compose up` + tests (must-have 8) — CI run #1 passed on a fresh Ubuntu runner (3 m 24 s), runs on every push
+- [x] **Secret scan** (gitleaks) — clean over the full history, locally and in CI run #1 (12 s)
 - [x] **Certification pack** exported into the repo (must-have 2 evidence) — [certification_pack/](certification_pack/README.md): 9 destinations, one per connector (L1–L4), each with run.json, live snapshot, screenshot and deletion confirmation; cleanup 0.1–2.1 s. Credentials in captured pages are redacted (Ghost embeds its Content API key). Re-export: `python scripts/export_certification_pack.py`
 - [ ] **No-spam evidence** written up: log review + policy in REPORT (must-have 5) — *me*
 - [ ] **Clarification email** (contract JSON shape; is mock certification accepted for Discourse/Dev.to/webhook) (must-haves 1, 2) — *you send; questions drafted in docs/PLAN.md §5*
-- [ ] Re-run the real-instance E2E (`RUN_E2E=1`) on the final build — *me*
+- [x] Real-instance E2E (`RUN_E2E=1`) — runs in every CI build (passed in run #1); re-check after the last change before submitting
 
 **B. Outstanding level (counts only if every item is verified)**
 - [ ] Review and correct `catalogue_data/labelled_set.json`, set `reviewed_by`, re-run `python scripts/eval_recommender.py` — *you*
@@ -54,14 +54,14 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 4 | Rules checked before every post | ✅ | `tests/test_rules.py` (21-case rule set + API tests), batch `04a`, `04b`, `07` | Also enforced on the raw contract path via `validate()` |
 | 5 | Never spam, never cheat | 🟡 | 429 reset-time backoff, certification cleanup always deletes test posts, robots.txt honoured by rules capture, SSRF guard, only own instances/mocks used | Log review evidence + written policy in REPORT ⬜ |
 | 6 | Safe retries (no duplicate after timeout) | ✅ | `test_timeout_then_retry_same_key_never_duplicates` (7 connectors), `test_publication_job_retries_timeout_with_same_key_and_never_duplicates`, batch `01` | Mutation-checked on Day 1 |
-| 7 | Secrets protected + simulation mode | 🟡 | `tests/test_logging.py`; container log scan clean on Day 1; `SIMULATION_MODE=true`; **gitleaks v8.18.4 over all 19 commits: no leaks** (`.gitleaks.toml`: default rules + a 2-pattern allowlist for idempotency keys and one fake test password; a planted fake key is still caught); CI job `secret-scan` in `.github/workflows/ci.yml` | First CI run result ⬜; repeat log scan ⬜ |
-| 8 | `docker compose up` with local Lemmy + Ghost + mocks | 🟡 | `docker-compose.yml`, `bootstrap/bootstrap.py`; fresh-volume start worked 4 times locally; CI job `clean-machine` (fresh Ubuntu runner: `.env` from `.env.example`, compose up, bootstrap must certify all 9 seeds, test suite, real E2E, batch; logs uploaded as an artifact) | **First CI run result ⬜** |
+| 7 | Secrets protected + simulation mode | ✅ | **CI run #1 `secret-scan` passed** (gitleaks v8.18.4, full history, 12 s; [Actions](https://github.com/akash0312-dot/long-tail-destination-network/actions)); `.gitleaks.toml` (default rules + 2-pattern allowlist; a planted fake key is still caught); credentials redacted from captured pages; log redaction `tests/test_logging.py`; container log scan clean (Day 1); `SIMULATION_MODE=true` | Optional: add an automated log scan step to CI |
+| 8 | `docker compose up` with local Lemmy + Ghost + mocks | ✅ | **CI run #1 `clean-machine` passed on a fresh Ubuntu runner (3 m 24 s)**: `.env` from `.env.example` only, `docker compose up --build`, bootstrap certified all 9 seeds, full test suite, real Ghost/Lemmy E2E, all batch scenarios; logs in the `clean-machine-evidence` artifact | |
 | 9 | Integration Standard + live demo up | ⬜ | | Live demo not deployed |
 
 ## Levels
 | Level | Item | Status | Evidence |
 |---|---|---|---|
-| Core | All must-haves | ⬜ | blocked on 1, 2, 5, 7, 8, 9 above |
+| Core | All must-haves | ⬜ | blocked on 1, 2, 5, 9 above |
 | Core | Full certification run per Core connector | 🟡 | `test_certification_passes_and_promotes`; bootstrap certifies all 6 on the stack. Export of evidence files ⬜ |
 | Core | Platform errors mapped to shared codes | ✅ | `tests/test_connectors.py` matrix × 7 connectors: 429, expired token, rejected, 5xx/circuit, schema change |
 | Advanced | Catalogue import (1,000 rows < 5 min, row report) | ✅ | `app/catalogue/importer.py`; `test_one_thousand_rows_under_five_minutes` (~10 s); `test_hard_case_csv_*`; batch `09` |
