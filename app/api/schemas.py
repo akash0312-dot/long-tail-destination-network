@@ -70,6 +70,12 @@ class DestinationUpdate(BaseModel):
     level: str | None = Field(default=None, pattern="^L[0-4]$")
 
 
+class TailorRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    content: Rendition
+    destination_ids: list[str] = Field(min_length=1, max_length=200)
+
+
 class CertificationCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     destination_id: str
@@ -82,6 +88,7 @@ class PublicationCreate(BaseModel):
     rendition: Rendition
     callback_url: HttpUrl | None = None
     is_test: bool = False
+    tailor: bool = Field(default=False, description="Adapt the content to this destination before the rules run")
     on_cap: Literal["reschedule", "reject"] = Field(
         default="reschedule", description="When the destination's frequency cap is reached: queue the post for "
                                           "the next free slot, or reject it")

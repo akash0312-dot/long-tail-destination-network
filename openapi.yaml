@@ -327,6 +327,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tailor:
+    post:
+      tags:
+      - publishing
+      summary: Preview one content item tailored for each destination, with the changes and validation
+      operationId: tailor_content_api_v1_tailor_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TailorRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Tailor Content Api V1 Tailor Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/certifications:
     post:
       tags:
@@ -835,6 +862,11 @@ components:
           type: boolean
           title: Is Test
           default: false
+        tailor:
+          type: boolean
+          title: Tailor
+          description: Adapt the content to this destination before the rules run
+          default: false
         on_cap:
           type: string
           enum:
@@ -921,6 +953,23 @@ components:
       type: object
       title: Rendition
       description: One piece of content shaped for one destination.
+    TailorRequest:
+      properties:
+        content:
+          $ref: '#/components/schemas/Rendition'
+        destination_ids:
+          items:
+            type: string
+          type: array
+          maxItems: 200
+          minItems: 1
+          title: Destination Ids
+      additionalProperties: false
+      type: object
+      required:
+      - content
+      - destination_ids
+      title: TailorRequest
     ValidationError:
       properties:
         loc:

@@ -18,6 +18,7 @@ from app.jobs import JobContext, create_job, handler
 from app.models import Connection, Destination, Publication, utcnow
 from app.output_manifest import build_manifest
 from app.storage import put_json
+from app.tailoring import tailor
 
 log = logging.getLogger("app.publishing")
 
@@ -166,6 +167,10 @@ def run_publication(ctx: JobContext) -> dict:
     rules = rules_engine.rules_of(dest)
     if assisted:
         rules["automation_allowed"] = None
+    tailor_warnings = []
+    if p.get("tailor"):
+        rendition, changes = tailor(rendition, dest, connector.key, connector.manifest.surface(dest.surface))
+        tailor_warnings = [f"TAILORED: {c}" for c in changes]
 
     # posting rules: checked before every post
     decision = rules_engine.evaluate(rendition, rules, recent_post_times(dest_id, dest.frequency_cap), utcnow(),
@@ -187,7 +192,7 @@ def run_publication(ctx: JobContext) -> dict:
         message = decision.reason + ("; post rescheduled" if "rescheduled_job_id" in details else "")
         raise AppError(ErrorCode.DEST_RULE_FREQUENCY_CAP, message, details)
     rendition = decision.rendition  # may carry an appended AI disclosure
-    rule_warnings = list(decision.warnings)
+    rule_warnings = tailor_warnings + list(decision.warnings)
     if assisted:
         return _assist_pack(ctx, dest, connector.key, rendition, key, is_test, rule_warnings, checks)
 

@@ -6,7 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.schemas import (CertificationCreate, ConnectionCreate, ConnectionUpdate, DestinationCreate,
-                             DestinationUpdate, PublicationCreate)
+                             DestinationUpdate, PublicationCreate, TailorRequest)
+from app.connectors.schemas import ConnectionRef, Rendition
+from app.tailoring import tailor
 from app.config import get_settings
 from app.connectors.registry import all_connectors, get_connector
 from app.connectors.router import call_method
@@ -145,7 +147,7 @@ def create_publication(body: PublicationCreate, request: Request, db: Session = 
     api_key = request.headers["Idempotency-Key"]
     payload = {"destination_id": body.destination_id, "rendition": body.rendition.model_dump(),
                "idempotency_key": f"{api_key}:{body.destination_id}", "is_test": body.is_test,
-               "on_cap": body.on_cap}
+               "on_cap": body.on_cap, "tailor": body.tailor}
     job = create_job("publication", payload, str(body.callback_url) if body.callback_url else None)
     return JSONResponse(jsonable_encoder(job_view(job)), status_code=202,
                         headers={"Location": f"/api/v1/jobs/{job.id}"})
@@ -157,6 +159,23 @@ def get_publication(publication_id: str, db: Session = Depends(get_db)) -> dict:
     if p is None:
         raise AppError(ErrorCode.NOT_FOUND, "Publication not found")
     return _row(p)
+
+
+# ---------------------------------------------------------------- tailoring
+@router.post("/tailor", tags=["publishing"],
+             summary="Preview one content item tailored for each destination, with the changes and validation")
+def tailor_content(body: TailorRequest, db: Session = Depends(get_db)) -> dict:
+    items = []
+    for dest_id in body.destination_ids:
+        d = db.get(Destination, dest_id)
+        if d is None:
+            raise AppError(ErrorCode.NOT_FOUND, "Destination not found", {"destination_id": dest_id})
+        connector = get_connector(d.connector_key, check_enabled=False)
+        rendition, changes = tailor(body.content.model_dump(), d, d.connector_key, connector.manifest.surface(d.surface))
+        validation = connector.validate(Rendition.model_validate(rendition), destination_ref(d), ConnectionRef())
+        items.append({"destination_id": d.id, "destination": d.name, "connector_key": d.connector_key,
+                      "rendition": rendition, "changes": changes, "validation": validation})
+    return {"items": items}
 
 
 # ---------------------------------------------------------------- certification
