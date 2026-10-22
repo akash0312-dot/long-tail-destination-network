@@ -1,12 +1,16 @@
 """/api/v1 routes: catalogue (connections, destinations), publications, jobs, files."""
-from fastapi import APIRouter, Depends, Request
+import uuid
+
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.ai import get_provider
 from app.api.schemas import (CertificationCreate, ConnectionCreate, ConnectionUpdate, DestinationCreate,
-                             DestinationUpdate, PublicationCreate, TailorRequest)
+                             DestinationUpdate, PublicationCreate, RulesCaptureCreate, RuleReview, TailorRequest)
+from app.catalogue.rules_capture import review
 from app.connectors.schemas import ConnectionRef, Rendition
 from app.tailoring import tailor
 from app.config import get_settings
@@ -15,7 +19,7 @@ from app.connectors.router import call_method
 from app.db import get_db
 from app.errors import AppError, ErrorCode
 from app.jobs import create_job, job_view
-from app.models import CertificationRun, Connection, Destination, Job, Publication
+from app.models import CertificationRun, Connection, Destination, Job, Publication, RuleProposal
 from app.services.publishing import connection_ref, destination_ref
 from app.storage import LocalStorage, get_storage
 from app.urls import normalize_url
@@ -159,6 +163,70 @@ def get_publication(publication_id: str, db: Session = Depends(get_db)) -> dict:
     if p is None:
         raise AppError(ErrorCode.NOT_FOUND, "Publication not found")
     return _row(p)
+
+
+# ---------------------------------------------------------------- catalogue import, rules capture, relevance
+@router.post("/catalogue/imports", status_code=202, tags=["catalogue"],
+             summary="Import a CSV of destinations (upload `file` or give `csv_url`); row-by-row report (job)")
+def import_catalogue(file: UploadFile | None = File(default=None), csv_url: str | None = Form(default=None),
+                     check_reachability: bool = Form(default=True), score_relevance: bool = Form(default=True),
+                     update_existing: bool = Form(default=False)):
+    if (file is None) == (csv_url is None):
+        raise AppError(ErrorCode.CATALOGUE_INPUT_INVALID, "Send exactly one of: file (CSV upload) or csv_url")
+    payload = {"check_reachability": check_reachability, "score_relevance": score_relevance,
+               "update_existing": update_existing}
+    if file is not None:
+        key = f"imports/uploads/{uuid.uuid4().hex}.csv"
+        get_storage().put_bytes(key, file.file.read(), "text/csv")
+        payload["input_key"] = key
+    else:
+        payload["csv_url"] = csv_url
+    job = create_job("catalogue_import", payload)
+    return JSONResponse(jsonable_encoder(job_view(job)), status_code=202, headers={"Location": f"/api/v1/jobs/{job.id}"})
+
+
+@router.post("/destinations/{destination_id}/rules/capture", status_code=202, tags=["catalogue"],
+             summary="Read the destination's rules page and propose posting rules for a person to confirm (job)")
+def capture_rules(destination_id: str, body: RulesCaptureCreate, db: Session = Depends(get_db)):
+    if db.get(Destination, destination_id) is None:
+        raise AppError(ErrorCode.NOT_FOUND, "Destination not found")
+    job = create_job("rules_capture", {"destination_id": destination_id,
+                                       "rules_url": str(body.rules_url) if body.rules_url else None})
+    return JSONResponse(jsonable_encoder(job_view(job)), status_code=202, headers={"Location": f"/api/v1/jobs/{job.id}"})
+
+
+@router.get("/rule-proposals", tags=["catalogue"], summary="Rule proposals waiting for (or after) review")
+def list_rule_proposals(destination_id: str | None = None, status: str | None = None,
+                        db: Session = Depends(get_db)) -> dict:
+    q = select(RuleProposal).order_by(RuleProposal.created_at.desc())
+    if destination_id:
+        q = q.where(RuleProposal.destination_id == destination_id)
+    if status:
+        q = q.where(RuleProposal.status == status)
+    return {"items": [_row(r) for r in db.execute(q.limit(200)).scalars()]}
+
+
+@router.post("/rule-proposals/{proposal_id}/confirm", tags=["catalogue"],
+             summary="A person confirms the proposed rules (optionally corrected); only now are they applied")
+def confirm_rule_proposal(proposal_id: str, body: RuleReview) -> dict:
+    return review(proposal_id, "confirmed", body.reviewed_by, body.overrides, body.note)
+
+
+@router.post("/rule-proposals/{proposal_id}/reject", tags=["catalogue"], summary="Reject a rule proposal")
+def reject_rule_proposal(proposal_id: str, body: RuleReview) -> dict:
+    return review(proposal_id, "rejected", body.reviewed_by, None, body.note)
+
+
+@router.post("/destinations/{destination_id}/relevance", tags=["catalogue"],
+             summary="Score the destination 1-5 against the target audience, with a reason")
+def score_destination(destination_id: str, db: Session = Depends(get_db)) -> dict:
+    d = db.get(Destination, destination_id)
+    if d is None:
+        raise AppError(ErrorCode.NOT_FOUND, "Destination not found")
+    res = get_provider().score_relevance(_row(d))
+    d.relevance_score, d.relevance_reason = res.data["score"], res.data["reason"]
+    return {"destination_id": d.id, "relevance_score": d.relevance_score, "relevance_reason": d.relevance_reason,
+            "provider": res.manifest_entry("relevance"), "warnings": res.warnings}
 
 
 # ---------------------------------------------------------------- tailoring

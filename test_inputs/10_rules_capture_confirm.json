@@ -1,0 +1,25 @@
+{
+  "description": "Advanced: the AI step reads a community's rules page and proposes rules; nothing changes until a person confirms them",
+  "setup": {
+    "destination": {"name": "batch-10 {run_id}", "url": "{mock}/pages/batch-{run_id}/c/creators", "connector_key": "lemmy",
+                    "rules_url": "{mock}/pages/batch-{run_id}/rules"},
+    "certify": false
+  },
+  "steps": [
+    {"method": "POST", "url": "{mock_host}/__admin/pages", "body": {"path": "pages/batch-{run_id}/rules", "body": "<html><body><h1>Rules</h1><ol><li>No self-promotion. Do not advertise your products.</li><li>Post at most once per week.</li><li>No external links.</li><li>AI-generated content must be labelled with the AI flair.</li><li>No bots or automated posting.</li></ol></body></html>"}},
+    {"method": "POST", "path": "/api/v1/destinations/{dest.id}/rules/capture", "body": {}, "save_as": "capture"},
+    {"method": "GET", "path": "/api/v1/destinations/{dest.id}", "save_as": "before"},
+    {"method": "POST", "path": "/api/v1/rule-proposals/{capture.result.proposal_id}/confirm", "body": {"reviewed_by": "batch reviewer"}, "save_as": "confirm"},
+    {"method": "GET", "path": "/api/v1/destinations/{dest.id}", "save_as": "after"}
+  ],
+  "expect": [
+    {"step": "capture", "path": "result.status", "equals": "proposed"},
+    {"step": "capture", "path": "result.proposed.self_promo_allowed", "equals": false},
+    {"step": "capture", "path": "result.proposed.automation_allowed", "equals": false},
+    {"step": "before", "path": "frequency_cap", "equals": null},
+    {"step": "confirm", "path": "status", "equals": "confirmed"},
+    {"step": "after", "path": "frequency_cap.per_days", "equals": 7},
+    {"step": "after", "path": "link_policy.allowed", "equals": false},
+    {"step": "after", "path": "automation_allowed", "equals": false}
+  ]
+}

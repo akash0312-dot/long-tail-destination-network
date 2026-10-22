@@ -19,6 +19,9 @@ x-app: &app
     MOCK_API_KEY: ${MOCK_API_KEY:-local-mock-key}
     PARTNER_WEBHOOK_SECRET: ${PARTNER_WEBHOOK_SECRET:-local-partner-secret}
     MOCK_WEBHOOK_SECRET: ${PARTNER_WEBHOOK_SECRET:-local-partner-secret}
+    # local stack only: the mock platforms are on internal hosts (mock, ghost, lemmy)
+    ALLOW_INTERNAL_HOSTS: ${ALLOW_INTERNAL_HOSTS:-true}
+    INTERNAL_BASE_URL: http://api:8000
   volumes:
     - app-secrets:/run/app-secrets:ro
   restart: unless-stopped

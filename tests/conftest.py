@@ -39,6 +39,7 @@ os.environ.update({
     "REQUIRE_CERTIFICATION": "false",  # certification gating has its own tests
     "OWN_DOMAINS": "creatorstudio.example",
     "MOCK_WEBHOOK_SECRET": "partner-test-secret",
+    "ALLOW_INTERNAL_HOSTS": "true",  # the mock platforms live on 127.0.0.1
     "LOG_LEVEL": "INFO",
 })
 

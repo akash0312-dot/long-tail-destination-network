@@ -39,6 +39,11 @@ def _slug(title: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:80] or "topic"
 
 
+@router.get("/{inst:path}/about.json")
+async def about(inst: str):
+    return {"about": {"title": f"Mock forum {inst}", "stats": {"users_count": 2500, "topics_count": 900}}}
+
+
 @router.post("/{inst:path}/posts.json")
 async def create(inst: str, request: Request):
     if not _authed(request):

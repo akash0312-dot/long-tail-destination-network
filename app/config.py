@@ -57,6 +57,24 @@ class Settings(BaseSettings):
     # idempotency
     idempotency_ttl_hours: int = 72
 
+    # AI provider (rules capture, relevance): mock = deterministic heuristics, no key needed
+    ai_provider: str = "mock"  # mock | anthropic
+    ai_model: str = "claude-opus-5-5"
+    ai_effort: str = "low"  # extraction and scoring are simple tasks
+    ai_max_tokens: int = 4000
+    ai_price_input_per_mtok: float = 4.0  # USD, claude-opus-5-5
+    ai_price_output_per_mtok: float = 20.0
+    ai_refusal_fallback: bool = True  # server-side fallback model if the main model declines
+
+    # catalogue import
+    catalogue_concurrency: int = 50
+    catalogue_reachability_timeout_s: float = 5.0
+    rules_fetch_max_bytes: int = 500_000
+    crawler_user_agent: str = "LongTailDestinationBot/1.0 (+catalogue rules check)"
+    # SSRF guard: refuse user-supplied URLs on private/loopback/single-label hosts. Only the local stack and tests
+    # (whose mock platforms live on such hosts) turn this on.
+    allow_internal_hosts: bool = False
+
     # posting rules and certification
     own_domains: str = ""  # comma-separated domains that count as self-promotion when linked
     require_certification: bool = True  # only certified destinations receive real posts

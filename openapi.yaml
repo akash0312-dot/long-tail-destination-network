@@ -327,6 +327,194 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/catalogue/imports:
+    post:
+      tags:
+      - catalogue
+      summary: Import a CSV of destinations (upload `file` or give `csv_url`); row-by-row report (job)
+      operationId: import_catalogue_api_v1_catalogue_imports_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_import_catalogue_api_v1_catalogue_imports_post'
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/destinations/{destination_id}/rules/capture:
+    post:
+      tags:
+      - catalogue
+      summary: Read the destination's rules page and propose posting rules for a person to confirm (job)
+      operationId: capture_rules_api_v1_destinations__destination_id__rules_capture_post
+      parameters:
+      - name: destination_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Destination Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RulesCaptureCreate'
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/rule-proposals:
+    get:
+      tags:
+      - catalogue
+      summary: Rule proposals waiting for (or after) review
+      operationId: list_rule_proposals_api_v1_rule_proposals_get
+      parameters:
+      - name: destination_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Destination Id
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Rule Proposals Api V1 Rule Proposals Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/rule-proposals/{proposal_id}/confirm:
+    post:
+      tags:
+      - catalogue
+      summary: A person confirms the proposed rules (optionally corrected); only now are they applied
+      operationId: confirm_rule_proposal_api_v1_rule_proposals__proposal_id__confirm_post
+      parameters:
+      - name: proposal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Proposal Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleReview'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Confirm Rule Proposal Api V1 Rule Proposals  Proposal Id  Confirm Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/rule-proposals/{proposal_id}/reject:
+    post:
+      tags:
+      - catalogue
+      summary: Reject a rule proposal
+      operationId: reject_rule_proposal_api_v1_rule_proposals__proposal_id__reject_post
+      parameters:
+      - name: proposal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Proposal Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleReview'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Reject Rule Proposal Api V1 Rule Proposals  Proposal Id  Reject Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/destinations/{destination_id}/relevance:
+    post:
+      tags:
+      - catalogue
+      summary: Score the destination 1-5 against the target audience, with a reason
+      operationId: score_destination_api_v1_destinations__destination_id__relevance_post
+      parameters:
+      - name: destination_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Destination Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Score Destination Api V1 Destinations  Destination Id  Relevance Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/tailor:
     post:
       tags:
@@ -569,6 +757,33 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    Body_import_catalogue_api_v1_catalogue_imports_post:
+      properties:
+        file:
+          anyOf:
+          - type: string
+            format: binary
+          - type: 'null'
+          title: File
+        csv_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Csv Url
+        check_reachability:
+          type: boolean
+          title: Check Reachability
+          default: true
+        score_relevance:
+          type: boolean
+          title: Score Relevance
+          default: true
+        update_existing:
+          type: boolean
+          title: Update Existing
+          default: false
+      type: object
+      title: Body_import_catalogue_api_v1_catalogue_imports_post
     CertificationCreate:
       properties:
         destination_id:
@@ -733,6 +948,11 @@ components:
           - type: string
           - type: 'null'
           title: Relevance Reason
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
         level:
           type: string
           pattern: ^L[0-4]$
@@ -953,6 +1173,44 @@ components:
       type: object
       title: Rendition
       description: One piece of content shaped for one destination.
+    RuleReview:
+      properties:
+        reviewed_by:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Reviewed By
+          description: The person who checked the proposal
+        overrides:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Overrides
+          description: Corrections applied on confirm
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - reviewed_by
+      title: RuleReview
+    RulesCaptureCreate:
+      properties:
+        rules_url:
+          anyOf:
+          - type: string
+            maxLength: 2083
+            minLength: 1
+            format: uri
+          - type: 'null'
+          title: Rules Url
+      additionalProperties: false
+      type: object
+      title: RulesCaptureCreate
     TailorRequest:
       properties:
         content:

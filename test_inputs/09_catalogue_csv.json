@@ -1,0 +1,17 @@
+{
+  "description": "Hard case 6a: a CSV with duplicates, bad URLs, a major platform, mixed languages and a dead site; row-by-row report, nothing silently dropped",
+  "steps": [
+    {"method": "POST", "url": "{mock_host}/__admin/pages", "body": {"path": "pages/batch-{run_id}/catalogue.csv", "body": "name,url,connector_key,language,description,audience_tags\nAI video creators {run_id},{mock}/pages/batch-{run_id}/lem/c/aivideo,lemmy,en,Creators using AI for video,ai;video\nSame community again,{mock}/pages/batch-{run_id}/lem/c/AIVideo/?utm_source=newsletter,lemmy,en,,\nNot a URL,definitely not a url,,,,\nBig platform,https://www.youtube.com/@channel,,,,\nComunidad de creadores {run_id},{mock}/pages/batch-{run_id}/es,assisted,es,Comunidad de creadores de video para la gente,\nJapanese community {run_id},{mock}/pages/batch-{run_id}/ja,assisted,en,動画クリエイターのためのコミュニティ,\nGone forum {run_id},{mock}/pages/dead/batch-{run_id},discourse,en,,\n"}},
+    {"method": "POST", "path": "/api/v1/catalogue/imports", "save_as": "import",
+     "form": {"csv_url": "{mock}/pages/batch-{run_id}/catalogue.csv"}}
+  ],
+  "expect": [
+    {"step": "import", "path": "status", "equals": "succeeded"},
+    {"step": "import", "path": "result.summary.rows", "equals": 7},
+    {"step": "import", "path": "result.summary.imported", "equals": 4},
+    {"step": "import", "path": "result.summary.duplicates_in_file", "equals": 1},
+    {"step": "import", "path": "result.summary.invalid", "equals": 2},
+    {"step": "import", "path": "result.summary.unreachable", "equals": 1},
+    {"step": "import", "path": "result.links.report_csv"}
+  ]
+}

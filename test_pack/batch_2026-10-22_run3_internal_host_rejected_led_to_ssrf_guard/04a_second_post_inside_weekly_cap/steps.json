@@ -1,0 +1,481 @@
+{
+  "name": "04a_second_post_inside_weekly_cap",
+  "description": "Hard case 4a: second post inside a 1-per-week cap is rescheduled with the next free slot",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "5781f1b2abb34b9fb5d355f2212e0ea1"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "77a1de7c9d124c8e9e4aa74b244106d4",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-22T17:29:49.060840Z"
+      },
+      "ms": 55
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-04a ecce781f",
+          "url": "http://mock:9000/batch/forum-04a-ecce781f",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 1,
+            "per_days": 7
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "77a1de7c9d124c8e9e4aa74b244106d4"
+        },
+        "idempotency_key": "006d6f895a944009b21653d23be486fd"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "89806da54ef9454782cf4d7e887f6c65",
+        "name": "batch-04a ecce781f",
+        "url": "http://mock:9000/batch/forum-04a-ecce781f",
+        "normalized_url": "https://mock:9000/batch/forum-04a-ecce781f",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-04a-ecce781f"
+        },
+        "connection_id": "77a1de7c9d124c8e9e4aa74b244106d4",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 7
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T17:29:49.122282Z"
+      },
+      "ms": 62
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "89806da54ef9454782cf4d7e887f6c65"
+        },
+        "idempotency_key": "2b38740804274ce4b1c0edbd3a9654d3"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "4a0656b3972c492ca7b325570ec4974b",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "4a0656b3972c492ca7b325570ec4974b",
+          "destination_id": "89806da54ef9454782cf4d7e887f6c65",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.08,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 1,
+                  "per_days": 7
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 14,
+              "result": {
+                "platform_post_id": "15",
+                "live_url": "http://mock:9000/batch/forum-04a-ecce781f/t/connector-certification-test-4a0656b3-please-ignore/15",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-04a-ecce781f/t/connector-certification-test-4a0656b3-please-ignore/15"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 9,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/89806da54ef9454782cf4d7e887f6c65/4a0656b3972c492ca7b325570ec4974b/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172950Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b67788ff4545be72752d37e62348c632ed8f05a78196b95edaf5a23a9dd31671",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/89806da54ef9454782cf4d7e887f6c65/4a0656b3972c492ca7b325570ec4974b/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172950Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a3c7587d26baa79d6083c804a2b5a6c957dfc82c8379b6191ae71c51698f6eb9"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/4a0656b3972c492ca7b325570ec4974b",
+          "evidence": "http://localhost:8333/longtail-network/certifications/89806da54ef9454782cf4d7e887f6c65/4a0656b3972c492ca7b325570ec4974b/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172950Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b67788ff4545be72752d37e62348c632ed8f05a78196b95edaf5a23a9dd31671",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/89806da54ef9454782cf4d7e887f6c65/4a0656b3972c492ca7b325570ec4974b/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172950Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a3c7587d26baa79d6083c804a2b5a6c957dfc82c8379b6191ae71c51698f6eb9"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:49.183096Z",
+        "started_at": "2026-10-22T17:29:49.984096Z",
+        "finished_at": "2026-10-22T17:29:50.077953Z"
+      },
+      "ms": 1072
+    },
+    {
+      "name": "first",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "89806da54ef9454782cf4d7e887f6c65",
+          "rendition": {
+            "title": "How do small teams plan weekly video?",
+            "body": "We batch-record on Mondays. What works for you?"
+          }
+        },
+        "idempotency_key": "6e99c211b0f74058aa4a1b78b4841e55"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "9e47116b38f04a3ba71a728fbeda361f",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "1da93316d859465b94f57a5cca0ef50d",
+          "destination_id": "89806da54ef9454782cf4d7e887f6c65",
+          "platform_post_id": "17",
+          "live_url": "http://mock:9000/batch/forum-04a-ecce781f/t/how-do-small-teams-plan-weekly-video/17",
+          "status": "published",
+          "warnings": [],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/1 posts in the last 7 days, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "9e47116b38f04a3ba71a728fbeda361f",
+            "kind": "publication",
+            "created_at": "2026-10-22T17:29:51.149663+00:00",
+            "connectors": [
+              {
+                "key": "discourse",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "local"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 13,
+              "validate": 20,
+              "publish": 17,
+              "total": 51
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "http://localhost:8333/longtail-network/publications/1da93316d859465b94f57a5cca0ef50d/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172951Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a3493e3965b39225466e2db2e0ad5012cd5ceeef1039b108838407c86fd94696",
+            "live_url": "http://mock:9000/batch/forum-04a-ecce781f/t/how-do-small-teams-plan-weekly-video/17"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/9e47116b38f04a3ba71a728fbeda361f",
+          "manifest": "http://localhost:8333/longtail-network/publications/1da93316d859465b94f57a5cca0ef50d/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172951Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a3493e3965b39225466e2db2e0ad5012cd5ceeef1039b108838407c86fd94696",
+          "live_url": "http://mock:9000/batch/forum-04a-ecce781f/t/how-do-small-teams-plan-weekly-video/17"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:50.267261Z",
+        "started_at": "2026-10-22T17:29:51.094319Z",
+        "finished_at": "2026-10-22T17:29:51.158242Z"
+      },
+      "ms": 1102
+    },
+    {
+      "name": "second",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "89806da54ef9454782cf4d7e887f6c65",
+          "rendition": {
+            "title": "What mic do you use for remote interviews?",
+            "body": "Looking for options under a modest budget."
+          }
+        },
+        "idempotency_key": "1ee22bb8eb7443d89807d1a14be651eb"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "9c617a91d0904c6b9b6494d96bfe2b72",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "DEST_RULE_FREQUENCY_CAP",
+          "message": "Cap of 1 post(s) per 7 days, 0:00:00 reached; next slot 2026-10-29T17:29:51.142341+00:00; post rescheduled",
+          "retryable": true,
+          "details": {
+            "checks": [
+              {
+                "rule": "frequency_cap",
+                "passed": false,
+                "detail": "Cap of 1 post(s) per 7 days, 0:00:00 reached; next slot 2026-10-29T17:29:51.142341+00:00",
+                "code": "DEST_RULE_FREQUENCY_CAP"
+              },
+              {
+                "rule": "self_promotion",
+                "passed": true,
+                "detail": "No promotion detected (score 0.00)",
+                "code": null
+              },
+              {
+                "rule": "link_policy",
+                "passed": true,
+                "detail": "0 link(s) within policy",
+                "code": null
+              },
+              {
+                "rule": "ai_disclosure",
+                "passed": true,
+                "detail": "Disclosure not required for this content",
+                "code": null
+              },
+              {
+                "rule": "language",
+                "passed": true,
+                "detail": "Language matches (en)",
+                "code": null
+              }
+            ],
+            "retry_at": "2026-10-29T17:29:51.142341+00:00",
+            "retry_after_s": 604798,
+            "rescheduled_job_id": "704d11e0bdee48c8936745224590bf7a"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/9c617a91d0904c6b9b6494d96bfe2b72"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:51.363393Z",
+        "started_at": "2026-10-22T17:29:52.184419Z",
+        "finished_at": "2026-10-22T17:29:52.200206Z"
+      },
+      "ms": 1087
+    }
+  ],
+  "checks": [
+    {
+      "step": "first",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "second",
+      "path": "error.code",
+      "equals": "DEST_RULE_FREQUENCY_CAP",
+      "actual": "DEST_RULE_FREQUENCY_CAP",
+      "ok": true
+    },
+    {
+      "step": "second",
+      "path": "error.details.retry_at",
+      "actual": "2026-10-29T17:29:51.142341+00:00",
+      "ok": true
+    },
+    {
+      "step": "second",
+      "path": "error.details.rescheduled_job_id",
+      "actual": "704d11e0bdee48c8936745224590bf7a",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

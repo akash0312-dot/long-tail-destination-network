@@ -124,7 +124,8 @@ class Runner:
             if step.get("method", "GET").upper() == "POST" and url.startswith(f"{self.api}/api/v1/"):
                 headers.setdefault("Idempotency-Key", step.get("idempotency_key") or uuid.uuid4().hex)
             started = time.monotonic()
-            r = self.request(step.get("method", "GET"), url, json=step.get("body"), headers=headers)
+            payload = {"data": step["form"]} if "form" in step else {"json": step.get("body")}
+            r = self.request(step.get("method", "GET"), url, headers=headers, **payload)
             try:
                 body = r.json()
             except ValueError:

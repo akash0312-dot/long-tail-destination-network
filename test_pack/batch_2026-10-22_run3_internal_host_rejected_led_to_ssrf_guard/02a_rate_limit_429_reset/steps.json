@@ -1,0 +1,363 @@
+{
+  "name": "02a_rate_limit_429_reset",
+  "description": "Hard case 2a: 429 with a 120 s reset; the post is rescheduled for after the reset time",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "devto",
+          "name": "batch forem",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          }
+        },
+        "idempotency_key": "ba3aae5fd81d4ad2b4366124b4bdf9d6"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "0acbf8ba1d72401fb81e3003860e1b1b",
+        "connector_key": "devto",
+        "name": "batch forem",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-22T17:29:32.511295Z"
+      },
+      "ms": 56
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-02a ecce781f",
+          "url": "http://mock:9000/batch/forem-02a-ecce781f",
+          "connector_key": "devto",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "0acbf8ba1d72401fb81e3003860e1b1b"
+        },
+        "idempotency_key": "bdc330fdd8ad4d4b868395e8fec711b3"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "bc14ab3a105b45db8880a0e4ef947a5b",
+        "name": "batch-02a ecce781f",
+        "url": "http://mock:9000/batch/forem-02a-ecce781f",
+        "normalized_url": "https://mock:9000/batch/forem-02a-ecce781f",
+        "platform_key": "devto",
+        "connector_key": "devto",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/batch/forem-02a-ecce781f"
+        },
+        "connection_id": "0acbf8ba1d72401fb81e3003860e1b1b",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T17:29:32.574017Z"
+      },
+      "ms": 62
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "bc14ab3a105b45db8880a0e4ef947a5b"
+        },
+        "idempotency_key": "7d4ee60f6e8840cf831a229f306b31b6"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "4dcfd14779d74a08b16b8efc8b06caa4",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "4dcfd14779d74a08b16b8efc8b06caa4",
+          "destination_id": "bc14ab3a105b45db8880a0e4ef947a5b",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.12,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "article",
+                "content_types": [
+                  "article",
+                  "text"
+                ],
+                "spec": {
+                  "title_max_chars": 128,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": 4,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 1,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 28,
+              "result": {
+                "platform_post_id": "9",
+                "live_url": "http://mock:9000/batch/forem-02a-ecce781f/__live/devto/9",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 18,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forem-02a-ecce781f/__live/devto/9"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 9,
+              "result": {
+                "deleted": true,
+                "note": "Forem API cannot delete articles; the article was unpublished"
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/bc14ab3a105b45db8880a0e4ef947a5b/4dcfd14779d74a08b16b8efc8b06caa4/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172933Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c79a5ec5f52329e7ee41e997366bc3e0d457d6875a0b005cd5d87a25f8db76c4",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/bc14ab3a105b45db8880a0e4ef947a5b/4dcfd14779d74a08b16b8efc8b06caa4/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172933Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=98e5bd611263131e20af5a8984a03eaf9483fc09ff3faf18a543c438260a73d1"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/4dcfd14779d74a08b16b8efc8b06caa4",
+          "evidence": "http://localhost:8333/longtail-network/certifications/bc14ab3a105b45db8880a0e4ef947a5b/4dcfd14779d74a08b16b8efc8b06caa4/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172933Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c79a5ec5f52329e7ee41e997366bc3e0d457d6875a0b005cd5d87a25f8db76c4",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/bc14ab3a105b45db8880a0e4ef947a5b/4dcfd14779d74a08b16b8efc8b06caa4/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172933Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=98e5bd611263131e20af5a8984a03eaf9483fc09ff3faf18a543c438260a73d1"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:32.633573Z",
+        "started_at": "2026-10-22T17:29:33.076102Z",
+        "finished_at": "2026-10-22T17:29:33.217579Z"
+      },
+      "ms": 1070
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:9000/__admin/faults",
+        "body": {
+          "platform": "devto",
+          "instance": "batch/forem-02a-ecce781f",
+          "op": "publish",
+          "kind": "rate_limit",
+          "reset_s": 120
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "devto",
+          "op": "publish",
+          "kind": "rate_limit",
+          "instance": "batch/forem-02a-ecce781f",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 120.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 2052
+    },
+    {
+      "name": "pub",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "bc14ab3a105b45db8880a0e4ef947a5b",
+          "rendition": {
+            "title": "Repurposing long videos into clips",
+            "body": "A walkthrough.",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "7908bdf4f52e46f6866e9513b7308cc0"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "6cb700d87a084411b8d8c4ed6888ea5c",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 40,
+        "result": null,
+        "error": {
+          "code": "PLATFORM_RATE_LIMIT",
+          "message": "Platform rate limit reached; retry after reset time; post rescheduled for after the platform's reset time",
+          "retryable": true,
+          "details": {
+            "op": "publish",
+            "retry_after_s": 120.0,
+            "reset_source": "Retry-After",
+            "retry_at_epoch": 1792690296,
+            "rescheduled_job_id": "27cd0c72f1d14449bc146b7d645548a2"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/6cb700d87a084411b8d8c4ed6888ea5c"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:35.758561Z",
+        "started_at": "2026-10-22T17:29:36.239205Z",
+        "finished_at": "2026-10-22T17:29:36.306866Z"
+      },
+      "ms": 1082
+    }
+  ],
+  "checks": [
+    {
+      "step": "pub",
+      "path": "error.code",
+      "equals": "PLATFORM_RATE_LIMIT",
+      "actual": "PLATFORM_RATE_LIMIT",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.retryable",
+      "equals": true,
+      "actual": true,
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.message",
+      "contains": "rescheduled",
+      "actual": "Platform rate limit reached; retry after reset time; post rescheduled for after the platform's reset time",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.details.rescheduled_job_id",
+      "actual": "27cd0c72f1d14449bc146b7d645548a2",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

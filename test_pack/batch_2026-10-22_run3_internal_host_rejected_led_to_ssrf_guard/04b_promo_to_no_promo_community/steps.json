@@ -1,0 +1,356 @@
+{
+  "name": "04b_promo_to_no_promo_community",
+  "description": "Hard case 4b: promotional post to a community that bans self-promotion is blocked with the reason",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "b6a1904f1d45445c9271c30c7282e686"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "cc3294e4798b4d4eb7f167eb1a665e61",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-22T17:29:52.444231Z"
+      },
+      "ms": 58
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-04b ecce781f",
+          "url": "http://mock:9000/batch/forum-04b-ecce781f",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": false,
+          "connection_id": "cc3294e4798b4d4eb7f167eb1a665e61"
+        },
+        "idempotency_key": "8cd6971ef00149c79300821f8e520492"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "f00d781eafad4425a07105bdb74c4cf0",
+        "name": "batch-04b ecce781f",
+        "url": "http://mock:9000/batch/forum-04b-ecce781f",
+        "normalized_url": "https://mock:9000/batch/forum-04b-ecce781f",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-04b-ecce781f"
+        },
+        "connection_id": "cc3294e4798b4d4eb7f167eb1a665e61",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T17:29:52.502980Z"
+      },
+      "ms": 60
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "f00d781eafad4425a07105bdb74c4cf0"
+        },
+        "idempotency_key": "b5cf3f8285864a7aaaaffec0a480fbbf"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "b67f44c692e946d08b8904a9334ac33a",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "b67f44c692e946d08b8904a9334ac33a",
+          "destination_id": "f00d781eafad4425a07105bdb74c4cf0",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.14,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 18,
+              "result": {
+                "platform_post_id": "19",
+                "live_url": "http://mock:9000/batch/forum-04b-ecce781f/t/connector-certification-test-b67f44c6-please-ignore/19",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 15,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 37,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-04b-ecce781f/t/connector-certification-test-b67f44c6-please-ignore/19"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 15,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 8,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/f00d781eafad4425a07105bdb74c4cf0/b67f44c692e946d08b8904a9334ac33a/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172953Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=9e1fecce84d39ab7211eb36f3511fe11854e6a9f653c71a9eff940b57e58ffb0",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/f00d781eafad4425a07105bdb74c4cf0/b67f44c692e946d08b8904a9334ac33a/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172953Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=08b7354dcc96e13658d6735f900edd829b9eb8997a644bbf0006b2749d3c5074"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/b67f44c692e946d08b8904a9334ac33a",
+          "evidence": "http://localhost:8333/longtail-network/certifications/f00d781eafad4425a07105bdb74c4cf0/b67f44c692e946d08b8904a9334ac33a/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172953Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=9e1fecce84d39ab7211eb36f3511fe11854e6a9f653c71a9eff940b57e58ffb0",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/f00d781eafad4425a07105bdb74c4cf0/b67f44c692e946d08b8904a9334ac33a/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172953Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=08b7354dcc96e13658d6735f900edd829b9eb8997a644bbf0006b2749d3c5074"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:52.568017Z",
+        "started_at": "2026-10-22T17:29:53.214008Z",
+        "finished_at": "2026-10-22T17:29:53.382394Z"
+      },
+      "ms": 1071
+    },
+    {
+      "name": "promo",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "f00d781eafad4425a07105bdb74c4cf0",
+          "rendition": {
+            "title": "Launching our video editor today",
+            "body": "Try our app and use code LAUNCH for 20% off this week!"
+          }
+        },
+        "idempotency_key": "fd4ed7bf13dd41d2bdcff43b314854ef"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "3db811379bad4758b2095e0ed4333e4e",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "DEST_RULE_SELF_PROMO",
+          "message": "Destination bans self-promotion and the content looks promotional (score 1.00: promotional phrases: use code, try our, our app; price or discount mentioned)",
+          "retryable": false,
+          "details": {
+            "checks": [
+              {
+                "rule": "frequency_cap",
+                "passed": true,
+                "detail": "0/5 posts in the last 1 day, 0:00:00",
+                "code": null
+              },
+              {
+                "rule": "self_promotion",
+                "passed": false,
+                "detail": "Destination bans self-promotion and the content looks promotional (score 1.00: promotional phrases: use code, try our, our app; price or discount mentioned)",
+                "code": "DEST_RULE_SELF_PROMO"
+              },
+              {
+                "rule": "link_policy",
+                "passed": true,
+                "detail": "0 link(s) within policy",
+                "code": null
+              },
+              {
+                "rule": "ai_disclosure",
+                "passed": true,
+                "detail": "Disclosure not required for this content",
+                "code": null
+              },
+              {
+                "rule": "language",
+                "passed": true,
+                "detail": "Language matches (en)",
+                "code": null
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/3db811379bad4758b2095e0ed4333e4e"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:53.636901Z",
+        "started_at": "2026-10-22T17:29:54.392242Z",
+        "finished_at": "2026-10-22T17:29:54.404182Z"
+      },
+      "ms": 1070
+    }
+  ],
+  "checks": [
+    {
+      "step": "promo",
+      "path": "error.code",
+      "equals": "DEST_RULE_SELF_PROMO",
+      "actual": "DEST_RULE_SELF_PROMO",
+      "ok": true
+    },
+    {
+      "step": "promo",
+      "path": "error.message",
+      "contains": "bans self-promotion",
+      "actual": "Destination bans self-promotion and the content looks promotional (score 1.00: promotional phrases: use code, try our, our app; price or discount mentioned)",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

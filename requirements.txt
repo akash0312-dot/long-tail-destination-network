@@ -10,3 +10,4 @@ PyYAML==6.0.2
 boto3==1.38.13
 python-multipart==0.0.20
 Markdown==3.8
+anthropic==2.1.0

@@ -1,6 +1,7 @@
 """Mock platform server for simulation mode and tests: uvicorn mock_platforms.app:app --port 9000"""
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
+from pydantic import BaseModel
 
 from mock_platforms import devto, discourse, ghost, hashnode, lemmy, partner, peertube, state
 
@@ -28,6 +29,7 @@ async def clear_faults():
 async def reset():
     state.reset()
     callbacks.clear()
+    pages.clear()
     return {"reset": True}
 
 
@@ -41,6 +43,27 @@ async def get_state():
 @app.get("/__admin/posts")
 async def posts(platform: str, instance: str):
     return {"posts": list(state.instance(platform, instance).posts.values())}
+
+
+pages: dict[str, tuple[int, str]] = {}  # path -> (status, body): rules pages and robots.txt set by tests
+
+
+class PageSpec(BaseModel):
+    path: str
+    body: str
+    status: int = 200
+
+
+@app.post("/__admin/pages")
+async def set_page(spec: PageSpec):
+    pages[spec.path.strip("/")] = (spec.status, spec.body)
+    return {"pages": len(pages)}
+
+
+@app.get("/robots.txt")
+async def robots():
+    status, body = pages.get("robots.txt", (200, "User-agent: *\nAllow: /\n"))
+    return PlainTextResponse(body, status_code=status)
 
 
 callbacks: list[dict] = []
@@ -64,6 +87,18 @@ app.include_router(devto.router)
 app.include_router(partner.router)
 app.include_router(peertube.router)
 app.include_router(hashnode.router)  # its GraphQL route is a catch-all POST /{inst}/, so it goes last
+
+
+@app.get("/pages/{path:path}")
+async def page(path: str):
+    """Catalogue reachability targets and rules pages (after the platform routers, so /pages/<x>/api/... still
+    reaches a mock platform). Anything under pages/dead/ answers 404."""
+    if f"pages/{path}" in pages:
+        status, body = pages[f"pages/{path}"]
+        return HTMLResponse(body, status_code=status)
+    if path.startswith("dead"):
+        return HTMLResponse("gone", status_code=404)
+    return HTMLResponse(f"<html><body><h1>{path}</h1></body></html>")
 
 
 # public "live" pages, registered last so API routes win

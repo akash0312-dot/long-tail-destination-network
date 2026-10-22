@@ -1,6 +1,7 @@
 """Request context (correlation id, auth, rate limit, access log) and Idempotency-Key handling."""
 import hashlib
 import logging
+import re
 import threading
 import time
 import uuid
@@ -123,7 +124,11 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                                 status_code=400)
         body = await request.body()
         scope = f"POST {request.url.path}"
-        req_hash = hashlib.sha256(scope.encode() + b"\n" + body).hexdigest()
+        hashed = body
+        boundary = re.search(r"boundary=\"?([^\";]+)", request.headers.get("content-type", ""))
+        if boundary:  # a retried upload of the same file gets a new random multipart boundary
+            hashed = body.replace(boundary.group(1).encode(), b"BOUNDARY")
+        req_hash = hashlib.sha256(scope.encode() + b"\n" + hashed).hexdigest()
         claim = await run_in_threadpool(_claim, key, scope, req_hash)
         if claim[0] == "conflict":
             return JSONResponse(error_body(ErrorCode.IDEMPOTENCY_KEY_CONFLICT,

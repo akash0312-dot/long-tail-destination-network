@@ -1,0 +1,405 @@
+{
+  "name": "03_limits_and_media",
+  "description": "Hard case 3: title longer than allowed and media the destination does not accept; field-level reasons, nothing posted",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "0472154fb54f4455ad65191903102433"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "e606fcba0e69466bbbca1ca99be5ccb2",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-22T17:29:43.696498Z"
+      },
+      "ms": 58
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-03 ecce781f",
+          "url": "http://mock:9000/batch/forum-03-ecce781f",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "e606fcba0e69466bbbca1ca99be5ccb2"
+        },
+        "idempotency_key": "5d97b6dea17e4ddeb9d4ec59c585ad85"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "20812dba7f814a3289dfce5d8fa0b686",
+        "name": "batch-03 ecce781f",
+        "url": "http://mock:9000/batch/forum-03-ecce781f",
+        "normalized_url": "https://mock:9000/batch/forum-03-ecce781f",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-03-ecce781f"
+        },
+        "connection_id": "e606fcba0e69466bbbca1ca99be5ccb2",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T17:29:43.755000Z"
+      },
+      "ms": 59
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "20812dba7f814a3289dfce5d8fa0b686"
+        },
+        "idempotency_key": "fe5995036d9a4194a5d92ae03c09c5f7"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "efbdba71148748eaa8b4b5e91289a241",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "efbdba71148748eaa8b4b5e91289a241",
+          "destination_id": "20812dba7f814a3289dfce5d8fa0b686",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.07,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 13,
+              "result": {
+                "platform_post_id": "13",
+                "live_url": "http://mock:9000/batch/forum-03-ecce781f/t/connector-certification-test-efbdba71-please-ignore/13",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 8,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 9,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-03-ecce781f/t/connector-certification-test-efbdba71-please-ignore/13"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/20812dba7f814a3289dfce5d8fa0b686/efbdba71148748eaa8b4b5e91289a241/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172944Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cd8efb45a43d9a7da51358e459403a10b3acf2be24526be86cb1539572a8ef5e",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/20812dba7f814a3289dfce5d8fa0b686/efbdba71148748eaa8b4b5e91289a241/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172944Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7112760b4d2f45ecc68cae09504fdf50da73e4fa56c3f19bd9dc8062cfcddb3a"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/efbdba71148748eaa8b4b5e91289a241",
+          "evidence": "http://localhost:8333/longtail-network/certifications/20812dba7f814a3289dfce5d8fa0b686/efbdba71148748eaa8b4b5e91289a241/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172944Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cd8efb45a43d9a7da51358e459403a10b3acf2be24526be86cb1539572a8ef5e",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/20812dba7f814a3289dfce5d8fa0b686/efbdba71148748eaa8b4b5e91289a241/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T172944Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7112760b4d2f45ecc68cae09504fdf50da73e4fa56c3f19bd9dc8062cfcddb3a"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:43.813471Z",
+        "started_at": "2026-10-22T17:29:44.762133Z",
+        "finished_at": "2026-10-22T17:29:44.867984Z"
+      },
+      "ms": 2078
+    },
+    {
+      "name": "long_title",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "20812dba7f814a3289dfce5d8fa0b686",
+          "rendition": {
+            "title": "This title goes on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on",
+            "body": "A body that is long enough to pass."
+          }
+        },
+        "idempotency_key": "a7eb6e76cd9a470eb6dc726c97db2994"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "fc7f9764993c441bac562f8682dc5599",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 20,
+        "result": null,
+        "error": {
+          "code": "DEST_SPEC_VIOLATION",
+          "message": "Content breaks the destination's format limits",
+          "retryable": false,
+          "details": {
+            "violations": [
+              {
+                "field": "title",
+                "code": "TITLE_TOO_LONG",
+                "limit": 255,
+                "actual": 256,
+                "message": "Title is 256 characters; limit is 255"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/fc7f9764993c441bac562f8682dc5599"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:45.899736Z",
+        "started_at": "2026-10-22T17:29:46.886772Z",
+        "finished_at": "2026-10-22T17:29:46.917502Z"
+      },
+      "ms": 2101
+    },
+    {
+      "name": "bad_media",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "20812dba7f814a3289dfce5d8fa0b686",
+          "rendition": {
+            "title": "A question with a photo attached",
+            "body": "A body that is long enough to pass.",
+            "content_type": "image",
+            "media": [
+              {
+                "url": "https://cdn.example/photo.heic",
+                "type": "image"
+              }
+            ]
+          }
+        },
+        "idempotency_key": "abbba1573f594b719a5debbf5b8c8683"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "e7b7a9d7dea446d6a56cdabdd2427f8b",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 20,
+        "result": null,
+        "error": {
+          "code": "DEST_SPEC_VIOLATION",
+          "message": "Content breaks the destination's format limits",
+          "retryable": false,
+          "details": {
+            "violations": [
+              {
+                "field": "media[0]",
+                "code": "MEDIA_TYPE_UNSUPPORTED",
+                "actual": "image/heic",
+                "limit": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif",
+                  "image/webp"
+                ],
+                "message": "Media type 'image/heic' is not accepted by this destination"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/e7b7a9d7dea446d6a56cdabdd2427f8b"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:29:47.994385Z",
+        "started_at": "2026-10-22T17:29:48.952451Z",
+        "finished_at": "2026-10-22T17:29:48.972862Z"
+      },
+      "ms": 1072
+    }
+  ],
+  "checks": [
+    {
+      "step": "long_title",
+      "path": "error.code",
+      "equals": "DEST_SPEC_VIOLATION",
+      "actual": "DEST_SPEC_VIOLATION",
+      "ok": true
+    },
+    {
+      "step": "long_title",
+      "path": "error.details.violations.0.code",
+      "equals": "TITLE_TOO_LONG",
+      "actual": "TITLE_TOO_LONG",
+      "ok": true
+    },
+    {
+      "step": "bad_media",
+      "path": "error.code",
+      "equals": "DEST_SPEC_VIOLATION",
+      "actual": "DEST_SPEC_VIOLATION",
+      "ok": true
+    },
+    {
+      "step": "bad_media",
+      "path": "error.details.violations.0.code",
+      "equals": "MEDIA_TYPE_UNSUPPORTED",
+      "actual": "MEDIA_TYPE_UNSUPPORTED",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

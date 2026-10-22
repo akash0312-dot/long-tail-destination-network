@@ -53,6 +53,7 @@ class DestinationCreate(BaseModel):
     automation_allowed: bool = True
     relevance_score: int | None = Field(default=None, ge=1, le=5)
     relevance_reason: str | None = None
+    description: str | None = None
     level: str = Field(default="L0", pattern="^L[0-4]$")
 
 
@@ -74,6 +75,18 @@ class TailorRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     content: Rendition
     destination_ids: list[str] = Field(min_length=1, max_length=200)
+
+
+class RulesCaptureCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    rules_url: HttpUrl | None = None
+
+
+class RuleReview(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    reviewed_by: str = Field(min_length=1, max_length=200, description="The person who checked the proposal")
+    overrides: dict[str, Any] | None = Field(default=None, description="Corrections applied on confirm")
+    note: str | None = None
 
 
 class CertificationCreate(BaseModel):

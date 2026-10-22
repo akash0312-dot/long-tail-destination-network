@@ -1,0 +1,157 @@
+{
+  "name": "09_catalogue_csv",
+  "description": "Hard case 6a: a CSV with duplicates, bad URLs, a major platform, mixed languages and a dead site; row-by-row report, nothing silently dropped",
+  "steps": [
+    {
+      "name": "step1",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:9000/__admin/pages",
+        "body": {
+          "path": "pages/batch-ecce781f/catalogue.csv",
+          "body": "name,url,connector_key,language,description,audience_tags\nAI video creators ecce781f,http://mock:9000/pages/batch-ecce781f/lem/c/aivideo,lemmy,en,Creators using AI for video,ai;video\nSame community again,http://mock:9000/pages/batch-ecce781f/lem/c/AIVideo/?utm_source=newsletter,lemmy,en,,\nNot a URL,definitely not a url,,,,\nBig platform,https://www.youtube.com/@channel,,,,\nComunidad de creadores ecce781f,http://mock:9000/pages/batch-ecce781f/es,assisted,es,Comunidad de creadores de video para la gente,\nJapanese community ecce781f,http://mock:9000/pages/batch-ecce781f/ja,assisted,en,\u52d5\u753b\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u306e\u305f\u3081\u306e\u30b3\u30df\u30e5\u30cb\u30c6\u30a3,\nGone forum ecce781f,http://mock:9000/pages/dead/batch-ecce781f,discourse,en,,\n"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "pages": 1
+      },
+      "ms": 2044
+    },
+    {
+      "name": "import",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/catalogue/imports",
+        "body": null,
+        "idempotency_key": "317c52b80c2d4dd4851d58f582e045b5"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "ad9fc768e8ba4bc0a2d872f0f01ccd68",
+        "kind": "catalogue_import",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "summary": {
+            "rows": 7,
+            "imported": 0,
+            "updated": 0,
+            "existing": 0,
+            "invalid": 7,
+            "duplicates_in_file": 0,
+            "unreachable": 0,
+            "rows_with_warnings": 0,
+            "seconds": 0.08
+          },
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "ad9fc768e8ba4bc0a2d872f0f01ccd68",
+            "kind": "catalogue_import",
+            "created_at": "2026-10-22T17:30:11.392163+00:00",
+            "connectors": [],
+            "providers": [
+              {
+                "task": "relevance",
+                "provider": "mock",
+                "model": "heuristics-v1",
+                "calls": 0,
+                "cost_usd": 0.0
+              }
+            ],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "local",
+              "check_reachability": true,
+              "score_relevance": true,
+              "update_existing": false
+            },
+            "seed": null,
+            "timings_ms": {
+              "validate_ms": 43,
+              "reachability_ms": 30,
+              "total_ms": 87
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "report_csv": "http://localhost:8333/longtail-network/imports/ad9fc768e8ba4bc0a2d872f0f01ccd68/report.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T173011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=327905e782eb1c5f4d193c5edc30edee8767562ce729ca51f59db533cf6f844c",
+            "summary": "http://localhost:8333/longtail-network/imports/ad9fc768e8ba4bc0a2d872f0f01ccd68/summary.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T173011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c542d047c57242c692526649c1a091808713210c785075a03800727b91f7f1e4"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/ad9fc768e8ba4bc0a2d872f0f01ccd68",
+          "report_csv": "http://localhost:8333/longtail-network/imports/ad9fc768e8ba4bc0a2d872f0f01ccd68/report.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T173011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=327905e782eb1c5f4d193c5edc30edee8767562ce729ca51f59db533cf6f844c",
+          "summary": "http://localhost:8333/longtail-network/imports/ad9fc768e8ba4bc0a2d872f0f01ccd68/summary.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T173011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c542d047c57242c692526649c1a091808713210c785075a03800727b91f7f1e4"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T17:30:11.265537Z",
+        "started_at": "2026-10-22T17:30:11.299817Z",
+        "finished_at": "2026-10-22T17:30:11.402028Z"
+      },
+      "ms": 1088
+    }
+  ],
+  "checks": [
+    {
+      "step": "import",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.rows",
+      "equals": 7,
+      "actual": 7,
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.imported",
+      "equals": 4,
+      "actual": 0,
+      "ok": false
+    },
+    {
+      "step": "import",
+      "path": "result.summary.duplicates_in_file",
+      "equals": 1,
+      "actual": 0,
+      "ok": false
+    },
+    {
+      "step": "import",
+      "path": "result.summary.invalid",
+      "equals": 2,
+      "actual": 7,
+      "ok": false
+    },
+    {
+      "step": "import",
+      "path": "result.summary.unreachable",
+      "equals": 1,
+      "actual": 0,
+      "ok": false
+    },
+    {
+      "step": "import",
+      "path": "result.links.report_csv",
+      "actual": "http://localhost:8333/longtail-network/imports/ad9fc768e8ba4bc0a2d872f0f01ccd68/report.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T173011Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=327905e782eb1c5f4d193c5edc30edee8767562ce729ca51f59db533cf6f844c",
+      "ok": true
+    }
+  ],
+  "passed": false
+}

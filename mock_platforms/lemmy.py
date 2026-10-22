@@ -40,6 +40,9 @@ def _community(db: state.Instance, name: str) -> dict:
     return db.communities[name]
 
 
+SUBSCRIBERS = 4321  # fixed so catalogue enrichment can be asserted
+
+
 @router.post("/{inst:path}/api/v3/user/login")
 async def login(inst: str, request: Request):
     f = state.take_fault(P, inst, "login")
@@ -57,7 +60,8 @@ async def login(inst: str, request: Request):
 
 @router.get("/{inst:path}/api/v3/community")
 async def get_community(inst: str, name: str):
-    return {"community_view": {"community": _community(state.instance(P, inst), name)}}
+    return {"community_view": {"community": _community(state.instance(P, inst), name),
+                               "counts": {"subscribers": SUBSCRIBERS, "posts": 10}}}
 
 
 @router.get("/{inst:path}/api/v3/post/list")

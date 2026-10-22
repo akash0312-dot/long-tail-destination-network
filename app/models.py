@@ -55,6 +55,8 @@ class Destination(Base):
     automation_allowed: Mapped[bool] = mapped_column(Boolean, default=True)
     relevance_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     relevance_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    checks: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # reachability + enrichment from the import
     level: Mapped[str] = mapped_column(String(4), default="L0")  # L0..L4
     certification_status: Mapped[str] = mapped_column(String(32), default="uncertified")
     last_certified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -106,6 +108,24 @@ class IdempotencyRecord(Base):
     status_code: Mapped[int | None] = mapped_column(Integer, nullable=True)
     response_body: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class RuleProposal(Base):
+    """Rules an AI step read from a community's rules page. Never applied until a person confirms them."""
+    __tablename__ = "rule_proposals"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    destination_id: Mapped[str] = mapped_column(ForeignKey("destinations.id"), index=True)
+    status: Mapped[str] = mapped_column(String(16), default="proposed")  # proposed | confirmed | rejected
+    source_url: Mapped[str] = mapped_column(String(1000))
+    proposed: Mapped[dict] = mapped_column(JSON)
+    applied: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    evidence: Mapped[list] = mapped_column(JSON, default=list)
+    provider: Mapped[dict] = mapped_column(JSON, default=dict)
+    snapshot_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    reviewed_by: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    review_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class CertificationRun(Base):
