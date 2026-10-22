@@ -4,7 +4,7 @@ Containerised connector service that publishes creator content to long-tail dest
 developer blogs, Ghost, partner sites…) through a standard connector contract — with idempotent retries, rate-limit
 backoff, error mapping to shared codes, and a mock platform server for simulation.
 
-> Status: Day 2 of the build. See [PROGRESS.md](PROGRESS.md) for what works today and [docs/PLAN.md](docs/PLAN.md) for
+> Status: Day 3 of the build (Core + Advanced implemented). See [PROGRESS.md](PROGRESS.md) for what works today and [docs/PLAN.md](docs/PLAN.md) for
 > requirements, architecture and plan.
 
 ## Quick start (≤ 10 commands)
@@ -72,6 +72,22 @@ Adding a connector = a new folder with `manifest.yaml` + `connector.py`. Adding 
 | devto | native | publish / status / delete (= unpublish; the Forem API cannot delete) — certified on the mock |
 | webhook | protocol | partner sites, HMAC-signed ([protocol](docs/PARTNER_WEBHOOK.md)) — certified on the mock partner |
 | assisted | assisted | build_assist_pack for communities where a person must post |
+| mrss | feed | hosted Media RSS feed per destination at `/api/v1/feeds/{feed_key}.xml` (public) — certifies at L2 |
+| hashnode | native | GraphQL publish / status / remove — certified on the mock |
+| peertube | native | OAuth, video import from URL, status, delete, refresh_auth — certified on the mock |
+
+## Catalogue, relevance, rules capture, tailoring
+
+- `POST /api/v1/catalogue/imports` (CSV `file` upload or `csv_url`) → job: validation, de-duplication (normalised
+  URL + platform), language detection, reachability, member-count enrichment, relevance 1–5 with a reason, and a
+  row-by-row `report.csv`. 1,000 rows take about 10 s.
+- `POST /api/v1/destinations/{id}/rules/capture` → job: reads the rules page (robots.txt honoured), proposes posting
+  rules with evidence quotes. `POST /api/v1/rule-proposals/{id}/confirm` (named reviewer, optional corrections) is the
+  only way they are applied; `/reject` discards them.
+- `POST /api/v1/tailor` previews each destination's rendition with its list of changes; `tailor: true` on a
+  publication applies it.
+- AI provider: `AI_PROVIDER=mock` (default: deterministic heuristics, no key) or `anthropic` (Claude, model from
+  `AI_MODEL`, token cost in every result manifest).
 
 ## Error codes
 
@@ -95,6 +111,10 @@ All errors: `{"error": {"code", "message", "retryable", "details"}}`.
 | `DEST_NOT_CERTIFIED` | 409 | no | *Extension:* destination not certified, or demoted after a failed certification |
 | `CERTIFICATION_FAILED` | 422 | no | *Extension:* a certification step failed; destination demoted to L0 |
 | `PLATFORM_SCHEMA_CHANGED` | 502 | no | *Extension:* platform response lost an expected field (renamed API) |
+| `AI_PROVIDER_ERROR` | 502 | depends | *Extension:* the AI provider failed (rate limit, credentials, cut-off answer) |
+| `AI_REFUSED` | 422 | no | *Extension:* the AI model declined the request (`details.category`) |
+| `RULES_PAGE_UNAVAILABLE` | 422 | no | *Extension:* rules page blocked by robots.txt, unreachable, internal or empty |
+| `CATALOGUE_INPUT_INVALID` | 400 | no | *Extension:* CSV missing name/url columns, not UTF-8, too large, or URL not public |
 | `CONNECTOR_NOT_FOUND` | 404 | no | *Extension:* unknown connector key |
 | `METHOD_NOT_SUPPORTED` | 405 | no | *Extension:* connector lacks this optional method |
 | `VALIDATION_ERROR` | 400 | no | Request body invalid |

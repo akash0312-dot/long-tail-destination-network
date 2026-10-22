@@ -186,18 +186,19 @@ def main(argv: list[str] | None = None) -> int:
         res = runner.run_scenario(scenario)
         folder = args.output / re.sub(r"[^\w.-]+", "_", res["name"])
         folder.mkdir(parents=True, exist_ok=True)
-        (folder / "steps.json").write_text(json.dumps(res, indent=2, default=str), encoding="utf-8")
+        (folder / "steps.json").write_text(json.dumps(res, indent=2, default=str), encoding="utf-8", newline="\n")
         results.append(res)
         print(f"{'PASS' if res['passed'] else 'FAIL'}  {res['name']}")
     summary = {"run_at": datetime.now(timezone.utc).isoformat(), "api": args.api,
                "passed": sum(r["passed"] for r in results), "total": len(results),
                "scenarios": [{"name": r["name"], "passed": r["passed"],
                               "failed_checks": [c for c in r["checks"] if not c["ok"]]} for r in results]}
-    (args.output / "summary.json").write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8")
+    (args.output / "summary.json").write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8",
+                                              newline="\n")
     md = [f"# Batch run {summary['run_at']}", "", f"**{summary['passed']}/{summary['total']} scenarios passed**", "",
           "| Scenario | Result | Description |", "|---|---|---|"]
     md += [f"| {r['name']} | {'PASS' if r['passed'] else 'FAIL'} | {r['description']} |" for r in results]
-    (args.output / "summary.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    (args.output / "summary.md").write_text("\n".join(md) + "\n", encoding="utf-8", newline="\n")
     print(f"{summary['passed']}/{summary['total']} passed -> {args.output}")
     return 0 if summary["passed"] == summary["total"] else 1
 
