@@ -91,8 +91,8 @@ def create_destination(body: DestinationCreate, db: Session = Depends(get_db)) -
     param = connector.manifest.instance_param
     data = body.model_dump()
     data["platform_key"] = data["platform_key"] or body.connector_key
-    if param and param not in data["params"]:
-        data["params"][param] = body.url
+    if param and param.endswith("url") and param not in data["params"]:
+        data["params"][param] = body.url  # e.g. base_url / endpoint_url default to the destination URL
     data["normalized_url"] = normalize_url(body.url)
     dup = db.execute(select(Destination).where(Destination.normalized_url == data["normalized_url"],
                                                Destination.platform_key == data["platform_key"])).scalar_one_or_none()
@@ -185,6 +185,17 @@ def get_job(job_id: str, db: Session = Depends(get_db)) -> dict:
     if job is None:
         raise AppError(ErrorCode.NOT_FOUND, "Job not found", {"job_id": job_id})
     return job_view(job)
+
+
+# ---------------------------------------------------------------- MRSS feeds (public: aggregators pull them)
+@router.get("/feeds/{feed_key}.xml", tags=["feeds"], summary="Public MRSS feed of an mrss destination",
+            response_class=Response)
+def get_feed(feed_key: str):
+    try:
+        data = get_storage().get_bytes(f"feeds/{feed_key}/feed.xml")
+    except Exception:
+        raise AppError(ErrorCode.NOT_FOUND, "Feed not found", {"feed_key": feed_key})
+    return Response(content=data, media_type="application/rss+xml")
 
 
 # ---------------------------------------------------------------- files (local storage backend only)

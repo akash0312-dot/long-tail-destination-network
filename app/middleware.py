@@ -20,6 +20,7 @@ from app.models import IdempotencyRecord
 
 log = logging.getLogger("app.access")
 PROTECTED_PREFIXES = ("/api/v1/", "/connector/v1")
+PUBLIC_PREFIXES = ("/api/v1/feeds/",)  # MRSS feeds are pulled by aggregators that cannot send our token
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
@@ -49,7 +50,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         try:
             s = get_settings()
             path = request.url.path
-            if path.startswith(PROTECTED_PREFIXES):
+            if path.startswith(PROTECTED_PREFIXES) and not path.startswith(PUBLIC_PREFIXES):
                 if s.api_token and request.headers.get("Authorization") != f"Bearer {s.api_token}":
                     return self._finish(JSONResponse(error_body(ErrorCode.UNAUTHORIZED, "Missing or invalid API token"),
                                                      status_code=401), cid, request, started)

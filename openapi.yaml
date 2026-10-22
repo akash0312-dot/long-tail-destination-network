@@ -408,6 +408,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/feeds/{feed_key}.xml:
+    get:
+      tags:
+      - feeds
+      summary: Public MRSS feed of an mrss destination
+      operationId: get_feed_api_v1_feeds__feed_key__xml_get
+      parameters:
+      - name: feed_key
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Feed Key
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/files/{key}:
     get:
       tags:

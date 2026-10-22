@@ -136,6 +136,10 @@ class BaseConnector:
                       "message": f"Content type '{r.content_type}' not accepted on surface '{surface.key}'"})
         if not spec.links_allowed and (r.link_url or URL_RE.search(r.body)):
             v.append({"field": "body", "code": "LINKS_NOT_ALLOWED", "message": "This surface does not accept links"})
+        videos = [m for m in r.media if m.type == "video"]
+        if spec.min_video is not None and len(videos) < spec.min_video:
+            v.append({"field": "media", "code": "VIDEO_REQUIRED", "limit": spec.min_video, "actual": len(videos),
+                      "message": "This destination needs a video file (media item with type 'video')"})
         if spec.max_media is not None and len(r.media) > spec.max_media:
             v.append({"field": "media", "code": "TOO_MANY_MEDIA", "limit": spec.max_media, "actual": len(r.media),
                       "message": f"{len(r.media)} media items; limit is {spec.max_media}"})

@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 
-from mock_platforms import devto, discourse, ghost, lemmy, partner, state
+from mock_platforms import devto, discourse, ghost, hashnode, lemmy, partner, peertube, state
 
 app = FastAPI(title="Long-tail mock platforms", version="0.1.0")
 
@@ -62,6 +62,8 @@ app.include_router(lemmy.router)
 app.include_router(discourse.router)
 app.include_router(devto.router)
 app.include_router(partner.router)
+app.include_router(peertube.router)
+app.include_router(hashnode.router)  # its GraphQL route is a catch-all POST /{inst}/, so it goes last
 
 
 # public "live" pages, registered last so API routes win

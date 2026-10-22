@@ -22,9 +22,24 @@ TARGETS = {
     "webhook": {"destination": {"name": "Partner A", "params": {"endpoint_url": "https://partner-a.example/api/posts"}},
                 "connection": {"credentials": {"signing_secret": "partner-test-secret"}},
                 "instance": "sim/webhook/partner-a-example-api-posts"},
+    "hashnode": {"destination": {"name": "Hashnode A", "params": {"base_url": "https://gql-a.example",
+                                                                  "publication_id": "pub-a"}},
+                 "connection": {"credentials": {"api_key": "hn-test-key"}},
+                 "instance": "sim/hashnode/gql-a-example"},
+    "peertube": {"destination": {"name": "Tube A", "params": {"base_url": "https://tube-a.example", "channel_id": 7}},
+                 "connection": {"credentials": {"username": "longtail_bot", "password": "pw-test-123"}},
+                 "instance": "sim/peertube/tube-a-example", "content_type": "video",
+                 "media": [{"url": "https://cdn.example.com/clip.mp4", "type": "video", "mime_type": "video/mp4"}]},
 }
 RENDITION = {"title": "How small creator teams ship video weekly", "body": "A short **discussion** starter.",
              "content_type": "text", "tags": ["video"]}
+
+
+def base_rendition(key: str, **overrides) -> dict:
+    """The shared test content, plus whatever the platform needs (PeerTube needs a video)."""
+    t = TARGETS[key]
+    extra = {k: t[k] for k in ("content_type", "media") if k in t}
+    return {**RENDITION, **extra, **overrides}
 
 
 def call(client, key, method, **body):
@@ -34,7 +49,7 @@ def call(client, key, method, **body):
 
 def publish(client, key, idem="key-1", rendition=None, target=None):
     t = target or TARGETS[key]
-    return call(client, key, "publish", rendition=rendition or RENDITION, destination=t["destination"],
+    return call(client, key, "publish", rendition=rendition or base_rendition(key), destination=t["destination"],
                 connection=t["connection"], idempotency_key=idem)
 
 
@@ -147,7 +162,7 @@ def test_renamed_api_field_is_schema_changed(client, mock, key):
 def test_title_too_long_blocked_before_any_platform_call(client, mock, key):
     """Hard case 3a: field-level reasons, nothing sent to the platform."""
     before = mock.calls()
-    status, err = publish(client, key, rendition=dict(RENDITION, title="x" * 300))
+    status, err = publish(client, key, rendition=base_rendition(key, title="x" * 300))
     assert status == 422
     assert err["error"]["code"] == "DEST_SPEC_VIOLATION"
     v = err["error"]["details"]["violations"][0]
@@ -159,11 +174,12 @@ def test_title_too_long_blocked_before_any_platform_call(client, mock, key):
 def test_unsupported_media_reported_by_validate(client, key):
     """Hard case 3b."""
     t = TARGETS[key]
-    r = dict(RENDITION, media=[{"url": "https://cdn.example.com/photo.heic", "type": "image"}])
+    r = base_rendition(key)
+    r["media"] = r.get("media", []) + [{"url": "https://cdn.example.com/photo.heic", "type": "image"}]
     status, res = call(client, key, "validate", rendition=r, destination=t["destination"], connection=t["connection"])
     assert status == 200 and res["ok"] is False
-    assert res["violations"][0]["code"] == "MEDIA_TYPE_UNSUPPORTED"
-    assert res["violations"][0]["actual"] == "image/heic"
+    bad = [v for v in res["violations"] if v["code"] == "MEDIA_TYPE_UNSUPPORTED"]
+    assert bad and bad[0]["actual"] == "image/heic"
 
 
 @pytest.mark.parametrize("key", TARGETS)

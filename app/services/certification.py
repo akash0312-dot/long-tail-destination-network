@@ -60,13 +60,17 @@ def _safe(out):
     return out if isinstance(out, (dict, list, str, int, float, bool, type(None))) else str(out)
 
 
-def test_rendition(dest: Destination, run_id: str) -> dict:
-    """Neutral, link-free, clearly labelled test content that satisfies every destination's rules."""
-    return {"title": f"Connector certification test {run_id[:8]} - please ignore",
-            "body": "Automated connectivity test from the Long-Tail Destination Network. "
-                    "This post is deleted within seconds.",
-            "content_type": "text", "language": dest.language or "en", "ai_generated": False,
-            "is_promotional": False}
+def test_rendition(dest: Destination, run_id: str, surface) -> dict:
+    """Neutral, link-free, clearly labelled test content that satisfies the destination's rules and format
+    (video platforms and feeds get the configured test video)."""
+    r = {"title": f"Connector certification test {run_id[:8]} - please ignore",
+         "body": "Automated connectivity test from the Long-Tail Destination Network. "
+                 "This post is deleted within seconds.",
+         "content_type": "text" if "text" in surface.content_types else surface.content_types[0],
+         "language": dest.language or "en", "ai_generated": False, "is_promotional": False}
+    if surface.spec.min_video:
+        r["media"] = [{"url": get_settings().certification_test_video_url, "type": "video", "mime_type": "video/mp4"}]
+    return r
 
 
 def rules_recorded(dest: Destination) -> dict:
@@ -82,6 +86,9 @@ def rules_recorded(dest: Destination) -> dict:
 def fetch_live(url: str) -> dict:
     """The live URL must answer 2xx. Federated servers (Lemmy without its web UI) answer ActivityPub instead."""
     attempts = []
+    s = get_settings()
+    if s.internal_base_url and url.startswith(s.public_base_url.rstrip("/")):  # a page we host ourselves (feeds)
+        url = s.internal_base_url.rstrip("/") + url[len(s.public_base_url.rstrip("/")):]
     for accept in ("text/html,application/xhtml+xml", "application/activity+json"):
         try:
             r = httpx.get(url, headers={"Accept": accept}, timeout=10, follow_redirects=True)
@@ -129,7 +136,7 @@ def run_certification(ctx: JobContext) -> dict:
     publish_attempted = deleted = False
     snapshot_url = None
     key = f"cert-{run_id}"
-    rendition = test_rendition(dest, run_id)
+    rendition = test_rendition(dest, run_id, connector.manifest.surface(dest.surface))
     try:
         run.step("rules_recorded", lambda: rules_recorded(dest))
         run.step("format_limits_recorded", lambda: connector.manifest.surface(dest.surface).model_dump())

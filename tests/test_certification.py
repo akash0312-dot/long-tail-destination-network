@@ -12,6 +12,8 @@ SETUP = {
     "devto": ({"api_key": "env:NOPE_K"}, {}, {}),
     "webhook": ({"signing_secret": "env:MOCK_WEBHOOK_SECRET"}, {}, {}),
     "assisted": ({}, {}, {"submit_url": "https://news.example/submit"}),
+    "hashnode": ({"api_key": "env:NOPE_K"}, {}, {"publication_id": "pub-1"}),
+    "peertube": ({"username": "env:NOPE_U", "password": "env:NOPE_P"}, {}, {"channel_id": 3}),
 }
 
 
@@ -40,7 +42,8 @@ def certify(client, dest_id):
 
 
 @pytest.mark.parametrize("key,level", [("ghost", "L3"), ("lemmy", "L3"), ("discourse", "L3"), ("devto", "L3"),
-                                       ("webhook", "L3"), ("assisted", "L1")])
+                                       ("webhook", "L3"), ("assisted", "L1"), ("hashnode", "L3"),
+                                       ("peertube", "L3")])
 def test_certification_passes_and_promotes(client, mock, key, level):
     d, _ = make_dest(client, key)
     job = certify(client, d["id"])

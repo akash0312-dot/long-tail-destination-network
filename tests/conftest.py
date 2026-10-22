@@ -19,12 +19,15 @@ def _free_port() -> int:
 
 MOCK_PORT = _free_port()
 MOCK_URL = f"http://127.0.0.1:{MOCK_PORT}"
+API_PORT = _free_port()  # the API also runs on a real port so certification can fetch pages we host (feeds)
+API_URL = f"http://127.0.0.1:{API_PORT}"
 
 os.environ.update({
     "DATABASE_URL": f"sqlite:///{_tmp}/test.db",
     "STORAGE_BACKEND": "local",
     "STORAGE_LOCAL_DIR": f"{_tmp}/storage",
     "PUBLIC_BASE_URL": "http://testserver",
+    "INTERNAL_BASE_URL": API_URL,
     "SIMULATION_MODE": "true",
     "MOCK_PLATFORM_URL": MOCK_URL,
     "JOB_EXECUTOR": "sync",
@@ -45,17 +48,22 @@ def mock_server():
     import uvicorn
     from mock_platforms.app import app as mock_app
 
-    server = uvicorn.Server(uvicorn.Config(mock_app, host="127.0.0.1", port=MOCK_PORT, log_level="warning"))
-    t = threading.Thread(target=server.run, daemon=True)
-    t.start()
-    for _ in range(100):
-        try:
-            if httpx.get(f"{MOCK_URL}/health").status_code == 200:
-                break
-        except httpx.HTTPError:
-            time.sleep(0.05)
+    from app.main import app as api_app
+
+    servers = []
+    for asgi, port, url in ((mock_app, MOCK_PORT, MOCK_URL), (api_app, API_PORT, API_URL)):
+        server = uvicorn.Server(uvicorn.Config(asgi, host="127.0.0.1", port=port, log_level="warning"))
+        threading.Thread(target=server.run, daemon=True).start()
+        servers.append(server)
+        for _ in range(100):
+            try:
+                if httpx.get(f"{url}/health").status_code == 200:
+                    break
+            except httpx.HTTPError:
+                time.sleep(0.05)
     yield MOCK_URL
-    server.should_exit = True
+    for server in servers:
+        server.should_exit = True
 
 
 class Mock:
@@ -83,11 +91,13 @@ def mock(mock_server) -> Mock:
 def _clean_state(mock_server):
     from app.connectors import http as chttp
     from app.connectors.lemmy import connector as lemmy_conn
+    from app.connectors.peertube import connector as peertube_conn
 
     httpx.post(f"{MOCK_URL}/__admin/reset")
     chttp.breaker.reset()
     chttp.limiter.reset()
     lemmy_conn._jwt_cache.clear()
+    peertube_conn._tokens.clear()
     yield
 
 

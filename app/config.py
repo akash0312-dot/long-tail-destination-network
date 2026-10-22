@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     environment: str = "local"
     log_level: str = "INFO"
     public_base_url: str = "http://localhost:8000"
+    internal_base_url: str = ""  # how the worker reaches this API (compose: http://api:8000); for live checks
 
     # database
     database_url: str = "sqlite:///./data/longtail.db"
@@ -61,6 +62,8 @@ class Settings(BaseSettings):
     require_certification: bool = True  # only certified destinations receive real posts
     certification_max_cleanup_s: int = 600  # test posts must be deleted within 10 minutes
     alert_webhook_url: str = ""  # optional: POST a JSON alert here when a destination is demoted
+    # short, rights-cleared clip used when certifying video destinations (PeerTube imports it from this URL)
+    certification_test_video_url: str = "https://example.com/certification-test.mp4"
 
     def own_domain_list(self) -> list[str]:
         return [d.strip().lower() for d in self.own_domains.split(",") if d.strip()]

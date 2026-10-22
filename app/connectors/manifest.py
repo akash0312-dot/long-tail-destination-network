@@ -21,6 +21,7 @@ class SurfaceSpec(BaseModel):
     title_required: bool = False
     media_types: list[str] | None = None  # accepted MIME types; None = any
     max_media: int | None = None
+    min_video: int | None = None  # video platforms and feeds need a video file
 
 
 class Surface(BaseModel):
