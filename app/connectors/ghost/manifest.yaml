@@ -1,0 +1,24 @@
+key: ghost
+version: 1.0.0
+name: Ghost (Admin API)
+tier: native
+auth: api_key
+surfaces:
+  - key: post
+    content_types: [text, article, image, video_link]
+    spec:
+      title_max_chars: 255
+      body_max_chars: 200000
+      links_allowed: true
+      title_required: true
+      media_types: [image/jpeg, image/png, image/gif, image/webp, image/svg+xml]
+      max_media: 1   # first image becomes the feature image
+rate_limits:
+  per_connection: {requests: 60, per_seconds: 60}
+capabilities: [publish, status, delete, refresh_auth]
+error_map:
+  "401": CONNECTION_AUTH_EXPIRED
+  "403": CONNECTION_AUTH_EXPIRED
+  "422": PLATFORM_CONTENT_REJECTED
+  "429": PLATFORM_RATE_LIMIT
+instance_param: base_url

@@ -1,0 +1,25 @@
+key: lemmy
+version: 1.0.0
+name: Lemmy (API v3, Lemmy 0.19)
+tier: native
+auth: api_key   # username/password login -> JWT, or a pre-issued JWT
+surfaces:
+  - key: post
+    content_types: [text, image, video_link, article]
+    spec:
+      title_max_chars: 200
+      body_max_chars: 49900   # Lemmy limit 50000 minus the hidden idempotency marker
+      links_allowed: true
+      title_required: true
+      media_types: [image/jpeg, image/png, image/gif, image/webp, video/mp4, video/webm]
+      max_media: 1   # Lemmy posts carry one URL
+rate_limits:
+  per_connection: {requests: 180, per_seconds: 60}   # Lemmy default "message" (general API) limit;
+                                                     # post creation limit (6/600s) is enforced by Lemmy -> 429 backoff
+capabilities: [publish, status, delete, refresh_auth]
+error_map:
+  "401": CONNECTION_AUTH_EXPIRED
+  "403": CONNECTION_AUTH_EXPIRED
+  "422": PLATFORM_CONTENT_REJECTED
+  "429": PLATFORM_RATE_LIMIT
+instance_param: base_url

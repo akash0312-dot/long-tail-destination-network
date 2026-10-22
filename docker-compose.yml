@@ -1,0 +1,182 @@
+name: longtail-network
+
+x-app: &app
+  build: .
+  image: longtail-network:local
+  env_file:
+    - path: .env
+      required: false
+  environment: &app-env
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-longtail}:${POSTGRES_PASSWORD:-local-only-change-me}@db:5432/${POSTGRES_DB:-longtail}
+    STORAGE_BACKEND: s3
+    S3_ENDPOINT_URL: http://s3:8333
+    S3_PUBLIC_ENDPOINT_URL: ${S3_PUBLIC_ENDPOINT_URL:-http://localhost:8333}
+    MOCK_PLATFORM_URL: http://mock:9000
+    SIMULATION_MODE: ${SIMULATION_MODE:-false}
+    JOB_EXECUTOR: worker
+    LEMMY_ADMIN_PASSWORD: ${LEMMY_ADMIN_PASSWORD:-local-only-lemmy-pass-123}
+  volumes:
+    - app-secrets:/run/app-secrets:ro
+  restart: unless-stopped
+
+services:
+  # ---------------------------------------------------------------- our service
+  api:
+    <<: *app
+    ports: ["8000:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+      s3: {condition: service_started}
+      mock: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  worker:
+    <<: *app
+    command: ["python", "-m", "app.worker"]
+    depends_on:
+      api: {condition: service_healthy}
+
+  mock:
+    <<: *app
+    command: ["uvicorn", "mock_platforms.app:app", "--host", "0.0.0.0", "--port", "9000", "--no-access-log"]
+    ports: ["127.0.0.1:9000:9000"]
+    depends_on: []
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9000/health', timeout=3)"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # provisions local Ghost + Lemmy (admin, API key, test community) and seeds catalogue rows; then exits
+  bootstrap:
+    <<: *app
+    command: ["python", "-m", "bootstrap.bootstrap"]
+    user: root
+    restart: "no"
+    volumes:
+      - app-secrets:/run/app-secrets
+    environment:
+      <<: *app-env
+      API_URL: http://api:8000
+      GHOST_URL: http://ghost:2368
+      LEMMY_URL: http://lemmy:8536
+    depends_on:
+      api: {condition: service_healthy}
+      ghost: {condition: service_healthy}
+      lemmy: {condition: service_started}
+
+  # ---------------------------------------------------------------- infrastructure
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-longtail}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-only-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-longtail}
+    volumes: [db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-longtail}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  s3:  # S3-compatible object storage (SeaweedFS, Apache-2.0)
+    image: chrislusf/seaweedfs:3.80
+    command: ["server", "-dir=/data", "-s3", "-s3.port=8333", "-master.volumeSizeLimitMB=256", "-volume.max=8"]
+    ports: ["127.0.0.1:8333:8333"]
+    volumes: [s3-data:/data]
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- local test instances (never shipped)
+  ghost:
+    image: ghost:5-alpine
+    environment:
+      url: http://ghost:2368
+      NODE_ENV: development
+      database__client: sqlite3
+      database__connection__filename: /var/lib/ghost/content/data/ghost.db
+      security__staffDeviceVerification: "false"
+    ports: ["127.0.0.1:2368:2368"]
+    volumes: [ghost-content:/var/lib/ghost/content]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:2368/ghost/api/admin/site/ >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+    restart: unless-stopped
+
+  lemmy-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lemmy
+      POSTGRES_PASSWORD: ${LEMMY_DB_PASSWORD:-local-only-lemmy-db}
+      POSTGRES_DB: lemmy
+    volumes: [lemmy-db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lemmy"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  lemmy-config:  # renders lemmy.hjson from env so no password is committed
+    image: postgres:16-alpine
+    restart: "no"
+    environment:
+      LEMMY_ADMIN_USERNAME: ${LEMMY_ADMIN_USERNAME:-longtail_admin}
+      LEMMY_ADMIN_PASSWORD: ${LEMMY_ADMIN_PASSWORD:-local-only-lemmy-pass-123}
+    volumes: [lemmy-config:/config]
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        cat > /config/config.hjson <<EOF
+        {
+          hostname: "localhost"
+          bind: "0.0.0.0"
+          port: 8536
+          tls_enabled: false
+          setup: {
+            admin_username: "$${LEMMY_ADMIN_USERNAME}"
+            admin_password: "$${LEMMY_ADMIN_PASSWORD}"
+            site_name: "Long-Tail Test Lemmy"
+          }
+        }
+        EOF
+        chmod 644 /config/config.hjson
+
+  lemmy:
+    image: dessalines/lemmy:0.19.8
+    environment:
+      LEMMY_CONFIG_LOCATION: /config/config.hjson
+      LEMMY_DATABASE_URL: postgres://lemmy:${LEMMY_DB_PASSWORD:-local-only-lemmy-db}@lemmy-db:5432/lemmy
+      RUST_LOG: warn
+    ports: ["127.0.0.1:8536:8536"]
+    volumes: [lemmy-config:/config:ro]
+    depends_on:
+      lemmy-db: {condition: service_healthy}
+      lemmy-config: {condition: service_completed_successfully}
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- one-command tests (no API keys)
+  tests:
+    <<: *app
+    profiles: ["test"]
+    command: ["pytest", "-p", "no:cacheprovider"]
+    restart: "no"
+    depends_on: []
+    volumes: []
+    environment:
+      DATABASE_URL: sqlite:////tmp/test.db
+      STORAGE_BACKEND: local
+
+volumes:
+  db-data:
+  s3-data:
+  ghost-content:
+  lemmy-db-data:
+  lemmy-config:
+  app-secrets:

@@ -1,0 +1,2 @@
+# Always LF so containers and Linux reviewers get identical files (CRLF breaks shell scripts in containers)
+* text=auto eol=lf
