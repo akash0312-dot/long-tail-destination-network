@@ -1,0 +1,15 @@
+key: assisted
+version: 1.0.0
+name: Assisted (a person posts) — builds a ready-to-post pack
+tier: assisted
+auth: none
+surfaces:
+  - key: post
+    content_types: [text, article, image, video, video_link]
+    spec:
+      links_allowed: true
+rate_limits:
+  per_connection: {requests: 600, per_seconds: 60}
+capabilities: [assist]
+error_map: {}
+instance_param: url

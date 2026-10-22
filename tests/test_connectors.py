@@ -19,6 +19,9 @@ TARGETS = {
     "devto": {"destination": {"name": "Forem A", "params": {"base_url": "https://forem-a.example"}},
               "connection": {"credentials": {"api_key": "devto-test-key-1"}},
               "instance": "sim/devto/forem-a-example"},
+    "webhook": {"destination": {"name": "Partner A", "params": {"endpoint_url": "https://partner-a.example/api/posts"}},
+                "connection": {"credentials": {"signing_secret": "partner-test-secret"}},
+                "instance": "sim/webhook/partner-a-example-api-posts"},
 }
 RENDITION = {"title": "How small creator teams ship video weekly", "body": "A short **discussion** starter.",
              "content_type": "text", "tags": ["video"]}
@@ -178,9 +181,11 @@ def test_circuit_breaker_stops_after_five_failures(client, mock, key):
 @pytest.mark.parametrize("key", TARGETS)
 def test_one_connector_many_destinations(client, mock, key):
     """Must-have 3: a second instance of the same platform type needs only different destination params."""
+    from app.connectors.registry import get_connector
     t = TARGETS[key]
+    param = get_connector(key).manifest.instance_param
     other = dict(t, destination={**t["destination"],
-                                 "params": {**t["destination"]["params"], "base_url": "https://second.example.org"}})
+                                 "params": {**t["destination"]["params"], param: "https://second.example.org"}})
     assert publish(client, key)[0] == 200
     assert publish(client, key, target=other)[0] == 200
     assert len(mock.posts(key, t["instance"])) == 1

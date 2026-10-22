@@ -35,6 +35,7 @@ os.environ.update({
     "CALLBACK_SIGNING_SECRET": "test-callback-secret",
     "REQUIRE_CERTIFICATION": "false",  # certification gating has its own tests
     "OWN_DOMAINS": "creatorstudio.example",
+    "MOCK_WEBHOOK_SECRET": "partner-test-secret",
     "LOG_LEVEL": "INFO",
 })
 

@@ -83,6 +83,27 @@ def _mark_connection(conn_id: str | None, status: str) -> None:
             c.status = status
 
 
+def _assist_pack(ctx: JobContext, dest: Destination, connector_key: str, rendition: dict, key: str, is_test: bool,
+                 warnings: list[str], checks: list[dict]) -> dict:
+    t0 = time.monotonic()
+    pack = call_method("assisted", "build_assist_pack",
+                       {"rendition": rendition, "destination": destination_ref(dest).model_dump()})
+    warnings = warnings + pack.get("warnings", [])
+    if connector_key != "assisted":
+        warnings.append(f"ASSIST_PACK: automated posting is not allowed at this destination; a person must post "
+                        f"(the '{connector_key}' connector was not used)")
+    pub_id = _record(dest.id, key, ctx.job_id, "awaiting_human", rendition, is_test=is_test, warnings=warnings)
+    manifest = build_manifest(job_id=ctx.job_id, kind="assist_pack", warnings=warnings,
+                              timings_ms={"total": round((time.monotonic() - t0) * 1000)},
+                              connectors=[{"key": "assisted", "version": get_connector("assisted").manifest.version}],
+                              ai_generated=bool(rendition.get("ai_generated")))
+    out = {"publication_id": pub_id, "destination_id": dest.id, "status": "awaiting_human", "platform_post_id": None,
+           "live_url": None, "assist_pack": pack, "warnings": warnings, "rule_checks": checks, "manifest": manifest}
+    out["links"] = {"manifest": put_json(f"publications/{pub_id}/result.json", out),
+                    **{f["name"]: f["url"] for f in pack["files"] if f.get("kind") in ("caption", "pack")}}
+    return out
+
+
 @handler("publication")
 def run_publication(ctx: JobContext) -> dict:
     p = ctx.payload
@@ -110,10 +131,14 @@ def run_publication(ctx: JobContext) -> dict:
                        {"destination_id": dest_id, "certification_status": dest.certification_status,
                         "level": dest.level})
     connector = get_connector(dest.connector_key)
+    # where automation is not allowed, a person posts from an assist pack instead
+    assisted = connector.manifest.tier == "assisted" or dest.automation_allowed is False
+    rules = rules_engine.rules_of(dest)
+    if assisted:
+        rules["automation_allowed"] = None
 
     # posting rules: checked before every post
-    decision = rules_engine.evaluate(rendition, rules_engine.rules_of(dest),
-                                     recent_post_times(dest_id, dest.frequency_cap), utcnow(),
+    decision = rules_engine.evaluate(rendition, rules, recent_post_times(dest_id, dest.frequency_cap), utcnow(),
                                      s.own_domain_list(), is_test=is_test)
     checks = [c.as_dict() for c in decision.checks]
     timings["rules"] = round((time.monotonic() - t0) * 1000)
@@ -133,6 +158,8 @@ def run_publication(ctx: JobContext) -> dict:
         raise AppError(ErrorCode.DEST_RULE_FREQUENCY_CAP, message, details)
     rendition = decision.rendition  # may carry an appended AI disclosure
     rule_warnings = list(decision.warnings)
+    if assisted:
+        return _assist_pack(ctx, dest, connector.key, rendition, key, is_test, rule_warnings, checks)
 
     body = {"rendition": rendition, "destination": destination_ref(dest).model_dump(),
             "connection": connection_ref(conn).model_dump(), "idempotency_key": key}

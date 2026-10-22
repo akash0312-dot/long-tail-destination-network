@@ -1,0 +1,24 @@
+key: webhook
+version: 1.0.0
+name: Partner site (signed webhook, protocol v1 — see docs/PARTNER_WEBHOOK.md)
+tier: protocol
+auth: api_key   # shared HMAC-SHA256 signing secret per partner
+surfaces:
+  - key: post
+    content_types: [text, article, image, video, video_link]
+    spec:
+      title_max_chars: 250   # conservative default for partner CMSs
+      body_max_chars: 100000
+      links_allowed: true
+      media_types: [image/jpeg, image/png, image/gif, image/webp, video/mp4, video/webm]
+      max_media: 10
+rate_limits:
+  per_connection: {requests: 30, per_seconds: 60}
+capabilities: [publish, status, delete]
+error_map:
+  "401": CONNECTION_AUTH_EXPIRED   # signature rejected
+  "403": CONNECTION_AUTH_EXPIRED   # partner revoked permission
+  "410": CONNECTION_AUTH_EXPIRED   # partner endpoint retired
+  "422": PLATFORM_CONTENT_REJECTED
+  "429": PLATFORM_RATE_LIMIT
+instance_param: endpoint_url

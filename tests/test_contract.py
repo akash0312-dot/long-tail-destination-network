@@ -18,12 +18,13 @@ def test_every_shared_code_exists_with_retry_semantics():
 
 def test_manifests_load_and_use_only_shared_codes():
     conns = all_connectors()
-    assert {"ghost", "lemmy"} <= set(conns)
+    assert {"ghost", "lemmy", "discourse", "devto", "webhook", "assisted"} <= set(conns)
     for key, c in conns.items():
         m = c.manifest
         assert m.key == key and m.instance_param
         assert "per_connection" in m.rate_limits
-        assert {"publish", "status", "delete"} <= set(m.capabilities)
+        required = {"assist"} if m.tier == "assisted" else {"publish", "status", "delete"}
+        assert required <= set(m.capabilities)
         assert set(m.error_map.values()) <= {ErrorCode(x) for x in SHARED_CODES}
 
 
