@@ -91,6 +91,29 @@ def test_same_idempotency_key_returns_same_job_and_one_post(client, mock):
     assert len(mock.posts("lemmy", inst)) == 1
 
 
+def test_publication_job_retries_timeout_with_same_key_and_never_duplicates(client, mock):
+    """Hard case 1 at the API level: the job retries by itself; reconcile returns the post the timeout hid."""
+    d, _ = make_destination(client)
+    inst = "sim/lemmy/" + d["params"]["base_url"].split("//")[1].replace(".", "-")
+    mock.arm(platform="lemmy", op="publish", kind="timeout", delay_s=1.5)
+    job = post(client, "/api/v1/publications", {"destination_id": d["id"], "rendition": RENDITION}).json()
+    assert job["status"] == "succeeded", job["error"]
+    warnings = job["result"]["warnings"]
+    assert any(w.startswith("RETRIED_AFTER_TIMEOUT") for w in warnings)
+    assert any(w.startswith("IDEMPOTENT_REPLAY") for w in warnings)
+    assert len(mock.posts("lemmy", inst)) == 1
+
+
+def test_long_rate_limit_reschedules_job_to_reset_time(client, mock):
+    d, _ = make_destination(client)
+    mock.arm(platform="lemmy", op="publish", kind="rate_limit", reset_s=120)
+    job = post(client, "/api/v1/publications", {"destination_id": d["id"], "rendition": RENDITION}).json()
+    err = job["error"]
+    assert err["code"] == "PLATFORM_RATE_LIMIT" and "rescheduled" in err["message"]
+    follow = client.get(f"/api/v1/jobs/{err['details']['rescheduled_job_id']}").json()
+    assert follow["status"] == "queued" and follow["run_after"]
+
+
 def test_same_key_different_body_conflicts(client):
     d, _ = make_destination(client)
     post(client, "/api/v1/publications", {"destination_id": d["id"], "rendition": RENDITION}, key="idem-api-2")

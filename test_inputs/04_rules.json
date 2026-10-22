@@ -1,0 +1,40 @@
+[
+  {
+    "name": "04a_second_post_inside_weekly_cap",
+    "description": "Hard case 4a: second post inside a 1-per-week cap is rescheduled with the next free slot",
+    "setup": {
+      "connection": {"connector_key": "discourse", "name": "batch bot", "secret_refs": {"api_key": "env:MOCK_API_KEY"}, "params": {"api_username": "batch_bot"}},
+      "destination": {"name": "batch-04a {run_id}", "url": "{mock}/batch/forum-04a-{run_id}", "connector_key": "discourse", "params": {"category_id": 1},
+                      "frequency_cap": {"posts": 1, "per_days": 7}, "link_policy": {"allowed": true}}
+    },
+    "steps": [
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "first",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "How do small teams plan weekly video?", "body": "We batch-record on Mondays. What works for you?"}}},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "second",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "What mic do you use for remote interviews?", "body": "Looking for options under a modest budget."}}}
+    ],
+    "expect": [
+      {"step": "first", "path": "status", "equals": "succeeded"},
+      {"step": "second", "path": "error.code", "equals": "DEST_RULE_FREQUENCY_CAP"},
+      {"step": "second", "path": "error.details.retry_at"},
+      {"step": "second", "path": "error.details.rescheduled_job_id"}
+    ]
+  },
+  {
+    "name": "04b_promo_to_no_promo_community",
+    "description": "Hard case 4b: promotional post to a community that bans self-promotion is blocked with the reason",
+    "setup": {
+      "connection": {"connector_key": "discourse", "name": "batch bot", "secret_refs": {"api_key": "env:MOCK_API_KEY"}, "params": {"api_username": "batch_bot"}},
+      "destination": {"name": "batch-04b {run_id}", "url": "{mock}/batch/forum-04b-{run_id}", "connector_key": "discourse", "params": {"category_id": 1},
+                      "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}, "self_promo_allowed": false}
+    },
+    "steps": [
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "promo",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Launching our video editor today", "body": "Try our app and use code LAUNCH for 20% off this week!"}}}
+    ],
+    "expect": [
+      {"step": "promo", "path": "error.code", "equals": "DEST_RULE_SELF_PROMO"},
+      {"step": "promo", "path": "error.message", "contains": "bans self-promotion"}
+    ]
+  }
+]

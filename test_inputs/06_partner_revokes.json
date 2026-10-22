@@ -1,0 +1,21 @@
+{
+  "description": "Hard case 6b: a partner revokes permission (403); the connection is paused and later posts ask for a reconnect",
+  "setup": {
+    "connection": {"connector_key": "webhook", "name": "batch partner", "secret_refs": {"signing_secret": "env:PARTNER_WEBHOOK_SECRET"}},
+    "destination": {"name": "batch-06 {run_id}", "url": "{mock}/partner/partner-06-{run_id}", "connector_key": "webhook",
+                    "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}, "self_promo_allowed": true}
+  },
+  "steps": [
+    {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "webhook", "instance": "partner/partner-06-{run_id}", "op": "publish", "kind": "auth_expired"}},
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "revoked",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "Partner feature: creator spotlight", "body": "Spotlight text."}}},
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "paused",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "Partner feature: second spotlight", "body": "Spotlight text."}}}
+  ],
+  "expect": [
+    {"step": "setup_cert", "path": "status", "equals": "succeeded"},
+    {"step": "revoked", "path": "error.code", "equals": "CONNECTION_AUTH_EXPIRED"},
+    {"step": "revoked", "path": "error.details.platform_message", "equals": "permission_revoked"},
+    {"step": "paused", "path": "error.message", "contains": "reconnect"}
+  ]
+}

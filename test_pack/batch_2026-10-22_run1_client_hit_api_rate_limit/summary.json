@@ -1,0 +1,121 @@
+{
+  "run_at": "2026-10-22T16:42:21.612490+00:00",
+  "api": "http://localhost:8000",
+  "passed": 9,
+  "total": 11,
+  "scenarios": [
+    {
+      "name": "01_timeout_retry_same_key",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02a_rate_limit_429_reset",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02b_expired_token_then_reconnect",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02c_content_rejected",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "03_limits_and_media",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "04a_second_post_inside_weekly_cap",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "04b_promo_to_no_promo_community",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "05_renamed_field_demotes",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "06_partner_revokes",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "07_language_and_disclosure",
+      "passed": false,
+      "failed_checks": [
+        {
+          "step": "english",
+          "path": "error.code",
+          "equals": "DEST_RULE_LANGUAGE_MISMATCH",
+          "actual": "RATE_LIMITED",
+          "ok": false
+        },
+        {
+          "step": "japanese",
+          "path": "status",
+          "equals": "succeeded",
+          "actual": null,
+          "ok": false
+        },
+        {
+          "step": "japanese",
+          "path": "result.warnings",
+          "contains": "AI_DISCLOSURE_ADDED",
+          "actual": null,
+          "ok": false
+        },
+        {
+          "step": "japanese",
+          "path": "result.warnings",
+          "contains": "(ja)",
+          "actual": null,
+          "ok": false
+        }
+      ]
+    },
+    {
+      "name": "08_assisted_pack",
+      "passed": false,
+      "failed_checks": [
+        {
+          "step": "setup_cert",
+          "path": "result.level",
+          "equals": "L1",
+          "actual": null,
+          "ok": false
+        },
+        {
+          "step": "pack",
+          "path": "result.status",
+          "equals": "awaiting_human",
+          "actual": null,
+          "ok": false
+        },
+        {
+          "step": "pack",
+          "path": "result.assist_pack.deep_link",
+          "contains": "submit?url=https%3A%2F%2Fexample.org%2Fchecklist",
+          "actual": null,
+          "ok": false
+        },
+        {
+          "step": "pack",
+          "path": "result.assist_pack.checklist",
+          "contains": "guidelines",
+          "actual": null,
+          "ok": false
+        }
+      ]
+    }
+  ]
+}

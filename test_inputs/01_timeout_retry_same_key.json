@@ -1,0 +1,22 @@
+{
+  "description": "Hard case 1: publish times out (post created, answer lost); job retries with the same key; no duplicate; client retry returns the same job",
+  "setup": {
+    "connection": {"connector_key": "discourse", "name": "batch bot", "secret_refs": {"api_key": "env:MOCK_API_KEY"}, "params": {"api_username": "batch_bot"}},
+    "destination": {"name": "batch-01 {run_id}", "url": "{mock}/batch/forum-01-{run_id}", "connector_key": "discourse", "params": {"category_id": 1},
+                    "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}}
+  },
+  "steps": [
+    {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "discourse", "instance": "batch/forum-01-{run_id}", "op": "publish", "kind": "timeout", "delay_s": 12}},
+    {"method": "POST", "path": "/api/v1/publications", "idempotency_key": "batch-01-{run_id}", "save_as": "pub",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "How do small teams plan weekly video?", "body": "We batch-record on Mondays. What works for you?"}}},
+    {"method": "POST", "path": "/api/v1/publications", "idempotency_key": "batch-01-{run_id}", "save_as": "client_retry",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "How do small teams plan weekly video?", "body": "We batch-record on Mondays. What works for you?"}}}
+  ],
+  "expect": [
+    {"step": "setup_cert", "path": "status", "equals": "succeeded"},
+    {"step": "pub", "path": "status", "equals": "succeeded"},
+    {"step": "pub", "path": "result.warnings", "contains": "RETRIED_AFTER_TIMEOUT"},
+    {"step": "pub", "path": "result.warnings", "contains": "IDEMPOTENT_REPLAY"},
+    {"step": "client_retry", "path": "job_id", "equals": "{pub.job_id}"}
+  ]
+}

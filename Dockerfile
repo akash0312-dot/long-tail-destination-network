@@ -6,7 +6,7 @@ WORKDIR /srv
 COPY requirements.txt requirements-dev.txt ./
 RUN pip install --no-cache-dir -r requirements-dev.txt
 
-COPY pytest.ini ./
+COPY pytest.ini openapi.yaml ./
 COPY app ./app
 COPY mock_platforms ./mock_platforms
 COPY bootstrap ./bootstrap

@@ -83,6 +83,36 @@ def _mark_connection(conn_id: str | None, status: str) -> None:
             c.status = status
 
 
+def _publish_with_retries(ctx: JobContext, p: dict, dest: Destination, conn: Connection | None, body: dict,
+                          rendition: dict, warnings: list[str], is_test: bool) -> dict:
+    """Timeouts and 5xx: retry in the job with the same idempotency key (the connector's reconcile step makes that
+    safe). A rate limit longer than the inline backoff: reschedule the job to the platform's reset time."""
+    s = get_settings()
+    attempt = 0
+    while True:
+        try:
+            return call_method(dest.connector_key, "publish", body)
+        except AppError as e:
+            transient = e.code == ErrorCode.PLATFORM_UNAVAILABLE and not e.details.get("circuit_open")
+            if transient and attempt < s.publish_retries:
+                attempt += 1
+                cause = "TIMEOUT" if e.details.get("timeout") else "PLATFORM_ERROR"
+                warnings.append(f"RETRIED_AFTER_{cause}: attempt {attempt + 1} with the same idempotency key")
+                time.sleep(min(2 ** attempt, 5))
+                continue
+            if e.code == ErrorCode.PLATFORM_RATE_LIMIT and e.details.get("retry_after_s") \
+                    and p.get("on_cap", "reschedule") == "reschedule":
+                follow = create_job("publication", p,
+                                    run_after=utcnow() + timedelta(seconds=float(e.details["retry_after_s"]) + 1))
+                e.details["rescheduled_job_id"] = follow.id
+                e.message += "; post rescheduled for after the platform's reset time"
+            if e.code == ErrorCode.CONNECTION_AUTH_EXPIRED:
+                _mark_connection(conn.id if conn else None, "expired")
+            _record(dest.id, p["idempotency_key"], ctx.job_id, "failed", rendition, is_test=is_test,
+                    error=e.to_dict()["error"])
+            raise
+
+
 def _assist_pack(ctx: JobContext, dest: Destination, connector_key: str, rendition: dict, key: str, is_test: bool,
                  warnings: list[str], checks: list[dict]) -> dict:
     t0 = time.monotonic()
@@ -175,13 +205,7 @@ def run_publication(ctx: JobContext) -> dict:
     ctx.progress(40)
 
     t1 = time.monotonic()
-    try:
-        result = call_method(dest.connector_key, "publish", body)
-    except AppError as e:
-        if e.code == ErrorCode.CONNECTION_AUTH_EXPIRED:
-            _mark_connection(conn.id if conn else None, "expired")
-        _record(dest_id, key, ctx.job_id, "failed", rendition, is_test=is_test, error=e.to_dict()["error"])
-        raise
+    result = _publish_with_retries(ctx, p, dest, conn, body, rendition, rule_warnings, is_test)
     timings["publish"] = round((time.monotonic() - t1) * 1000)
     warnings = rule_warnings + list(result.get("warnings", []))
     pub_id = _record(dest_id, key, ctx.job_id, "published", rendition, is_test=is_test,

@@ -1,0 +1,127 @@
+{
+  "name": "08_assisted_pack",
+  "description": "Assisted tier: a community that bans automation gets a ready-to-post pack (caption, deep link, rules checklist) and nothing is posted",
+  "steps": [
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-08 40e750e3",
+          "url": "https://news-40e750e3.example/submit",
+          "connector_key": "assisted",
+          "params": {
+            "submit_url_template": "https://news-40e750e3.example/submit?url={url}&title={title}"
+          },
+          "automation_allowed": false,
+          "self_promo_allowed": false,
+          "rules_url": "https://news-40e750e3.example/guidelines",
+          "frequency_cap": {
+            "posts": 1,
+            "per_days": 30
+          },
+          "link_policy": {
+            "allowed": true,
+            "max_links": 1
+          }
+        },
+        "idempotency_key": "e51844cb190d4a95b93137e28e2095da"
+      },
+      "http_status": 429,
+      "response": {
+        "error": {
+          "code": "RATE_LIMITED",
+          "message": "Too many requests",
+          "retryable": true,
+          "details": {
+            "retry_after_s": 13.6
+          }
+        }
+      },
+      "ms": 44
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "None"
+        },
+        "idempotency_key": "66729dd1f5ea400eacf45bad1c98a1f8"
+      },
+      "http_status": 429,
+      "response": {
+        "error": {
+          "code": "RATE_LIMITED",
+          "message": "Too many requests",
+          "retryable": true,
+          "details": {
+            "retry_after_s": 13.6
+          }
+        }
+      },
+      "ms": 5
+    },
+    {
+      "name": "pack",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "None",
+          "rendition": {
+            "title": "Show: a free checklist for planning video weeks",
+            "body": "Feedback welcome.",
+            "link_url": "https://example.org/checklist"
+          }
+        },
+        "idempotency_key": "025fc0ade10d4901b00a446525360edf"
+      },
+      "http_status": 429,
+      "response": {
+        "error": {
+          "code": "RATE_LIMITED",
+          "message": "Too many requests",
+          "retryable": true,
+          "details": {
+            "retry_after_s": 13.5
+          }
+        }
+      },
+      "ms": 43
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "result.level",
+      "equals": "L1",
+      "actual": null,
+      "ok": false
+    },
+    {
+      "step": "pack",
+      "path": "result.status",
+      "equals": "awaiting_human",
+      "actual": null,
+      "ok": false
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.deep_link",
+      "contains": "submit?url=https%3A%2F%2Fexample.org%2Fchecklist",
+      "actual": null,
+      "ok": false
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.checklist",
+      "contains": "guidelines",
+      "actual": null,
+      "ok": false
+    }
+  ],
+  "passed": false
+}

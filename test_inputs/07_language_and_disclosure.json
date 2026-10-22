@@ -1,0 +1,21 @@
+{
+  "description": "Hard case 7: a Japanese community that requires AI disclosure; English content is refused, Japanese AI content gets a Japanese disclosure",
+  "setup": {
+    "connection": {"connector_key": "discourse", "name": "batch bot", "secret_refs": {"api_key": "env:MOCK_API_KEY"}, "params": {"api_username": "batch_bot"}},
+    "destination": {"name": "batch-07 {run_id}", "url": "{mock}/batch/forum-07-{run_id}", "connector_key": "discourse", "params": {"category_id": 1},
+                    "language": "ja", "disclosure_required": true,
+                    "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}}
+  },
+  "steps": [
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "english",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "How do small teams plan weekly video?", "body": "We batch-record on Mondays. What works for you?", "language": "en"}}},
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "japanese",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "小規模チームは毎週の動画制作をどう計画していますか？", "body": "私たちは月曜日にまとめて撮影し、週の半ばに編集しています。皆さんはどうしていますか？", "language": "ja", "ai_generated": true}}}
+  ],
+  "expect": [
+    {"step": "english", "path": "error.code", "equals": "DEST_RULE_LANGUAGE_MISMATCH"},
+    {"step": "japanese", "path": "status", "equals": "succeeded"},
+    {"step": "japanese", "path": "result.warnings", "contains": "AI_DISCLOSURE_ADDED"},
+    {"step": "japanese", "path": "result.warnings", "contains": "(ja)"}
+  ]
+}

@@ -1,0 +1,352 @@
+{
+  "name": "02c_content_rejected",
+  "description": "Hard case 2c: the platform refuses the content; its message is returned, no retry",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "devto",
+          "name": "batch forem",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          }
+        },
+        "idempotency_key": "0d522e010cee41b3bae1eb156607a7bd"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "e064e1e8fae8448ca36adf35165c1038",
+        "connector_key": "devto",
+        "name": "batch forem",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-22T16:43:11.738566Z"
+      },
+      "ms": 54
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-02c 418155fb",
+          "url": "http://mock:9000/batch/forem-02c-418155fb",
+          "connector_key": "devto",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "e064e1e8fae8448ca36adf35165c1038"
+        },
+        "idempotency_key": "4e097a4107c94b66bfcd95f112b42036"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "7a0303d3ab0a43029548df588eefacfb",
+        "name": "batch-02c 418155fb",
+        "url": "http://mock:9000/batch/forem-02c-418155fb",
+        "normalized_url": "https://mock:9000/batch/forem-02c-418155fb",
+        "platform_key": "devto",
+        "connector_key": "devto",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/batch/forem-02c-418155fb"
+        },
+        "connection_id": "e064e1e8fae8448ca36adf35165c1038",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T16:43:11.797880Z"
+      },
+      "ms": 59
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "7a0303d3ab0a43029548df588eefacfb"
+        },
+        "idempotency_key": "67e4b317891f43ab95fe97a14c33d0c0"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "16f8d9ddbe724fb4b3d8fd1b7c0c0dfe",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "16f8d9ddbe724fb4b3d8fd1b7c0c0dfe",
+          "destination_id": "7a0303d3ab0a43029548df588eefacfb",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.1,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "article",
+                "content_types": [
+                  "article",
+                  "text"
+                ],
+                "spec": {
+                  "title_max_chars": 128,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": 4,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 1
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 18,
+              "result": {
+                "platform_post_id": "31",
+                "live_url": "http://mock:9000/batch/forem-02c-418155fb/__live/devto/31",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 16,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 15,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forem-02c-418155fb/__live/devto/31"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 9,
+              "result": {
+                "deleted": true,
+                "note": "Forem API cannot delete articles; the article was unpublished"
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/7a0303d3ab0a43029548df588eefacfb/16f8d9ddbe724fb4b3d8fd1b7c0c0dfe/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164312Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=296c85edacf208ace68924a63024866a8bd6928a7f2904315cf1b3bc110e1204",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/7a0303d3ab0a43029548df588eefacfb/16f8d9ddbe724fb4b3d8fd1b7c0c0dfe/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164312Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=567c3b7c47d5f20416b161d2676854f00f56dc9967ab112c75e580737221ab38"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/16f8d9ddbe724fb4b3d8fd1b7c0c0dfe",
+          "evidence": "http://localhost:8333/longtail-network/certifications/7a0303d3ab0a43029548df588eefacfb/16f8d9ddbe724fb4b3d8fd1b7c0c0dfe/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164312Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=296c85edacf208ace68924a63024866a8bd6928a7f2904315cf1b3bc110e1204",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/7a0303d3ab0a43029548df588eefacfb/16f8d9ddbe724fb4b3d8fd1b7c0c0dfe/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164312Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=567c3b7c47d5f20416b161d2676854f00f56dc9967ab112c75e580737221ab38"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T16:43:11.860678Z",
+        "started_at": "2026-10-22T16:43:12.788468Z",
+        "finished_at": "2026-10-22T16:43:12.912682Z"
+      },
+      "ms": 2087
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:9000/__admin/faults",
+        "body": {
+          "platform": "devto",
+          "instance": "batch/forem-02c-418155fb",
+          "op": "publish",
+          "kind": "reject",
+          "message": "Body markdown has been blocked as spam"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "devto",
+          "op": "publish",
+          "kind": "reject",
+          "instance": "batch/forem-02c-418155fb",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 2.0,
+          "message": "Body markdown has been blocked as spam"
+        },
+        "active": 1
+      },
+      "ms": 2081
+    },
+    {
+      "name": "pub",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "7a0303d3ab0a43029548df588eefacfb",
+          "rendition": {
+            "title": "Batch post",
+            "body": "x",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "47d83082bcc1490faa9000663d7f083c"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "de35e94857fc427a97b029271f1caf4b",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 40,
+        "result": null,
+        "error": {
+          "code": "PLATFORM_CONTENT_REJECTED",
+          "message": "Body markdown has been blocked as spam",
+          "retryable": false,
+          "details": {
+            "op": "publish",
+            "status": 422,
+            "platform_message": "Body markdown has been blocked as spam"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/de35e94857fc427a97b029271f1caf4b"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T16:43:16.032792Z",
+        "started_at": "2026-10-22T16:43:16.945753Z",
+        "finished_at": "2026-10-22T16:43:16.987518Z"
+      },
+      "ms": 1091
+    }
+  ],
+  "checks": [
+    {
+      "step": "pub",
+      "path": "error.code",
+      "equals": "PLATFORM_CONTENT_REJECTED",
+      "actual": "PLATFORM_CONTENT_REJECTED",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.retryable",
+      "equals": false,
+      "actual": false,
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.details.platform_message",
+      "contains": "blocked as spam",
+      "actual": "Body markdown has been blocked as spam",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,20 @@
+{
+  "description": "Hard case 3: title longer than allowed and media the destination does not accept; field-level reasons, nothing posted",
+  "setup": {
+    "connection": {"connector_key": "discourse", "name": "batch bot", "secret_refs": {"api_key": "env:MOCK_API_KEY"}, "params": {"api_username": "batch_bot"}},
+    "destination": {"name": "batch-03 {run_id}", "url": "{mock}/batch/forum-03-{run_id}", "connector_key": "discourse", "params": {"category_id": 1},
+                    "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}}
+  },
+  "steps": [
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "long_title",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "This title goes on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on", "body": "A body that is long enough to pass."}}},
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "bad_media",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "A question with a photo attached", "body": "A body that is long enough to pass.", "content_type": "image", "media": [{"url": "https://cdn.example/photo.heic", "type": "image"}]}}}
+  ],
+  "expect": [
+    {"step": "long_title", "path": "error.code", "equals": "DEST_SPEC_VIOLATION"},
+    {"step": "long_title", "path": "error.details.violations.0.code", "equals": "TITLE_TOO_LONG"},
+    {"step": "bad_media", "path": "error.code", "equals": "DEST_SPEC_VIOLATION"},
+    {"step": "bad_media", "path": "error.details.violations.0.code", "equals": "MEDIA_TYPE_UNSUPPORTED"}
+  ]
+}

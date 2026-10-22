@@ -1,0 +1,19 @@
+{
+  "description": "Assisted tier: a community that bans automation gets a ready-to-post pack (caption, deep link, rules checklist) and nothing is posted",
+  "setup": {
+    "destination": {"name": "batch-08 {run_id}", "url": "https://news-{run_id}.example/submit", "connector_key": "assisted",
+                    "params": {"submit_url_template": "https://news-{run_id}.example/submit?url={url}&title={title}"},
+                    "automation_allowed": false, "self_promo_allowed": false, "rules_url": "https://news-{run_id}.example/guidelines",
+                    "frequency_cap": {"posts": 1, "per_days": 30}, "link_policy": {"allowed": true, "max_links": 1}}
+  },
+  "steps": [
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "pack",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "Show: a free checklist for planning video weeks", "body": "Feedback welcome.", "link_url": "https://example.org/checklist"}}}
+  ],
+  "expect": [
+    {"step": "setup_cert", "path": "result.level", "equals": "L1"},
+    {"step": "pack", "path": "result.status", "equals": "awaiting_human"},
+    {"step": "pack", "path": "result.assist_pack.deep_link", "contains": "submit?url=https%3A%2F%2Fexample.org%2Fchecklist"},
+    {"step": "pack", "path": "result.assist_pack.checklist", "contains": "guidelines"}
+  ]
+}

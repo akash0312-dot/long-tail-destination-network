@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     connector_http_timeout_s: float = 10.0
     max_inline_backoff_s: float = 10.0  # 429 waits longer than this are returned as PLATFORM_RATE_LIMIT
     max_rate_limit_retries: int = 2
+    publish_retries: int = 2  # in-job retries after a timeout / 5xx, same idempotency key
     circuit_breaker_threshold: int = 5
     circuit_breaker_cooldown_s: float = 60.0
 

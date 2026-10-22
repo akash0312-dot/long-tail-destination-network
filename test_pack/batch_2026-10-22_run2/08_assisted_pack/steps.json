@@ -1,0 +1,383 @@
+{
+  "name": "08_assisted_pack",
+  "description": "Assisted tier: a community that bans automation gets a ready-to-post pack (caption, deep link, rules checklist) and nothing is posted",
+  "steps": [
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-08 418155fb",
+          "url": "https://news-418155fb.example/submit",
+          "connector_key": "assisted",
+          "params": {
+            "submit_url_template": "https://news-418155fb.example/submit?url={url}&title={title}"
+          },
+          "automation_allowed": false,
+          "self_promo_allowed": false,
+          "rules_url": "https://news-418155fb.example/guidelines",
+          "frequency_cap": {
+            "posts": 1,
+            "per_days": 30
+          },
+          "link_policy": {
+            "allowed": true,
+            "max_links": 1
+          }
+        },
+        "idempotency_key": "783bbef0f2e14456b837fac5b80ebd9e"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "b6073fe8d3c44a9b9e961ce0ac975df4",
+        "name": "batch-08 418155fb",
+        "url": "https://news-418155fb.example/submit",
+        "normalized_url": "https://news-418155fb.example/submit",
+        "platform_key": "assisted",
+        "connector_key": "assisted",
+        "surface": "post",
+        "params": {
+          "submit_url_template": "https://news-418155fb.example/submit?url={url}&title={title}",
+          "url": "https://news-418155fb.example/submit"
+        },
+        "connection_id": null,
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": "https://news-418155fb.example/guidelines",
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 30
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true,
+          "max_links": 1
+        },
+        "disclosure_required": false,
+        "automation_allowed": false,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T16:43:38.373560Z"
+      },
+      "ms": 62
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "b6073fe8d3c44a9b9e961ce0ac975df4"
+        },
+        "idempotency_key": "989a159423644003a64ee8c48cebdaa5"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "acfafd8d2ad240cca62e74bfe3a0719c",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "acfafd8d2ad240cca62e74bfe3a0719c",
+          "destination_id": "b6073fe8d3c44a9b9e961ce0ac975df4",
+          "passed": true,
+          "level": "L1",
+          "duration_s": 0.04,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 1,
+                  "per_days": 30
+                },
+                "link_policy": {
+                  "allowed": true,
+                  "max_links": 1
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": false,
+                "language": "en",
+                "rules_url": "https://news-418155fb.example/guidelines"
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "post",
+                "content_types": [
+                  "text",
+                  "article",
+                  "image",
+                  "video",
+                  "video_link"
+                ],
+                "spec": {
+                  "title_max_chars": null,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": null,
+                  "links_allowed": true,
+                  "title_required": false,
+                  "media_types": null,
+                  "max_media": null
+                }
+              }
+            },
+            {
+              "step": "build_assist_pack",
+              "ok": true,
+              "ms": 15,
+              "result": {
+                "files": [
+                  {
+                    "name": "post.md",
+                    "mime_type": "text/markdown",
+                    "kind": "caption",
+                    "storage_key": "assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/19160acf8f28f913/post.md",
+                    "url": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/19160acf8f28f913/post.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164339Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=627281c6d2d60061c20c96c46e094481e5115ecab6348ae320deea93dba8ec0e"
+                  },
+                  {
+                    "name": "pack.json",
+                    "mime_type": "application/json",
+                    "kind": "pack",
+                    "storage_key": "assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/19160acf8f28f913/pack.json",
+                    "url": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/19160acf8f28f913/pack.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164339Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2cc02b1c7819fa5e7551ccec714c15dcaccdc378c0c1b0b05a0a53c8c6498969"
+                  }
+                ],
+                "caption": "Connector certification test acfafd8d - please ignore\n\nAutomated connectivity test from the Long-Tail Destination Network. This post is deleted within seconds.",
+                "deep_link": "https://news-418155fb.example/submit?url=&title=Connector%20certification%20test%20acfafd8d%20-%20please%20ignore",
+                "checklist": [
+                  "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+                  "Read the community rules first: https://news-418155fb.example/guidelines",
+                  "Post at most 1 time(s) per 30 day(s) here.",
+                  "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+                  "Use at most 1 link(s).",
+                  "Write in the community's language (en).",
+                  "After posting, paste the live URL back so the post is tracked."
+                ],
+                "warnings": []
+              }
+            },
+            {
+              "step": "pack_files_downloadable",
+              "ok": true,
+              "ms": 11,
+              "result": [
+                "post.md",
+                "pack.json"
+              ]
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/b6073fe8d3c44a9b9e961ce0ac975df4/acfafd8d2ad240cca62e74bfe3a0719c/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164339Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f6bdfe3350bcf638f2d6a1d01e72f2d8f0d47c60de664dddd35743a89fbfd8a4"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/acfafd8d2ad240cca62e74bfe3a0719c",
+          "evidence": "http://localhost:8333/longtail-network/certifications/b6073fe8d3c44a9b9e961ce0ac975df4/acfafd8d2ad240cca62e74bfe3a0719c/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164339Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f6bdfe3350bcf638f2d6a1d01e72f2d8f0d47c60de664dddd35743a89fbfd8a4"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T16:43:38.444190Z",
+        "started_at": "2026-10-22T16:43:39.433649Z",
+        "finished_at": "2026-10-22T16:43:39.497264Z"
+      },
+      "ms": 2100
+    },
+    {
+      "name": "pack",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "b6073fe8d3c44a9b9e961ce0ac975df4",
+          "rendition": {
+            "title": "Show: a free checklist for planning video weeks",
+            "body": "Feedback welcome.",
+            "link_url": "https://example.org/checklist"
+          }
+        },
+        "idempotency_key": "03ccc880417d48929d1bc9026773f955"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "4f2264de9a8544659dea28fbefa89881",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "357a38ea530946a2a39cc32ddee5dff9",
+          "destination_id": "b6073fe8d3c44a9b9e961ce0ac975df4",
+          "status": "awaiting_human",
+          "platform_post_id": null,
+          "live_url": null,
+          "assist_pack": {
+            "files": [
+              {
+                "name": "post.md",
+                "mime_type": "text/markdown",
+                "kind": "caption",
+                "storage_key": "assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/post.md",
+                "url": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/post.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2669c981dff765a8f18d2c5d0f9f08b547f7a20cff68d00bf07cede5238c50e9"
+              },
+              {
+                "name": "pack.json",
+                "mime_type": "application/json",
+                "kind": "pack",
+                "storage_key": "assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/pack.json",
+                "url": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/pack.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=994e3f963d2f1f7574109f2172321d1b8304d0c227cbcd7f524b9538ec0883b6"
+              }
+            ],
+            "caption": "Show: a free checklist for planning video weeks\n\nFeedback welcome.\n\nhttps://example.org/checklist",
+            "deep_link": "https://news-418155fb.example/submit?url=https%3A%2F%2Fexample.org%2Fchecklist&title=Show%3A%20a%20free%20checklist%20for%20planning%20video%20weeks",
+            "checklist": [
+              "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+              "Read the community rules first: https://news-418155fb.example/guidelines",
+              "Post at most 1 time(s) per 30 day(s) here.",
+              "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+              "Use at most 1 link(s).",
+              "Write in the community's language (en).",
+              "After posting, paste the live URL back so the post is tracked."
+            ],
+            "warnings": []
+          },
+          "warnings": [],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/1 posts in the last 30 days, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "1 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "4f2264de9a8544659dea28fbefa89881",
+            "kind": "assist_pack",
+            "created_at": "2026-10-22T16:43:41.533549+00:00",
+            "connectors": [
+              {
+                "key": "assisted",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "local"
+            },
+            "seed": null,
+            "timings_ms": {
+              "total": 12
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "http://localhost:8333/longtail-network/publications/357a38ea530946a2a39cc32ddee5dff9/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a7fbab140d71c90b86cc0dcffb7d594a10dbf6604cc2458641e85be571b0236a",
+            "post.md": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/post.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2669c981dff765a8f18d2c5d0f9f08b547f7a20cff68d00bf07cede5238c50e9",
+            "pack.json": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/pack.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=994e3f963d2f1f7574109f2172321d1b8304d0c227cbcd7f524b9538ec0883b6"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/4f2264de9a8544659dea28fbefa89881",
+          "manifest": "http://localhost:8333/longtail-network/publications/357a38ea530946a2a39cc32ddee5dff9/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a7fbab140d71c90b86cc0dcffb7d594a10dbf6604cc2458641e85be571b0236a",
+          "post.md": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/post.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2669c981dff765a8f18d2c5d0f9f08b547f7a20cff68d00bf07cede5238c50e9",
+          "pack.json": "http://localhost:8333/longtail-network/assist-packs/b6073fe8d3c44a9b9e961ce0ac975df4/62a0983d85cabbe1/pack.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T164341Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=994e3f963d2f1f7574109f2172321d1b8304d0c227cbcd7f524b9538ec0883b6"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T16:43:40.545816Z",
+        "started_at": "2026-10-22T16:43:41.514699Z",
+        "finished_at": "2026-10-22T16:43:41.539789Z"
+      },
+      "ms": 1090
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "result.level",
+      "equals": "L1",
+      "actual": "L1",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.status",
+      "equals": "awaiting_human",
+      "actual": "awaiting_human",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.deep_link",
+      "contains": "submit?url=https%3A%2F%2Fexample.org%2Fchecklist",
+      "actual": "https://news-418155fb.example/submit?url=https%3A%2F%2Fexample.org%2Fchecklist&title=Show%3A%20a%20free%20checklist%20for%20planning%20video%20weeks",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.checklist",
+      "contains": "guidelines",
+      "actual": [
+        "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+        "Read the community rules first: https://news-418155fb.example/guidelines",
+        "Post at most 1 time(s) per 30 day(s) here.",
+        "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+        "Use at most 1 link(s).",
+        "Write in the community's language (en).",
+        "After posting, paste the live URL back so the post is tracked."
+      ],
+      "ok": true
+    }
+  ],
+  "passed": true
+}

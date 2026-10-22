@@ -1,0 +1,23 @@
+{
+  "description": "Hard case 5: the platform renames a field; certification fails, the destination is demoted to L0 and excluded, an alert is written, the test post is cleaned up",
+  "setup": {
+    "connection": {"connector_key": "discourse", "name": "batch bot", "secret_refs": {"api_key": "env:MOCK_API_KEY"}, "params": {"api_username": "batch_bot"}},
+    "destination": {"name": "batch-05 {run_id}", "url": "{mock}/batch/forum-05-{run_id}", "connector_key": "discourse", "params": {"category_id": 1},
+                    "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}}
+  },
+  "steps": [
+    {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "discourse", "instance": "batch/forum-05-{run_id}", "op": "get_status", "kind": "rename_field"}},
+    {"method": "POST", "path": "/api/v1/certifications", "body": {"destination_id": "{dest.id}"}, "save_as": "recert"},
+    {"method": "GET", "path": "/api/v1/destinations/{dest.id}", "save_as": "after"},
+    {"method": "POST", "path": "/api/v1/publications", "save_as": "excluded",
+     "body": {"destination_id": "{dest.id}", "rendition": {"title": "How do small teams plan weekly video?", "body": "We batch-record on Mondays. What works for you?"}}}
+  ],
+  "expect": [
+    {"step": "setup_cert", "path": "status", "equals": "succeeded"},
+    {"step": "recert", "path": "error.code", "equals": "CERTIFICATION_FAILED"},
+    {"step": "recert", "path": "error.details.links.alert"},
+    {"step": "after", "path": "level", "equals": "L0"},
+    {"step": "after", "path": "certification_status", "equals": "failed"},
+    {"step": "excluded", "path": "error.code", "equals": "DEST_NOT_CERTIFIED"}
+  ]
+}

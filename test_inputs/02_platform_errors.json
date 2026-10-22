@@ -1,0 +1,66 @@
+[
+  {
+    "name": "02a_rate_limit_429_reset",
+    "description": "Hard case 2a: 429 with a 120 s reset; the post is rescheduled for after the reset time",
+    "setup": {
+      "connection": {"connector_key": "devto", "name": "batch forem", "secret_refs": {"api_key": "env:MOCK_API_KEY"}},
+      "destination": {"name": "batch-02a {run_id}", "url": "{mock}/batch/forem-02a-{run_id}", "connector_key": "devto",
+                      "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}, "self_promo_allowed": true}
+    },
+    "steps": [
+      {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "devto", "instance": "batch/forem-02a-{run_id}", "op": "publish", "kind": "rate_limit", "reset_s": 120}},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "pub",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Repurposing long videos into clips", "body": "A walkthrough.", "content_type": "article"}}}
+    ],
+    "expect": [
+      {"step": "pub", "path": "error.code", "equals": "PLATFORM_RATE_LIMIT"},
+      {"step": "pub", "path": "error.retryable", "equals": true},
+      {"step": "pub", "path": "error.message", "contains": "rescheduled"},
+      {"step": "pub", "path": "error.details.rescheduled_job_id"}
+    ]
+  },
+  {
+    "name": "02b_expired_token_then_reconnect",
+    "description": "Hard case 2b: expired token pauses the connection; posting resumes only after reconnect",
+    "setup": {
+      "connection": {"connector_key": "devto", "name": "batch forem", "secret_refs": {"api_key": "env:MOCK_API_KEY"}},
+      "destination": {"name": "batch-02b {run_id}", "url": "{mock}/batch/forem-02b-{run_id}", "connector_key": "devto",
+                      "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}, "self_promo_allowed": true}
+    },
+    "steps": [
+      {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "devto", "instance": "batch/forem-02b-{run_id}", "op": "publish", "kind": "auth_expired"}},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "expired",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Batch post A", "body": "x", "content_type": "article"}}},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "paused",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Batch post B", "body": "x", "content_type": "article"}}},
+      {"method": "POST", "path": "/api/v1/connections/{conn.id}/reconnect", "body": {}, "save_as": "reconnect"},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "resumed",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Batch post C", "body": "x", "content_type": "article"}}}
+    ],
+    "expect": [
+      {"step": "expired", "path": "error.code", "equals": "CONNECTION_AUTH_EXPIRED"},
+      {"step": "paused", "path": "error.message", "contains": "reconnect"},
+      {"step": "reconnect", "path": "status", "equals": "active"},
+      {"step": "resumed", "path": "status", "equals": "succeeded"}
+    ]
+  },
+  {
+    "name": "02c_content_rejected",
+    "description": "Hard case 2c: the platform refuses the content; its message is returned, no retry",
+    "setup": {
+      "connection": {"connector_key": "devto", "name": "batch forem", "secret_refs": {"api_key": "env:MOCK_API_KEY"}},
+      "destination": {"name": "batch-02c {run_id}", "url": "{mock}/batch/forem-02c-{run_id}", "connector_key": "devto",
+                      "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}, "self_promo_allowed": true}
+    },
+    "steps": [
+      {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "devto", "instance": "batch/forem-02c-{run_id}", "op": "publish", "kind": "reject", "message": "Body markdown has been blocked as spam"}},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "pub",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Batch post", "body": "x", "content_type": "article"}}}
+    ],
+    "expect": [
+      {"step": "pub", "path": "error.code", "equals": "PLATFORM_CONTENT_REJECTED"},
+      {"step": "pub", "path": "error.retryable", "equals": false},
+      {"step": "pub", "path": "error.details.platform_message", "contains": "blocked as spam"}
+    ]
+  }
+]
