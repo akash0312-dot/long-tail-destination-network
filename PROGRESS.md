@@ -4,8 +4,12 @@ Plan and full requirements: [`docs/PLAN.md`](docs/PLAN.md). Status keys: ✅ don
 Every ✅ must link to evidence (test, file, log) — this feeds the Submission Form. Mark honestly: a false "Yes" in the
 form disqualifies; "Partial" with a reason does not.
 
-**Test status (2026-10-22, end of Day 3):**
-- `docker compose --profile test run --rm tests` → **185 passed**, 2 skipped (the 2 real-instance E2E tests need the stack)
+**Test status (2026-10-22, Outstanding work):**
+- `docker compose --profile test run --rm tests` → **208 passed**, 2 skipped (the 2 real-instance E2E tests need the stack)
+- Batch on a fresh stack → **13/13** ([run 5](test_pack/batch_2026-10-22_run5_outstanding/summary.md)); seeds certify at Ghost L3, **Lemmy L4 (real)**, Discourse L4, Dev.to L4, webhook L3, assisted L1
+
+**Earlier (end of Day 3):**
+- `docker compose --profile test run --rm tests` → 185 passed, 2 skipped
 - `RUN_E2E=1 pytest tests/test_e2e_local.py` → 2 passed on Day 2 (real local Ghost 5 + Lemmy 0.19.8); re-run before submission ⬜
 - `python -m app.batch --input test_inputs ...` → **13/13 scenarios passed** ([run 4](test_pack/batch_2026-10-22_run4_day3/summary.md))
 - Fresh stack bootstrap → **6/6 seeded destinations certified**
@@ -35,10 +39,10 @@ form disqualifies; "Partial" with a reason does not.
 | Advanced | Relevance score 1–5 + reason | ✅ | `app/catalogue/heuristics.py`, `POST /api/v1/destinations/{id}/relevance`, scored on every import; `test_relevance_endpoint` |
 | Advanced | Tailoring | ✅ | `app/tailoring.py`, `POST /api/v1/tailor`, `tailor: true` on publications; `tests/test_tailoring.py` |
 | Advanced | Three more connectors | ✅ | MRSS feed (`tests/test_feeds.py`, certifies at L2), Hashnode + PeerTube (hard-case matrix + certification at L3, on mocks) |
-| Outstanding | Recommender + precision@10 | ⬜ | |
-| Outstanding | fetch_metrics on ≥ 3 connectors | ⬜ | |
-| Outstanding | Recertification scheduler | 🟡 | demotion + alert done; scheduler ⬜ |
-| Outstanding | 150+ real destinations | ⬜ | importer ready; research ⬜ |
+| Outstanding | Recommender + precision@10 | 🟡 | `app/recommender.py`, `POST /api/v1/recommendations`, `tests/test_recommender.py`; **precision@10 = 0.41** on 10 items ([report](test_pack/recommender_eval/report.md); baseline 0.31 and a rejected 0.38 variant kept). **Labels are AI-drafted: you must review/correct `catalogue_data/labelled_set.json` and re-run** — the brief says "a set you label". Variant chosen on the same set (no held-out set) |
+| Outstanding | fetch_metrics on ≥ 3 connectors | ✅ | Lemmy, Discourse, Dev.to, PeerTube (`tests/test_metrics.py`); **real local Lemmy certifies at L4** (metrics verified); `POST /api/v1/publications/{id}/metrics` |
+| Outstanding | Recertification scheduler | ✅ | `app/services/scheduler.py` (worker loop + `POST /api/v1/recertifications/run`), tickets (`GET /api/v1/tickets`), demotion + exclusion + alert, auto-resolve; temporary failures are inconclusive, not demotions — `tests/test_scheduler.py` |
+| Outstanding | 150+ real destinations | 🟡 | `catalogue_data/destinations.csv`: **199 verified live** (190 with relevance ≥ 3), connector type, relevance + reason, member counts from platform APIs, 0 invalid on import. **Rules: only 24 rows have a rule read from the page; 175 use labelled conservative defaults.** To close: run rules capture with Claude (`AI_PROVIDER=anthropic`, needs your key) or review rules by hand |
 
 ## Integration Standard
 | # | Point | Status | Evidence |
@@ -69,6 +73,8 @@ form disqualifies; "Partial" with a reason does not.
 | Metric | Value | Conditions |
 |---|---|---|
 | Catalogue: time for 1,000 rows | ~10 s (9.6–10.8 s over 3 runs) | Windows laptop, reachability on, 50 concurrent checks against the local mock; 921 imported, 49 duplicates, 30 invalid, 20 unreachable |
+| Real catalogue | 199 verified / 226 candidates; 190 relevance ≥ 3 | live checks 2026-10-22; 27 dropped with reasons (`catalogue_data/dropped.csv`) |
+| Recommendation precision@10 | 0.41 (10 items) | AI-drafted labels, not yet reviewed; variant chosen on this set |
 | Certification time per run | ⬜ to extract from evidence (`duration_s` in run.json) | |
 | Duplicates under retry tests | 0 | all timeout/retry tests and batch `01` |
 | Rule safety (caught / missed) | 21 / 0 on our rule set | `tests/test_rules.py::RULE_CASES` |
@@ -87,7 +93,7 @@ form disqualifies; "Partial" with a reason does not.
 | Demo video | ⬜ |
 | Live demo deployed | ⬜ |
 | Clarification email sent to the hiring team | ⬜ (questions drafted in `docs/PLAN.md` §5) |
-| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network. Day 3 commits not pushed yet. Reviewer invite ⬜ |
+| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network (Day 3 pushed; Outstanding commits local until pushed). Reviewer invite ⬜ |
 | Submission Form filled | ⬜ |
 
 ## Decisions log
@@ -126,6 +132,16 @@ form disqualifies; "Partial" with a reason does not.
 - SSRF guard after a batch scenario showed the importer would fetch any URL it was given.
 - Bugs caught by tests: certification sent text to a video-only feed; PeerTube mock ignored faults on one endpoint
   (masked the circuit breaker); mock page lookup used the wrong key.
-- **Next:** push Day 3; certification-pack export; gitleaks; clean-machine test; live demo (with
-  `CALLBACK_SIGNATURE_HEADER` set); REPORT / SOURCES / AI_USE; clarification email; then Outstanding (recommender +
-  precision@10, fetch_metrics ×3, recertification scheduler, 150+ real destinations).
+- Day 3 pushed to GitHub (14 commits).
+
+### Day 4 — Outstanding level — 2026-10-22
+- **fetch_metrics** on Lemmy, Discourse, Dev.to, PeerTube (null when not exposed); stored snapshots; L4 in certification.
+- **Recommender** with reasons and exclusions; **precision@10 0.41** on an AI-drafted labelled set (needs your review).
+- **Recertification scheduler** + tickets; design fix: a temporary 429/timeout is *inconclusive*, never a demotion.
+- **Real catalogue**: 199 live-verified destinations from 226 candidates (14 guessed Lemmy communities did not exist
+  and were dropped); rules mostly defaults — the weakest part, documented.
+- Bugs caught: relevance read hostnames (`lemmy.ml` → "ML"); a broad phrase gave a self-promotion false positive.
+- **Your actions needed:** review `catalogue_data/labelled_set.json` (then `python scripts/eval_recommender.py`);
+  decide whether to run Claude rules capture over the catalogue (costs money; needs `ANTHROPIC_API_KEY`).
+- **Then:** certification-pack export, gitleaks, clean-machine test, live demo, REPORT / SOURCES / AI_USE,
+  clarification email, Submission Form.
