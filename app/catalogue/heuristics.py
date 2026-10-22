@@ -54,11 +54,17 @@ def extract_rules(text: str) -> dict:
             ev("frequency_cap", s)
             break
 
-    no_promo = _find(sentences, r"\bno (self[- ]?promotion|promotion|advertis\w*|ads|spam)\b|self[- ]?promotion is "
-                                r"(not allowed|prohibited|banned|forbidden)|do not (promote|advertise)|don't "
-                                r"(promote|advertise)|9:1|10% rule")
-    yes_promo = _find(sentences, r"self[- ]?promotion is (allowed|welcome|ok)|promote your|share your (own )?"
-                                 r"(work|project|product)s?|show (and|&) tell|showcase")
+    no_promo = _find(sentences, r"\bno (self[- ]?promotion|self[- ]?promo|promotion|advertis\w*|ads|spam|shilling|"
+                                r"marketing|commercial)\b|self[- ]?promo\w* (is |are )?(not allowed|prohibited|banned|"
+                                r"forbidden|limited|restricted|discouraged|only)|(do not|don't|please don't|never) "
+                                r"(promote|advertise|spam)|(do not|don't) use .{0,40}for (self[- ]?)?promotion|"
+                                r"(primarily|mainly|only) for (self[- ]?)?promotion|\b(spam|advertising|unsolicited "
+                                r"promotion) (is|are|will be) (not allowed|prohibited|banned|removed|deleted)|"
+                                r"9:1|10% rule")
+    yes_promo = _find(sentences, r"self[- ]?promo\w* (is |are )?(allowed|welcome|ok|fine|permitted)|"
+                                 r"(you may|you can|feel free to) promote your|"
+                                 r"share your (own )?(work|project|product|creation|video|app)s?|show (and|&) tell|"
+                                 r"showcase|feel free to (share|post) your|submit your (product|tool|startup|app)")
     if no_promo:
         out["self_promo_allowed"] = False
         ev("self_promo_allowed", no_promo)
@@ -90,9 +96,10 @@ def extract_rules(text: str) -> dict:
         out["notes"] += "AI-generated content is banned here: do not post AI content. "
         ev("notes", ai_ban)
 
-    bots = _find(sentences, r"\bno bots\b|bots are not (allowed|permitted)|automated (posting|posts|accounts) "
-                            r"(is|are) (not allowed|prohibited|banned)|no automat\w+ (posting|posts)|"
-                            r"must be posted by a (human|person)")
+    bots = _find(sentences, r"\bno bots?\b|bots? (are|is) (not allowed|not permitted|prohibited|banned)|"
+                            r"automated (posting|posts|accounts|submissions) (is|are) (not allowed|prohibited|banned)|"
+                            r"no automat\w+ (posting|posts|submissions)|must be (posted|submitted|made) by a "
+                            r"(human|person|real person)|(do not|don't) (use|run) (bots|scripts|automation)")
     if bots:
         out["automation_allowed"] = False
         ev("automation_allowed", bots)
@@ -113,11 +120,19 @@ def extract_rules(text: str) -> dict:
     return out
 
 
+HOST_RE = re.compile(r"\b([a-z0-9-]+)(?:\.[a-z][a-z0-9-]*)+\b", re.IGNORECASE)
+
+
+def topic_text(text: str) -> str:
+    """Lowercase words for keyword matching. Hostnames keep only their first label: 'lemmy.ml' is not about ML."""
+    return re.sub(r"[_/.\-#]+", " ", HOST_RE.sub(r"\1", text).lower())
+
+
 def score_relevance(dest: dict) -> dict:
     """1-5 against the audience (AI, video, marketing, SaaS, creators, founders), with the evidence in the reason."""
-    text = " ".join(str(dest.get(k) or "") for k in ("name", "category", "description", "url"))
+    text = " ".join(str(dest.get(k) or "") for k in ("name", "category", "description"))  # not the URL
     text += " " + " ".join(dest.get("audience_tags") or [])
-    low = re.sub(r"[_/.\-]+", " ", text.lower())
+    low = topic_text(text)
     hits = {seg: [w for w in words if re.search(rf"\b{re.escape(w)}\b", low)] for seg, words in AUDIENCE.items()}
     matched = {seg: ws for seg, ws in hits.items() if ws}
     score = {0: 1, 1: 3, 2: 4}.get(len(matched), 5)

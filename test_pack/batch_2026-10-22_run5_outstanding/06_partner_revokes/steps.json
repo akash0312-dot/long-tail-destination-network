@@ -1,0 +1,404 @@
+{
+  "name": "06_partner_revokes",
+  "description": "Hard case 6b: a partner revokes permission (403); the connection is paused and later posts ask for a reconnect",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "webhook",
+          "name": "batch partner",
+          "secret_refs": {
+            "signing_secret": "env:PARTNER_WEBHOOK_SECRET"
+          }
+        },
+        "idempotency_key": "fd62bb9fede145099a3f745e3d40aca3"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "a8e34658be374cd19771e80019415965",
+        "connector_key": "webhook",
+        "name": "batch partner",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "signing_secret": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-22T18:09:17.753338Z"
+      },
+      "ms": 89
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-06 93c32869",
+          "url": "http://mock:9000/partner/partner-06-93c32869",
+          "connector_key": "webhook",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "a8e34658be374cd19771e80019415965"
+        },
+        "idempotency_key": "d297300612c0455d9058e8b4cd92c5ab"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "7d2bc2a84e444f7fb1492592bc4a1dea",
+        "name": "batch-06 93c32869",
+        "url": "http://mock:9000/partner/partner-06-93c32869",
+        "normalized_url": "https://mock:9000/partner/partner-06-93c32869",
+        "platform_key": "webhook",
+        "connector_key": "webhook",
+        "surface": "post",
+        "params": {
+          "endpoint_url": "http://mock:9000/partner/partner-06-93c32869"
+        },
+        "connection_id": "a8e34658be374cd19771e80019415965",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T18:09:17.850245Z"
+      },
+      "ms": 83
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "7d2bc2a84e444f7fb1492592bc4a1dea"
+        },
+        "idempotency_key": "9715d7c240ea42d3a8df1d71c415de8e"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "c233728882894269a93839e65640f744",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "c233728882894269a93839e65640f744",
+          "destination_id": "7d2bc2a84e444f7fb1492592bc4a1dea",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.06,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "post",
+                "content_types": [
+                  "text",
+                  "article",
+                  "image",
+                  "video",
+                  "video_link"
+                ],
+                "spec": {
+                  "title_max_chars": 250,
+                  "title_min_chars": null,
+                  "body_max_chars": 100000,
+                  "body_min_chars": null,
+                  "max_tags": null,
+                  "links_allowed": true,
+                  "title_required": false,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp",
+                    "video/mp4",
+                    "video/webm"
+                  ],
+                  "max_media": 10,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 8,
+              "result": {
+                "platform_post_id": "25",
+                "live_url": "http://mock:9000/__live/partner/partner/partner-06-93c32869/25",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 6,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/__live/partner/partner/partner-06-93c32869/25"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 8,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/7d2bc2a84e444f7fb1492592bc4a1dea/c233728882894269a93839e65640f744/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180918Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=08632aba2eaaebd3ae941047d268caf395337fdb224b1b029c36d1e3270bd1fb",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/7d2bc2a84e444f7fb1492592bc4a1dea/c233728882894269a93839e65640f744/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180918Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ccf52a9c6687df98226d9fe8e635133d5cdd89ee37b7f0281610bf94f16d4738"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/c233728882894269a93839e65640f744",
+          "evidence": "http://localhost:8333/longtail-network/certifications/7d2bc2a84e444f7fb1492592bc4a1dea/c233728882894269a93839e65640f744/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180918Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=08632aba2eaaebd3ae941047d268caf395337fdb224b1b029c36d1e3270bd1fb",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/7d2bc2a84e444f7fb1492592bc4a1dea/c233728882894269a93839e65640f744/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180918Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ccf52a9c6687df98226d9fe8e635133d5cdd89ee37b7f0281610bf94f16d4738"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:09:17.931843Z",
+        "started_at": "2026-10-22T18:09:18.864216Z",
+        "finished_at": "2026-10-22T18:09:18.937966Z"
+      },
+      "ms": 1100
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:9000/__admin/faults",
+        "body": {
+          "platform": "webhook",
+          "instance": "partner/partner-06-93c32869",
+          "op": "publish",
+          "kind": "auth_expired"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "webhook",
+          "op": "publish",
+          "kind": "auth_expired",
+          "instance": "partner/partner-06-93c32869",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 5
+    },
+    {
+      "name": "revoked",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "7d2bc2a84e444f7fb1492592bc4a1dea",
+          "rendition": {
+            "title": "Partner feature: creator spotlight",
+            "body": "Spotlight text."
+          }
+        },
+        "idempotency_key": "c581134dbac5472d9434944e6b672f04"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "a03f87892659407aad49fa67e82387d1",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 40,
+        "result": null,
+        "error": {
+          "code": "CONNECTION_AUTH_EXPIRED",
+          "message": "permission_revoked",
+          "retryable": false,
+          "details": {
+            "op": "publish",
+            "status": 403,
+            "platform_message": "permission_revoked"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/a03f87892659407aad49fa67e82387d1"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:09:19.030216Z",
+        "started_at": "2026-10-22T18:09:19.954267Z",
+        "finished_at": "2026-10-22T18:09:20.005986Z"
+      },
+      "ms": 1081
+    },
+    {
+      "name": "paused",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "7d2bc2a84e444f7fb1492592bc4a1dea",
+          "rendition": {
+            "title": "Partner feature: second spotlight",
+            "body": "Spotlight text."
+          }
+        },
+        "idempotency_key": "2762f2be09d9472b8b16366c843866d1"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "3fd2b2c4762c4cfda2c788ef83a5fe6a",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "CONNECTION_AUTH_EXPIRED",
+          "message": "Connection is expired; the owner must reconnect before posting",
+          "retryable": false,
+          "details": {
+            "connection_id": "a8e34658be374cd19771e80019415965",
+            "connection_status": "expired"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/3fd2b2c4762c4cfda2c788ef83a5fe6a"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:09:20.104180Z",
+        "started_at": "2026-10-22T18:09:21.022665Z",
+        "finished_at": "2026-10-22T18:09:21.037211Z"
+      },
+      "ms": 1078
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "revoked",
+      "path": "error.code",
+      "equals": "CONNECTION_AUTH_EXPIRED",
+      "actual": "CONNECTION_AUTH_EXPIRED",
+      "ok": true
+    },
+    {
+      "step": "revoked",
+      "path": "error.details.platform_message",
+      "equals": "permission_revoked",
+      "actual": "permission_revoked",
+      "ok": true
+    },
+    {
+      "step": "paused",
+      "path": "error.message",
+      "contains": "reconnect",
+      "actual": "Connection is expired; the owner must reconnect before posting",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

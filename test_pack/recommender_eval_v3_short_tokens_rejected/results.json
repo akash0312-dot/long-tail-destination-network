@@ -1,0 +1,1619 @@
+{
+  "metric": "precision@10",
+  "mean": 0.38,
+  "items": 10,
+  "catalogue_rows": 199,
+  "labelled_by": "DRAFT by the AI coding assistant (Claude) from destination names and descriptions; must be reviewed and corrected by the candidate before the score is reported",
+  "reviewed_by": null,
+  "results": [
+    {
+      "id": "fine-tune-llm-laptop",
+      "precision_at_10": 0.7,
+      "relevant_labelled": 21,
+      "hits": [
+        "Hugging Face Forums",
+        "Hashnode #machine-learning",
+        "DEV Community #llm",
+        "PyTorch Forums",
+        "lemmy.world Machine Learning",
+        "programming.dev Machine Learning",
+        "Hashnode #artificial-intelligence"
+      ],
+      "misses_in_top10": [
+        "Ben's Bites",
+        "Python Discourse",
+        "Cursor Community Forum"
+      ],
+      "top10": [
+        {
+          "destination_id": "c60",
+          "name": "Hugging Face Forums",
+          "url": "https://discuss.huggingface.co",
+          "connector_key": "discourse",
+          "score": 0.6256,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: hugging, face, ai; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.551,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c125",
+          "name": "Hashnode #machine-learning",
+          "url": "https://hashnode.com/n/machine-learning",
+          "connector_key": "hashnode",
+          "score": 0.6136,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: machine, learning, ai; relevance 4/5",
+          "components": {
+            "topic": 0.531,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c181",
+          "name": "Ben's Bites",
+          "url": "https://www.bensbites.com",
+          "connector_key": "assisted",
+          "score": 0.6118,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: learning, ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.478,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c65",
+          "name": "Python Discourse",
+          "url": "https://discuss.python.org",
+          "connector_key": "discourse",
+          "score": 0.6094,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: python, ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c111",
+          "name": "DEV Community #llm",
+          "url": "https://dev.to/t/llm",
+          "connector_key": "devto",
+          "score": 0.5878,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: llm, ai; relevance 4/5",
+          "components": {
+            "topic": 0.488,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c67",
+          "name": "PyTorch Forums",
+          "url": "https://discuss.pytorch.org",
+          "connector_key": "discourse",
+          "score": 0.5878,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: pytorch, ai; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.488,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c22",
+          "name": "lemmy.world Machine Learning",
+          "url": "https://lemmy.world/c/machinelearning",
+          "connector_key": "lemmy",
+          "score": 0.5836,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: learning, machine, ai; relevance 3/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.531,
+            "relevance": 0.6,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c36",
+          "name": "programming.dev Machine Learning",
+          "url": "https://programming.dev/c/machine_learning",
+          "connector_key": "lemmy",
+          "score": 0.5836,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: machine, learning, ai; relevance 3/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.531,
+            "relevance": 0.6,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c122",
+          "name": "Hashnode #artificial-intelligence",
+          "url": "https://hashnode.com/n/artificial-intelligence",
+          "connector_key": "hashnode",
+          "score": 0.5818,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: machine, ai; relevance 4/5",
+          "components": {
+            "topic": 0.478,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c61",
+          "name": "Cursor Community Forum",
+          "url": "https://forum.cursor.com",
+          "connector_key": "discourse",
+          "score": 0.58,
+          "reason": "audience match: AI (1/1 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.425,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "saas-10k-mrr",
+      "precision_at_10": 0.4,
+      "relevant_labelled": 17,
+      "hits": [
+        "DEV Community #startup",
+        "DEV Community #saas",
+        "DEV Community #marketing",
+        "Hashnode #startups"
+      ],
+      "misses_in_top10": [
+        "DEV Community #showdev",
+        "DEV Community #ai",
+        "DEV Community #discuss",
+        "DEV Community #llm",
+        "DEV Community #machinelearning",
+        "DEV Community #python"
+      ],
+      "top10": [
+        {
+          "destination_id": "c113",
+          "name": "DEV Community #startup",
+          "url": "https://dev.to/t/startup",
+          "connector_key": "devto",
+          "score": 0.565,
+          "reason": "audience match: SaaS, founders (2/3 of the content's topics); shared topics: startup, content, founder; relevance 4/5",
+          "components": {
+            "topic": 0.45,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c114",
+          "name": "DEV Community #showdev",
+          "url": "https://dev.to/t/showdev",
+          "connector_key": "devto",
+          "score": 0.553,
+          "reason": "audience match: SaaS, founders (2/3 of the content's topics); shared topics: content, founder; relevance 5/5",
+          "components": {
+            "topic": 0.38,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c112",
+          "name": "DEV Community #saas",
+          "url": "https://dev.to/t/saas",
+          "connector_key": "devto",
+          "score": 0.544,
+          "reason": "audience match: SaaS, founders (2/3 of the content's topics); shared topics: content, founder, saas; relevance 4/5",
+          "components": {
+            "topic": 0.415,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c117",
+          "name": "DEV Community #marketing",
+          "url": "https://dev.to/t/marketing",
+          "connector_key": "devto",
+          "score": 0.5338,
+          "reason": "audience match: SaaS, marketing (2/3 of the content's topics); shared topics: marketing, content; relevance 4/5",
+          "components": {
+            "topic": 0.398,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c124",
+          "name": "Hashnode #startups",
+          "url": "https://hashnode.com/n/startups",
+          "connector_key": "hashnode",
+          "score": 0.5302,
+          "reason": "audience match: SaaS, founders (2/3 of the content's topics); shared topics: startup, founder; relevance 4/5",
+          "components": {
+            "topic": 0.392,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c109",
+          "name": "DEV Community #ai",
+          "url": "https://dev.to/t/ai",
+          "connector_key": "devto",
+          "score": 0.4096,
+          "reason": "audience match: SaaS (1/3 of the content's topics); shared topics: content; relevance 4/5",
+          "components": {
+            "topic": 0.191,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c120",
+          "name": "DEV Community #discuss",
+          "url": "https://dev.to/t/discuss",
+          "connector_key": "devto",
+          "score": 0.4096,
+          "reason": "audience match: SaaS (1/3 of the content's topics); shared topics: content; relevance 4/5",
+          "components": {
+            "topic": 0.191,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c111",
+          "name": "DEV Community #llm",
+          "url": "https://dev.to/t/llm",
+          "connector_key": "devto",
+          "score": 0.4096,
+          "reason": "audience match: SaaS (1/3 of the content's topics); shared topics: content; relevance 4/5",
+          "components": {
+            "topic": 0.191,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c110",
+          "name": "DEV Community #machinelearning",
+          "url": "https://dev.to/t/machinelearning",
+          "connector_key": "devto",
+          "score": 0.4096,
+          "reason": "audience match: SaaS (1/3 of the content's topics); shared topics: content; relevance 4/5",
+          "components": {
+            "topic": 0.191,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c119",
+          "name": "DEV Community #python",
+          "url": "https://dev.to/t/python",
+          "connector_key": "devto",
+          "score": 0.4096,
+          "reason": "audience match: SaaS (1/3 of the content's topics); shared topics: content; relevance 4/5",
+          "components": {
+            "topic": 0.191,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "blender-product-video",
+      "precision_at_10": 0.6,
+      "relevant_labelled": 12,
+      "hits": [
+        "lemmy.world Blender",
+        "Blender Artists",
+        "Shotcut Forum",
+        "GameDev.tv Community",
+        "ArtStation",
+        "KDE Discuss"
+      ],
+      "misses_in_top10": [
+        "Blender Developer Talk",
+        "Level1Techs Forum",
+        "Dailymotion",
+        "Framacolibri"
+      ],
+      "top10": [
+        {
+          "destination_id": "c7",
+          "name": "lemmy.world Blender",
+          "url": "https://lemmy.world/c/blender",
+          "connector_key": "lemmy",
+          "score": 0.7948,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: rendering, animation, modeling, blender; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.783,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c84",
+          "name": "Blender Artists",
+          "url": "https://blenderartists.org",
+          "connector_key": "discourse",
+          "score": 0.6496,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: blender, video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.541,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c85",
+          "name": "Blender Developer Talk",
+          "url": "https://devtalk.blender.org",
+          "connector_key": "discourse",
+          "score": 0.6496,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: blender, video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.541,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c82",
+          "name": "Shotcut Forum",
+          "url": "https://forum.shotcut.org",
+          "connector_key": "discourse",
+          "score": 0.6274,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: shotcut, video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.554,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c101",
+          "name": "GameDev.tv Community",
+          "url": "https://community.gamedev.tv",
+          "connector_key": "discourse",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c81",
+          "name": "Level1Techs Forum",
+          "url": "https://forum.level1techs.com",
+          "connector_key": "discourse",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c188",
+          "name": "ArtStation",
+          "url": "https://www.artstation.com",
+          "connector_key": "assisted",
+          "score": 0.5794,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c189",
+          "name": "Dailymotion",
+          "url": "https://www.dailymotion.com",
+          "connector_key": "assisted",
+          "score": 0.5794,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c107",
+          "name": "Framacolibri",
+          "url": "https://framacolibri.org",
+          "connector_key": "discourse",
+          "score": 0.5794,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c83",
+          "name": "KDE Discuss",
+          "url": "https://discuss.kde.org",
+          "connector_key": "discourse",
+          "score": 0.5794,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.474,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "launch-ai-notes",
+      "precision_at_10": 0.3,
+      "relevant_labelled": 17,
+      "hits": [
+        "Product Hunt",
+        "Futurepedia",
+        "DEV Community #showdev"
+      ],
+      "misses_in_top10": [
+        "DEV Community #ai",
+        "DEV Community #llm",
+        "DEV Community #machinelearning",
+        "DEV Community #python",
+        "Hashnode #ai",
+        "Hashnode #artificial-intelligence",
+        "Hashnode #machine-learning"
+      ],
+      "top10": [
+        {
+          "destination_id": "c146",
+          "name": "Product Hunt",
+          "url": "https://www.producthunt.com",
+          "connector_key": "assisted",
+          "score": 0.574,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: launch, ai, saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.415,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c163",
+          "name": "Futurepedia",
+          "url": "https://www.futurepedia.io",
+          "connector_key": "assisted",
+          "score": 0.5086,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.306,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c114",
+          "name": "DEV Community #showdev",
+          "url": "https://dev.to/t/showdev",
+          "connector_key": "devto",
+          "score": 0.4852,
+          "reason": "audience match: SaaS, creators (2/3 of the content's topics); relevance 5/5",
+          "components": {
+            "topic": 0.267,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c109",
+          "name": "DEV Community #ai",
+          "url": "https://dev.to/t/ai",
+          "connector_key": "devto",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c111",
+          "name": "DEV Community #llm",
+          "url": "https://dev.to/t/llm",
+          "connector_key": "devto",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c110",
+          "name": "DEV Community #machinelearning",
+          "url": "https://dev.to/t/machinelearning",
+          "connector_key": "devto",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c119",
+          "name": "DEV Community #python",
+          "url": "https://dev.to/t/python",
+          "connector_key": "devto",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c121",
+          "name": "Hashnode #ai",
+          "url": "https://hashnode.com/n/ai",
+          "connector_key": "hashnode",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c122",
+          "name": "Hashnode #artificial-intelligence",
+          "url": "https://hashnode.com/n/artificial-intelligence",
+          "connector_key": "hashnode",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c125",
+          "name": "Hashnode #machine-learning",
+          "url": "https://hashnode.com/n/machine-learning",
+          "connector_key": "hashnode",
+          "score": 0.4786,
+          "reason": "audience match: AI, SaaS (2/3 of the content's topics); shared topics: ai; relevance 4/5",
+          "components": {
+            "topic": 0.306,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "n8n-email-automation",
+      "precision_at_10": 0.3,
+      "relevant_labelled": 13,
+      "hits": [
+        "n8n Community",
+        "Make Community",
+        "DEV Community #marketing"
+      ],
+      "misses_in_top10": [
+        "Hacker Newsletter",
+        "TLDR Newsletter",
+        "lemmy.zip Technology",
+        "lemmy.world Technology",
+        "Home Assistant Community",
+        "freeCodeCamp Forum",
+        "lemmy.world Videos"
+      ],
+      "top10": [
+        {
+          "destination_id": "c62",
+          "name": "n8n Community",
+          "url": "https://community.n8n.io",
+          "connector_key": "discourse",
+          "score": 0.793,
+          "reason": "audience match: SaaS, marketing (2/2 of the content's topics); shared topics: n8n, automation, marketing, saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.78,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c63",
+          "name": "Make Community",
+          "url": "https://community.make.com",
+          "connector_key": "discourse",
+          "score": 0.6454,
+          "reason": "audience match: SaaS, marketing (2/2 of the content's topics); shared topics: marketing, saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.534,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c183",
+          "name": "Hacker Newsletter",
+          "url": "https://hackernewsletter.com",
+          "connector_key": "assisted",
+          "score": 0.5914,
+          "reason": "audience match: SaaS, marketing (2/2 of the content's topics); shared topics: saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.444,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c182",
+          "name": "TLDR Newsletter",
+          "url": "https://tldr.tech",
+          "connector_key": "assisted",
+          "score": 0.5914,
+          "reason": "audience match: SaaS, marketing (2/2 of the content's topics); shared topics: saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.444,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c56",
+          "name": "lemmy.zip Technology",
+          "url": "https://lemmy.zip/c/technology",
+          "connector_key": "lemmy",
+          "score": 0.5914,
+          "reason": "audience match: SaaS, marketing (2/2 of the content's topics); shared topics: saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.444,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c117",
+          "name": "DEV Community #marketing",
+          "url": "https://dev.to/t/marketing",
+          "connector_key": "devto",
+          "score": 0.5896,
+          "reason": "audience match: SaaS, marketing (2/2 of the content's topics); shared topics: marketing; relevance 4/5",
+          "components": {
+            "topic": 0.491,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c0",
+          "name": "lemmy.world Technology",
+          "url": "https://lemmy.world/c/technology",
+          "connector_key": "lemmy",
+          "score": 0.5326,
+          "reason": "audience match: SaaS (1/2 of the content's topics); shared topics: follow, saas; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.346,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c92",
+          "name": "Home Assistant Community",
+          "url": "https://community.home-assistant.io",
+          "connector_key": "discourse",
+          "score": 0.5122,
+          "reason": "audience match: SaaS (1/2 of the content's topics); shared topics: automation, saas; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.362,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c69",
+          "name": "freeCodeCamp Forum",
+          "url": "https://forum.freecodecamp.org",
+          "connector_key": "discourse",
+          "score": 0.5122,
+          "reason": "audience match: SaaS (1/2 of the content's topics); shared topics: code, saas; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.362,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c4",
+          "name": "lemmy.world Videos",
+          "url": "https://lemmy.world/c/videos",
+          "connector_key": "lemmy",
+          "score": 0.4762,
+          "reason": "audience match: marketing (1/2 of the content's topics); shared topics: follow; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.302,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "video-podcast-episode",
+      "precision_at_10": 0.7,
+      "relevant_labelled": 14,
+      "hits": [
+        "Apple Podcasts (video podcasts)",
+        "Spotify for Creators (video podcasts)",
+        "Dailymotion",
+        "Odysee",
+        "Rumble",
+        "Spectra Video",
+        "TILvids"
+      ],
+      "misses_in_top10": [
+        "ArtStation",
+        "Diode Zone",
+        "MakerTube"
+      ],
+      "top10": [
+        {
+          "destination_id": "c136",
+          "name": "Apple Podcasts (video podcasts)",
+          "url": "https://podcastsconnect.apple.com",
+          "connector_key": "mrss",
+          "score": 0.6706,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: podcast, video, creator; relevance 4/5",
+          "components": {
+            "topic": 0.626,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c137",
+          "name": "Spotify for Creators (video podcasts)",
+          "url": "https://creators.spotify.com",
+          "connector_key": "mrss",
+          "score": 0.6706,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: podcast, video, creator; relevance 4/5",
+          "components": {
+            "topic": 0.626,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c188",
+          "name": "ArtStation",
+          "url": "https://www.artstation.com",
+          "connector_key": "assisted",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c189",
+          "name": "Dailymotion",
+          "url": "https://www.dailymotion.com",
+          "connector_key": "assisted",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c130",
+          "name": "Diode Zone",
+          "url": "https://diode.zone",
+          "connector_key": "peertube",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c131",
+          "name": "MakerTube",
+          "url": "https://makertube.net",
+          "connector_key": "peertube",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c191",
+          "name": "Odysee",
+          "url": "https://odysee.com",
+          "connector_key": "assisted",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c190",
+          "name": "Rumble",
+          "url": "https://rumble.com",
+          "connector_key": "assisted",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c132",
+          "name": "Spectra Video",
+          "url": "https://spectra.video",
+          "connector_key": "peertube",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c128",
+          "name": "TILvids",
+          "url": "https://tilvids.com",
+          "connector_key": "peertube",
+          "score": 0.6094,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5",
+          "components": {
+            "topic": 0.524,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "plotly-streamlit-dashboard",
+      "precision_at_10": 0.5,
+      "relevant_labelled": 11,
+      "hits": [
+        "Plotly Community",
+        "Python Discourse",
+        "Streamlit Community",
+        "freeCodeCamp Forum",
+        "DEV Community #python"
+      ],
+      "misses_in_top10": [
+        "Ben's Bites",
+        "OpenAI Developer Community",
+        "PyTorch Forums",
+        "Blender Artists",
+        "Blender Developer Talk"
+      ],
+      "top10": [
+        {
+          "destination_id": "c105",
+          "name": "Plotly Community",
+          "url": "https://community.plotly.com",
+          "connector_key": "discourse",
+          "score": 0.4894,
+          "reason": "shared topics: plotly, dashboard, visualization, data; relevance 3/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.374,
+            "relevance": 0.6,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c181",
+          "name": "Ben's Bites",
+          "url": "https://www.bensbites.com",
+          "connector_key": "assisted",
+          "score": 0.3658,
+          "reason": "shared topics: building; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.068,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c59",
+          "name": "OpenAI Developer Community",
+          "url": "https://community.openai.com",
+          "connector_key": "discourse",
+          "score": 0.3658,
+          "reason": "shared topics: building; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.068,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c65",
+          "name": "Python Discourse",
+          "url": "https://discuss.python.org",
+          "connector_key": "discourse",
+          "score": 0.3628,
+          "reason": "shared topics: python; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.063,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c76",
+          "name": "Streamlit Community",
+          "url": "https://discuss.streamlit.io",
+          "connector_key": "discourse",
+          "score": 0.3442,
+          "reason": "shared topics: streamlit; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.082,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c67",
+          "name": "PyTorch Forums",
+          "url": "https://discuss.pytorch.org",
+          "connector_key": "discourse",
+          "score": 0.3406,
+          "reason": "shared topics: code; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.076,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c69",
+          "name": "freeCodeCamp Forum",
+          "url": "https://forum.freecodecamp.org",
+          "connector_key": "discourse",
+          "score": 0.3406,
+          "reason": "shared topics: code; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.076,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c119",
+          "name": "DEV Community #python",
+          "url": "https://dev.to/t/python",
+          "connector_key": "devto",
+          "score": 0.3328,
+          "reason": "shared topics: python; relevance 4/5",
+          "components": {
+            "topic": 0.063,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c84",
+          "name": "Blender Artists",
+          "url": "https://blenderartists.org",
+          "connector_key": "discourse",
+          "score": 0.325,
+          "reason": "little topical overlap; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.0,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c85",
+          "name": "Blender Developer Talk",
+          "url": "https://devtalk.blender.org",
+          "connector_key": "discourse",
+          "score": 0.325,
+          "reason": "little topical overlap; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.0,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ux-ai-chat",
+      "precision_at_10": 0.1,
+      "relevant_labelled": 11,
+      "hits": [
+        "OpenAI Developer Community"
+      ],
+      "misses_in_top10": [
+        "programming.dev Technology",
+        "Hashnode #machine-learning",
+        "Level1Techs Forum",
+        "Ben's Bites",
+        "Cursor Community Forum",
+        "Hacker News",
+        "HackerNoon",
+        "Python Discourse",
+        "TLDR Newsletter"
+      ],
+      "top10": [
+        {
+          "destination_id": "c43",
+          "name": "programming.dev Technology",
+          "url": "https://programming.dev/c/technology",
+          "connector_key": "lemmy",
+          "score": 0.5932,
+          "reason": "audience match: AI, video (2/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.447,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c125",
+          "name": "Hashnode #machine-learning",
+          "url": "https://hashnode.com/n/machine-learning",
+          "connector_key": "hashnode",
+          "score": 0.5134,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: pattern, ai; relevance 4/5",
+          "components": {
+            "topic": 0.364,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c81",
+          "name": "Level1Techs Forum",
+          "url": "https://forum.level1techs.com",
+          "connector_key": "discourse",
+          "score": 0.5038,
+          "reason": "audience match: video (1/2 of the content's topics); shared topics: design; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.298,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c181",
+          "name": "Ben's Bites",
+          "url": "https://www.bensbites.com",
+          "connector_key": "assisted",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c61",
+          "name": "Cursor Community Forum",
+          "url": "https://forum.cursor.com",
+          "connector_key": "discourse",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c144",
+          "name": "Hacker News",
+          "url": "https://news.ycombinator.com",
+          "connector_key": "assisted",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c165",
+          "name": "HackerNoon",
+          "url": "https://hackernoon.com",
+          "connector_key": "assisted",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c59",
+          "name": "OpenAI Developer Community",
+          "url": "https://community.openai.com",
+          "connector_key": "discourse",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c65",
+          "name": "Python Discourse",
+          "url": "https://discuss.python.org",
+          "connector_key": "discourse",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c182",
+          "name": "TLDR Newsletter",
+          "url": "https://tldr.tech",
+          "connector_key": "assisted",
+          "score": 0.4732,
+          "reason": "audience match: AI (1/2 of the content's topics); shared topics: ai; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.247,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "selfhost-peertube",
+      "precision_at_10": 0.2,
+      "relevant_labelled": 12,
+      "hits": [
+        "Level1Techs Forum",
+        "Framacolibri"
+      ],
+      "misses_in_top10": [
+        "lemmy.world Blender",
+        "Blender Artists",
+        "Blender Developer Talk",
+        "GameDev.tv Community",
+        "Dailymotion",
+        "Odysee",
+        "Rumble",
+        "ArtStation"
+      ],
+      "top10": [
+        {
+          "destination_id": "c7",
+          "name": "lemmy.world Blender",
+          "url": "https://lemmy.world/c/blender",
+          "connector_key": "lemmy",
+          "score": 0.652,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: source, open, video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.545,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c84",
+          "name": "Blender Artists",
+          "url": "https://blenderartists.org",
+          "connector_key": "discourse",
+          "score": 0.6004,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.459,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c85",
+          "name": "Blender Developer Talk",
+          "url": "https://devtalk.blender.org",
+          "connector_key": "discourse",
+          "score": 0.6004,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.459,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c101",
+          "name": "GameDev.tv Community",
+          "url": "https://community.gamedev.tv",
+          "connector_key": "discourse",
+          "score": 0.6004,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.459,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c81",
+          "name": "Level1Techs Forum",
+          "url": "https://forum.level1techs.com",
+          "connector_key": "discourse",
+          "score": 0.6004,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.459,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c189",
+          "name": "Dailymotion",
+          "url": "https://www.dailymotion.com",
+          "connector_key": "assisted",
+          "score": 0.592,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: platform, video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.495,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c191",
+          "name": "Odysee",
+          "url": "https://odysee.com",
+          "connector_key": "assisted",
+          "score": 0.592,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: platform, video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.495,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c190",
+          "name": "Rumble",
+          "url": "https://rumble.com",
+          "connector_key": "assisted",
+          "score": 0.592,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: platform, video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.495,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c188",
+          "name": "ArtStation",
+          "url": "https://www.artstation.com",
+          "connector_key": "assisted",
+          "score": 0.5704,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.459,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c107",
+          "name": "Framacolibri",
+          "url": "https://framacolibri.org",
+          "connector_key": "discourse",
+          "score": 0.5704,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.459,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "creator-income",
+      "precision_at_10": 0.0,
+      "relevant_labelled": 10,
+      "hits": [],
+      "misses_in_top10": [
+        "Blender Artists",
+        "Blender Developer Talk",
+        "GameDev.tv Community",
+        "Level1Techs Forum",
+        "lemmy.world Blender",
+        "ArtStation",
+        "Dailymotion",
+        "Framacolibri",
+        "KDE Discuss",
+        "Odysee"
+      ],
+      "top10": [
+        {
+          "destination_id": "c84",
+          "name": "Blender Artists",
+          "url": "https://blenderartists.org",
+          "connector_key": "discourse",
+          "score": 0.625,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c85",
+          "name": "Blender Developer Talk",
+          "url": "https://devtalk.blender.org",
+          "connector_key": "discourse",
+          "score": 0.625,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c101",
+          "name": "GameDev.tv Community",
+          "url": "https://community.gamedev.tv",
+          "connector_key": "discourse",
+          "score": 0.625,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c81",
+          "name": "Level1Techs Forum",
+          "url": "https://forum.level1techs.com",
+          "connector_key": "discourse",
+          "score": 0.625,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c7",
+          "name": "lemmy.world Blender",
+          "url": "https://lemmy.world/c/blender",
+          "connector_key": "lemmy",
+          "score": 0.625,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 5/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 1.0,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c188",
+          "name": "ArtStation",
+          "url": "https://www.artstation.com",
+          "connector_key": "assisted",
+          "score": 0.595,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c189",
+          "name": "Dailymotion",
+          "url": "https://www.dailymotion.com",
+          "connector_key": "assisted",
+          "score": 0.595,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c107",
+          "name": "Framacolibri",
+          "url": "https://framacolibri.org",
+          "connector_key": "discourse",
+          "score": 0.595,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c83",
+          "name": "KDE Discuss",
+          "url": "https://discuss.kde.org",
+          "connector_key": "discourse",
+          "score": 0.595,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        },
+        {
+          "destination_id": "c191",
+          "name": "Odysee",
+          "url": "https://odysee.com",
+          "connector_key": "assisted",
+          "score": 0.595,
+          "reason": "audience match: creators, video (2/2 of the content's topics); shared topics: video, creator; relevance 4/5; a person posts (assist pack)",
+          "components": {
+            "topic": 0.5,
+            "relevance": 0.8,
+            "past": 0.5,
+            "headroom": 1.0
+          }
+        }
+      ]
+    }
+  ]
+}

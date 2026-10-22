@@ -1,0 +1,590 @@
+{
+  "name": "01_timeout_retry_same_key",
+  "description": "Hard case 1: publish times out (post created, answer lost); job retries with the same key; no duplicate; client retry returns the same job",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "ab61f2de1de94403b6156054666f9a15"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "7d13508649094bf59b36d4a69257ae40",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-22T18:08:34.263763Z"
+      },
+      "ms": 44
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-01 93c32869",
+          "url": "http://mock:9000/batch/forum-01-93c32869",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "7d13508649094bf59b36d4a69257ae40"
+        },
+        "idempotency_key": "b2cc35d9b4d84c8997d70a9b45340f97"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "f1fec1e24ca146d8b15b7e1f4a862275",
+        "name": "batch-01 93c32869",
+        "url": "http://mock:9000/batch/forum-01-93c32869",
+        "normalized_url": "https://mock:9000/batch/forum-01-93c32869",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-01-93c32869"
+        },
+        "connection_id": "7d13508649094bf59b36d4a69257ae40",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T18:08:34.340042Z"
+      },
+      "ms": 76
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "f1fec1e24ca146d8b15b7e1f4a862275"
+        },
+        "idempotency_key": "ac43f9496ed94261a74274e47b4d0de4"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "9621cc3302734454ac8256aa3ddcd752",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "9621cc3302734454ac8256aa3ddcd752",
+          "destination_id": "f1fec1e24ca146d8b15b7e1f4a862275",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.08,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "platform_post_id": "5",
+                "live_url": "http://mock:9000/batch/forum-01-93c32869/t/connector-certification-test-9621cc33-please-ignore/5",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 8,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-01-93c32869/t/connector-certification-test-9621cc33-please-ignore/5"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 8,
+              "result": {
+                "views": 120,
+                "likes": 9,
+                "comments": 3,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": 9
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 9,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 7,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/f1fec1e24ca146d8b15b7e1f4a862275/9621cc3302734454ac8256aa3ddcd752/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180834Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0c4619a6fc82f61b9cc27116a3a8080e48c8bb21733274696b4303ecab1f8327",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/f1fec1e24ca146d8b15b7e1f4a862275/9621cc3302734454ac8256aa3ddcd752/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180834Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=02c335d571d8cbcd6b6501ea878bd58548aef0edf2f8cfa19d4d2eb4999fc827"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/9621cc3302734454ac8256aa3ddcd752",
+          "evidence": "http://localhost:8333/longtail-network/certifications/f1fec1e24ca146d8b15b7e1f4a862275/9621cc3302734454ac8256aa3ddcd752/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180834Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0c4619a6fc82f61b9cc27116a3a8080e48c8bb21733274696b4303ecab1f8327",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/f1fec1e24ca146d8b15b7e1f4a862275/9621cc3302734454ac8256aa3ddcd752/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180834Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=02c335d571d8cbcd6b6501ea878bd58548aef0edf2f8cfa19d4d2eb4999fc827"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:34.408836Z",
+        "started_at": "2026-10-22T18:08:34.885248Z",
+        "finished_at": "2026-10-22T18:08:34.985580Z"
+      },
+      "ms": 1089
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:9000/__admin/faults",
+        "body": {
+          "platform": "discourse",
+          "instance": "batch/forum-01-93c32869",
+          "op": "publish",
+          "kind": "timeout",
+          "delay_s": 12
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "discourse",
+          "op": "publish",
+          "kind": "timeout",
+          "instance": "batch/forum-01-93c32869",
+          "times": 1,
+          "delay_s": 12.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 2040
+    },
+    {
+      "name": "pub",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "f1fec1e24ca146d8b15b7e1f4a862275",
+          "rendition": {
+            "title": "How do small teams plan weekly video?",
+            "body": "We batch-record on Mondays. What works for you?"
+          }
+        },
+        "idempotency_key": "batch-01-93c32869"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "95e529b509c54e7b92ffd76c55e0b118",
+          "destination_id": "f1fec1e24ca146d8b15b7e1f4a862275",
+          "platform_post_id": "7",
+          "live_url": "http://mock:9000/batch/forum-01-93c32869/t/how-do-small-teams-plan-weekly-video/7",
+          "status": "published",
+          "warnings": [
+            "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+            "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+          ],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/5 posts in the last 1 day, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+            "kind": "publication",
+            "created_at": "2026-10-22T18:08:50.093594+00:00",
+            "connectors": [
+              {
+                "key": "discourse",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "local"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 17,
+              "validate": 20,
+              "publish": 12037,
+              "total": 12072
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [
+              "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+              "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+            ],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "http://localhost:8333/longtail-network/publications/95e529b509c54e7b92ffd76c55e0b118/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180850Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8b2506993ba68c07fc71e6e1c84051116b3ebe8fbc8e757d27c2740004cc9a00",
+            "live_url": "http://mock:9000/batch/forum-01-93c32869/t/how-do-small-teams-plan-weekly-video/7"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+          "manifest": "http://localhost:8333/longtail-network/publications/95e529b509c54e7b92ffd76c55e0b118/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180850Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8b2506993ba68c07fc71e6e1c84051116b3ebe8fbc8e757d27c2740004cc9a00",
+          "live_url": "http://mock:9000/batch/forum-01-93c32869/t/how-do-small-teams-plan-weekly-video/7"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:37.544184Z",
+        "started_at": "2026-10-22T18:08:38.017654Z",
+        "finished_at": "2026-10-22T18:08:50.101581Z"
+      },
+      "ms": 13247
+    },
+    {
+      "name": "client_retry",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "f1fec1e24ca146d8b15b7e1f4a862275",
+          "rendition": {
+            "title": "How do small teams plan weekly video?",
+            "body": "We batch-record on Mondays. What works for you?"
+          }
+        },
+        "idempotency_key": "batch-01-93c32869"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "95e529b509c54e7b92ffd76c55e0b118",
+          "destination_id": "f1fec1e24ca146d8b15b7e1f4a862275",
+          "platform_post_id": "7",
+          "live_url": "http://mock:9000/batch/forum-01-93c32869/t/how-do-small-teams-plan-weekly-video/7",
+          "status": "published",
+          "warnings": [
+            "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+            "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+          ],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/5 posts in the last 1 day, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+            "kind": "publication",
+            "created_at": "2026-10-22T18:08:50.093594+00:00",
+            "connectors": [
+              {
+                "key": "discourse",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "local"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 17,
+              "validate": 20,
+              "publish": 12037,
+              "total": 12072
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [
+              "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+              "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+            ],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "http://localhost:8333/longtail-network/publications/95e529b509c54e7b92ffd76c55e0b118/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180850Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8b2506993ba68c07fc71e6e1c84051116b3ebe8fbc8e757d27c2740004cc9a00",
+            "live_url": "http://mock:9000/batch/forum-01-93c32869/t/how-do-small-teams-plan-weekly-video/7"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+          "manifest": "http://localhost:8333/longtail-network/publications/95e529b509c54e7b92ffd76c55e0b118/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180850Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8b2506993ba68c07fc71e6e1c84051116b3ebe8fbc8e757d27c2740004cc9a00",
+          "live_url": "http://mock:9000/batch/forum-01-93c32869/t/how-do-small-teams-plan-weekly-video/7"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:37.544184Z",
+        "started_at": "2026-10-22T18:08:38.017654Z",
+        "finished_at": "2026-10-22T18:08:50.101581Z"
+      },
+      "ms": 1068
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "result.warnings",
+      "contains": "RETRIED_AFTER_TIMEOUT",
+      "actual": [
+        "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+        "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+      ],
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "result.warnings",
+      "contains": "IDEMPOTENT_REPLAY",
+      "actual": [
+        "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+        "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+      ],
+      "ok": true
+    },
+    {
+      "step": "client_retry",
+      "path": "job_id",
+      "equals": "e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+      "actual": "e0eb0ff3aa4d4fb1a1c43bcb0d208260",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

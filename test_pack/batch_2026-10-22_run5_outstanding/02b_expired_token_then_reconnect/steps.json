@@ -1,0 +1,546 @@
+{
+  "name": "02b_expired_token_then_reconnect",
+  "description": "Hard case 2b: expired token pauses the connection; posting resumes only after reconnect",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections",
+        "body": {
+          "connector_key": "devto",
+          "name": "batch forem",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          }
+        },
+        "idempotency_key": "45fe2ee23fec4794b07bdccbd84adc40"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "58ff4bda85674e02ad9a7f1118caf1db",
+        "connector_key": "devto",
+        "name": "batch forem",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-22T18:08:56.227657Z"
+      },
+      "ms": 68
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/destinations",
+        "body": {
+          "name": "batch-02b 93c32869",
+          "url": "http://mock:9000/batch/forem-02b-93c32869",
+          "connector_key": "devto",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "58ff4bda85674e02ad9a7f1118caf1db"
+        },
+        "idempotency_key": "0fca64a879f14851ab6e6b5779248f0d"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "3973efc79eb14371be84493c92acb6b6",
+        "name": "batch-02b 93c32869",
+        "url": "http://mock:9000/batch/forem-02b-93c32869",
+        "normalized_url": "https://mock:9000/batch/forem-02b-93c32869",
+        "platform_key": "devto",
+        "connector_key": "devto",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/batch/forem-02b-93c32869"
+        },
+        "connection_id": "58ff4bda85674e02ad9a7f1118caf1db",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T18:08:56.300921Z"
+      },
+      "ms": 83
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/certifications",
+        "body": {
+          "destination_id": "3973efc79eb14371be84493c92acb6b6"
+        },
+        "idempotency_key": "65818fdf1a47409e9f0f4be03946c021"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "e613c36f3a5c4067ad8e58fae204572b",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "e613c36f3a5c4067ad8e58fae204572b",
+          "destination_id": "3973efc79eb14371be84493c92acb6b6",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.11,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "article",
+                "content_types": [
+                  "article",
+                  "text"
+                ],
+                "spec": {
+                  "title_max_chars": 128,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": 4,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 1,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 19,
+              "result": {
+                "platform_post_id": "10",
+                "live_url": "http://mock:9000/batch/forem-02b-93c32869/__live/devto/10",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forem-02b-93c32869/__live/devto/10"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "views": 340,
+                "likes": 21,
+                "comments": 5,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": null
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 17,
+              "result": {
+                "deleted": true,
+                "note": "Forem API cannot delete articles; the article was unpublished"
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 6,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "http://localhost:8333/longtail-network/certifications/3973efc79eb14371be84493c92acb6b6/e613c36f3a5c4067ad8e58fae204572b/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180856Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3833e5e72e903d5d39fbbd4283f057a9af73b7ca8794589a3b4811b831d0e83",
+            "live_snapshot": "http://localhost:8333/longtail-network/certifications/3973efc79eb14371be84493c92acb6b6/e613c36f3a5c4067ad8e58fae204572b/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180856Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=4b2d2b9e45ab2ad4b780ffc358955f4aa5045ddcbd5a03fc6925fd274743936a"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/e613c36f3a5c4067ad8e58fae204572b",
+          "evidence": "http://localhost:8333/longtail-network/certifications/3973efc79eb14371be84493c92acb6b6/e613c36f3a5c4067ad8e58fae204572b/run.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180856Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3833e5e72e903d5d39fbbd4283f057a9af73b7ca8794589a3b4811b831d0e83",
+          "live_snapshot": "http://localhost:8333/longtail-network/certifications/3973efc79eb14371be84493c92acb6b6/e613c36f3a5c4067ad8e58fae204572b/live_snapshot.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180856Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=4b2d2b9e45ab2ad4b780ffc358955f4aa5045ddcbd5a03fc6925fd274743936a"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:56.379285Z",
+        "started_at": "2026-10-22T18:08:56.392016Z",
+        "finished_at": "2026-10-22T18:08:56.528571Z"
+      },
+      "ms": 1089
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:9000/__admin/faults",
+        "body": {
+          "platform": "devto",
+          "instance": "batch/forem-02b-93c32869",
+          "op": "publish",
+          "kind": "auth_expired"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "devto",
+          "op": "publish",
+          "kind": "auth_expired",
+          "instance": "batch/forem-02b-93c32869",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 5
+    },
+    {
+      "name": "expired",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "3973efc79eb14371be84493c92acb6b6",
+          "rendition": {
+            "title": "Batch post A",
+            "body": "x",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "262e04639a4242758191790225128d0a"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "49868b76ff874c61a46dd8bbe76a4d93",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 40,
+        "result": null,
+        "error": {
+          "code": "CONNECTION_AUTH_EXPIRED",
+          "message": "unauthorized",
+          "retryable": false,
+          "details": {
+            "op": "publish",
+            "status": 401,
+            "platform_message": "unauthorized"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/49868b76ff874c61a46dd8bbe76a4d93"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:57.477136Z",
+        "started_at": "2026-10-22T18:08:57.551900Z",
+        "finished_at": "2026-10-22T18:08:57.608071Z"
+      },
+      "ms": 1094
+    },
+    {
+      "name": "paused",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "3973efc79eb14371be84493c92acb6b6",
+          "rendition": {
+            "title": "Batch post B",
+            "body": "x",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "2e1840dd6c5c4e98b5518d085896c2c6"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "3185a067b0f747d3a316c76e9a11640a",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "CONNECTION_AUTH_EXPIRED",
+          "message": "Connection is expired; the owner must reconnect before posting",
+          "retryable": false,
+          "details": {
+            "connection_id": "58ff4bda85674e02ad9a7f1118caf1db",
+            "connection_status": "expired"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/3185a067b0f747d3a316c76e9a11640a"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:58.572626Z",
+        "started_at": "2026-10-22T18:08:58.626585Z",
+        "finished_at": "2026-10-22T18:08:58.643188Z"
+      },
+      "ms": 1095
+    },
+    {
+      "name": "reconnect",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/connections/58ff4bda85674e02ad9a7f1118caf1db/reconnect",
+        "body": {},
+        "idempotency_key": "0e2ba72c514341748f5226af59bb33eb"
+      },
+      "http_status": 200,
+      "response": {
+        "connection_id": "58ff4bda85674e02ad9a7f1118caf1db",
+        "status": "active",
+        "verified": false,
+        "expires_at": null,
+        "note": "This connector cannot check credentials directly; run a certification."
+      },
+      "ms": 84
+    },
+    {
+      "name": "resumed",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/publications",
+        "body": {
+          "destination_id": "3973efc79eb14371be84493c92acb6b6",
+          "rendition": {
+            "title": "Batch post C",
+            "body": "x",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "2110fdd9c8854ed0ba567c01c32cf471"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "e3e23849fede4eabae989b2a45c63981",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "d26ea403dc8441a88ab570b81c1e9f92",
+          "destination_id": "3973efc79eb14371be84493c92acb6b6",
+          "platform_post_id": "11",
+          "live_url": "http://mock:9000/batch/forem-02b-93c32869/__live/devto/11",
+          "status": "published",
+          "warnings": [],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/5 posts in the last 1 day, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "Destination allows self-promotion",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "e3e23849fede4eabae989b2a45c63981",
+            "kind": "publication",
+            "created_at": "2026-10-22T18:09:00.716271+00:00",
+            "connectors": [
+              {
+                "key": "devto",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "local"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 12,
+              "validate": 16,
+              "publish": 9,
+              "total": 38
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "http://localhost:8333/longtail-network/publications/d26ea403dc8441a88ab570b81c1e9f92/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180900Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=48e54a60b2997f1d9ef85530777f28290d6a7706e9399a3b3c77e5d02d2fd4e4",
+            "live_url": "http://mock:9000/batch/forem-02b-93c32869/__live/devto/11"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/e3e23849fede4eabae989b2a45c63981",
+          "manifest": "http://localhost:8333/longtail-network/publications/d26ea403dc8441a88ab570b81c1e9f92/result.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=anonymous%2F20261022%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261022T180900Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=48e54a60b2997f1d9ef85530777f28290d6a7706e9399a3b3c77e5d02d2fd4e4",
+          "live_url": "http://mock:9000/batch/forem-02b-93c32869/__live/devto/11"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T18:08:59.752418Z",
+        "started_at": "2026-10-22T18:09:00.673233Z",
+        "finished_at": "2026-10-22T18:09:00.723040Z"
+      },
+      "ms": 1094
+    }
+  ],
+  "checks": [
+    {
+      "step": "expired",
+      "path": "error.code",
+      "equals": "CONNECTION_AUTH_EXPIRED",
+      "actual": "CONNECTION_AUTH_EXPIRED",
+      "ok": true
+    },
+    {
+      "step": "paused",
+      "path": "error.message",
+      "contains": "reconnect",
+      "actual": "Connection is expired; the owner must reconnect before posting",
+      "ok": true
+    },
+    {
+      "step": "reconnect",
+      "path": "status",
+      "equals": "active",
+      "actual": "active",
+      "ok": true
+    },
+    {
+      "step": "resumed",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

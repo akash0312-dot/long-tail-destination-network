@@ -10,6 +10,8 @@ COPY pytest.ini openapi.yaml ./
 COPY app ./app
 COPY mock_platforms ./mock_platforms
 COPY bootstrap ./bootstrap
+COPY scripts ./scripts
+COPY catalogue_data ./catalogue_data
 COPY tests ./tests
 
 RUN useradd --create-home app && mkdir -p /srv/data && chown app /srv/data

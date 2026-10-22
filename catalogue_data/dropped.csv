@@ -1,0 +1,28 @@
+name,url,connector_key,reason
+lemmy.world Filmmaking,https://lemmy.world/c/filmmaking,lemmy,community not found (HTTP 404)
+lemmy.world Animation,https://lemmy.world/c/animation,lemmy,only moderators can post
+lemmy.world Marketing,https://lemmy.world/c/marketing,lemmy,community not found (HTTP 404)
+lemmy.world Side Projects,https://lemmy.world/c/sideprojects,lemmy,community not found (HTTP 404)
+lemmy.world Stable Diffusion,https://lemmy.world/c/stable_diffusion,lemmy,community not found (HTTP 400)
+programming.dev AI,https://programming.dev/c/ai,lemmy,community not found (HTTP 404)
+programming.dev Showcase,https://programming.dev/c/showcase,lemmy,community not found (HTTP 404)
+lemmy.ml Selfhosted,https://lemmy.ml/c/selfhosted,lemmy,community not found (HTTP 400)
+sh.itjust.works Technology,https://sh.itjust.works/c/technology,lemmy,only moderators can post
+lemmy.ca Technology,https://lemmy.ca/c/technology,lemmy,community not found (HTTP 404)
+infosec.pub Technology,https://infosec.pub/c/technology,lemmy,community not found (HTTP 404)
+discuss.tchncs.de Technology,https://discuss.tchncs.de/c/technology,lemmy,community not found (HTTP 404)
+sopuli.xyz Technology,https://sopuli.xyz/c/technology,lemmy,community not found (HTTP 404)
+reddthat.com Technology,https://reddthat.com/c/technology,lemmy,community not found (HTTP 404)
+Render Community,https://community.render.com,discourse,unreachable (ConnectError)
+Cloudflare Community,https://community.cloudflare.com,discourse,not verifiable as a Discourse forum (about.json HTTP 403)
+Figma Forum,https://forum.figma.com,discourse,not verifiable as a Discourse forum (about.json HTTP 404)
+Codecademy Forums,https://discuss.codecademy.com,discourse,unreachable (ConnectError)
+Vue Forum,https://forum.vuejs.org,discourse,not verifiable as a Discourse forum (about.json HTTP 406)
+Webflow Forum,https://forum.webflow.com,discourse,not verifiable as a Discourse forum (about.json HTTP 200)
+Unity Discussions,https://discussions.unity.com,discourse,not verifiable as a Discourse forum (about.json HTTP 403)
+openFrameworks Forum,https://forum.openframeworks.cc,discourse,not verifiable as a Discourse forum (about.json HTTP 403)
+Jellyfin Forum,https://forum.jellyfin.org,discourse,not verifiable as a Discourse forum (about.json HTTP 200)
+Kaggle-adjacent MLOps Discuss,https://discuss.mlflow.org,discourse,unreachable (ConnectError)
+CodeNewbie Community,https://community.codenewbie.org,devto,unreachable (ConnectTimeout)
+PeerTube Linux Rocks,https://peertube.linuxrocks.online,peertube,not verifiable as a PeerTube instance (HTTP 502)
+Designer News,https://www.designernews.co,assisted,HTTP 402
