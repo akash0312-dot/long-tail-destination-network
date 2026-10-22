@@ -129,29 +129,88 @@ def _post(c: httpx.Client, path: str, key: str, body: dict) -> dict | None:
     return None
 
 
-def seed_catalogue() -> None:
-    headers = {}
-    if os.environ.get("API_TOKEN"):
-        headers["Authorization"] = f"Bearer {os.environ['API_TOKEN']}"
-    with httpx.Client(timeout=30, headers=headers) as c:
-        ghost_conn = _post(c, "/api/v1/connections", "seed-conn-ghost-local", {
-            "connector_key": "ghost", "name": "Local Ghost admin integration", "auth_type": "api_key",
-            "secret_refs": {"admin_api_key": f"file:{SECRETS_DIR}/ghost_admin_api_key"}})
-        lemmy_conn = _post(c, "/api/v1/connections", "seed-conn-lemmy-local", {
-            "connector_key": "lemmy", "name": "Local Lemmy test account", "auth_type": "api_key",
-            "secret_refs": {"password": "env:LEMMY_ADMIN_PASSWORD"}, "params": {"username": LEMMY_USER}})
-        if ghost_conn:
-            _post(c, "/api/v1/destinations", "seed-dest-ghost-local", {
-                "name": "Long-Tail Test Blog (local Ghost)", "url": GHOST, "connector_key": "ghost",
-                "connection_id": ghost_conn["id"], "category": "blog", "audience_tags": ["creators", "ai"],
-                "self_promo_allowed": True, "automation_allowed": True})
-        if lemmy_conn:
-            _post(c, "/api/v1/destinations", "seed-dest-lemmy-local", {
-                "name": f"!{LEMMY_COMMUNITY} (local Lemmy)", "url": f"{LEMMY}/c/{LEMMY_COMMUNITY}",
-                "connector_key": "lemmy", "params": {"base_url": LEMMY, "community": LEMMY_COMMUNITY},
-                "connection_id": lemmy_conn["id"], "category": "forum", "audience_tags": ["ai", "founders"],
-                "frequency_cap": {"posts": 1, "per_days": 7}, "self_promo_allowed": False,
-                "automation_allowed": True})
+MOCK = os.environ.get("MOCK_PLATFORM_URL", "http://mock:9000")
+
+# (key, connection, destination) for every Core connector type. Ghost and Lemmy are real local instances; the rest
+# are served by the mock platform server. Each destination records its posting rules, which certification requires.
+SEEDS = [
+    ("ghost",
+     {"name": "Local Ghost admin integration", "secret_refs": {"admin_api_key": f"file:{SECRETS_DIR}/ghost_admin_api_key"}},
+     {"name": "Long-Tail Test Blog (local Ghost)", "url": GHOST, "category": "blog",
+      "audience_tags": ["creators", "ai"], "self_promo_allowed": True,
+      "frequency_cap": {"posts": 10, "per_days": 1}, "link_policy": {"allowed": True, "max_links": 10},
+      "rules_url": f"{GHOST}/"}),
+    ("lemmy",
+     {"name": "Local Lemmy test account", "secret_refs": {"password": "env:LEMMY_ADMIN_PASSWORD"},
+      "params": {"username": LEMMY_USER}},
+     {"name": f"!{LEMMY_COMMUNITY} (local Lemmy)", "url": f"{LEMMY}/c/{LEMMY_COMMUNITY}",
+      "params": {"base_url": LEMMY, "community": LEMMY_COMMUNITY}, "category": "forum",
+      "audience_tags": ["ai", "founders"], "self_promo_allowed": False,
+      "frequency_cap": {"posts": 1, "per_days": 7}, "link_policy": {"allowed": True, "max_links": 2},
+      "rules_url": f"{LEMMY}/c/{LEMMY_COMMUNITY}"}),
+    ("discourse",
+     {"name": "Mock Discourse API key", "secret_refs": {"api_key": "env:MOCK_API_KEY"},
+      "params": {"api_username": "longtail_bot"}},
+     {"name": "Creator Ops Forum (local mock Discourse)", "url": f"{MOCK}/local/discourse-demo",
+      "params": {"category_id": 4}, "category": "forum", "audience_tags": ["creators", "video"],
+      "self_promo_allowed": False, "frequency_cap": {"posts": 1, "per_days": 3},
+      "link_policy": {"allowed": True, "max_links": 1}, "rules_url": f"{MOCK}/local/discourse-demo/guidelines"}),
+    ("devto",
+     {"name": "Mock Forem API key", "secret_refs": {"api_key": "env:MOCK_API_KEY"}},
+     {"name": "Dev community (local mock Forem)", "url": f"{MOCK}/local/forem-demo", "category": "developer_blog",
+      "audience_tags": ["saas", "ai"], "self_promo_allowed": True, "frequency_cap": {"posts": 2, "per_days": 7},
+      "link_policy": {"allowed": True}, "rules_url": f"{MOCK}/local/forem-demo/code-of-conduct"}),
+    ("webhook",
+     {"name": "Demo partner signing secret", "secret_refs": {"signing_secret": "env:PARTNER_WEBHOOK_SECRET"}},
+     {"name": "Partner site demo (local mock partner)", "url": f"{MOCK}/partner/partner-demo", "category": "partner",
+      "audience_tags": ["marketing"], "self_promo_allowed": True, "frequency_cap": {"posts": 5, "per_days": 1},
+      "link_policy": {"allowed": True}, "rules_url": f"{MOCK}/partner/partner-demo/terms"}),
+    ("assisted",
+     None,
+     {"name": "Show-and-tell board (assisted, a person posts)", "url": "https://news.example/submit",
+      "params": {"submit_url_template": "https://news.example/submit?url={url}&title={title}"},
+      "category": "aggregator", "audience_tags": ["founders"], "self_promo_allowed": False,
+      "automation_allowed": False, "frequency_cap": {"posts": 1, "per_days": 30},
+      "link_policy": {"allowed": True, "max_links": 1}, "rules_url": "https://news.example/guidelines"}),
+]
+
+
+def seed_catalogue(c: httpx.Client) -> list[str]:
+    """Register connections (secret refs only) and destinations; returns the seeded destination ids."""
+    for key, conn, dest in SEEDS:
+        conn_id = None
+        if conn:
+            created = _post(c, "/api/v1/connections", f"seed-conn-{key}",
+                            {"connector_key": key, "auth_type": "api_key", **conn})
+            conn_id = created["id"] if created else None
+        _post(c, "/api/v1/destinations", f"seed-dest-{key}",
+              {"connector_key": key, **dest, **({"connection_id": conn_id} if conn_id else {})})
+    names = {d["name"] for _, _, d in SEEDS}
+    items = c.get(f"{API}/api/v1/destinations").json()["items"]
+    return [d["id"] for d in items if d["name"] in names]
+
+
+def certify_all(c: httpx.Client, destination_ids: list[str]) -> bool:
+    """Certify every seeded destination (real test post, live check, delete) and wait for the results."""
+    jobs = {}
+    for dest_id in destination_ids:
+        r = c.post(f"{API}/api/v1/certifications", json={"destination_id": dest_id},
+                   headers={"Idempotency-Key": f"bootstrap-cert-{dest_id}-{int(time.time())}"})
+        jobs[dest_id] = r.json()["job_id"]
+    ok = True
+    deadline = time.time() + 300
+    for dest_id, job_id in jobs.items():
+        while time.time() < deadline:
+            job = c.get(f"{API}/api/v1/jobs/{job_id}").json()
+            if job["status"] in ("succeeded", "failed"):
+                break
+            time.sleep(1)
+        passed = job["status"] == "succeeded"
+        ok &= passed
+        log.info("certification", extra={"destination_id": dest_id, "passed": passed,
+                                         "destination_level": (job.get("result") or {}).get("level"),
+                                         "error": (job.get("error") or {}).get("message")})
+    return ok
 
 
 def main() -> int:
@@ -160,8 +219,11 @@ def main() -> int:
     wait_for(f"{LEMMY}/api/v3/site", "lemmy")
     provision_ghost()
     provision_lemmy()
-    seed_catalogue()
-    log.info("bootstrap complete")
+    headers = {"Authorization": f"Bearer {os.environ['API_TOKEN']}"} if os.environ.get("API_TOKEN") else {}
+    with httpx.Client(timeout=30, headers=headers) as c:
+        ids = seed_catalogue(c)
+        certified = certify_all(c, ids)
+    log.info("bootstrap complete", extra={"destinations": len(ids), "all_certified": certified})
     return 0
 
 

@@ -15,6 +15,10 @@ x-app: &app
     SIMULATION_MODE: ${SIMULATION_MODE:-false}
     JOB_EXECUTOR: worker
     LEMMY_ADMIN_PASSWORD: ${LEMMY_ADMIN_PASSWORD:-local-only-lemmy-pass-123}
+    # mock-backed demo destinations (Discourse, Forem, partner webhook); the mock verifies the partner signature
+    MOCK_API_KEY: ${MOCK_API_KEY:-local-mock-key}
+    PARTNER_WEBHOOK_SECRET: ${PARTNER_WEBHOOK_SECRET:-local-partner-secret}
+    MOCK_WEBHOOK_SECRET: ${PARTNER_WEBHOOK_SECRET:-local-partner-secret}
   volumes:
     - app-secrets:/run/app-secrets:ro
   restart: unless-stopped

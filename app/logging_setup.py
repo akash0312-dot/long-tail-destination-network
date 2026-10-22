@@ -51,7 +51,7 @@ class JsonFormatter(logging.Formatter):
         }
         for k, v in record.__dict__.items():
             if k not in self._std and not k.startswith("_"):
-                payload[k] = v
+                payload[f"extra_{k}" if k in payload else k] = v  # never overwrite the reserved fields
         if record.exc_info:
             payload["exception"] = self.formatException(record.exc_info)
         return redact(json.dumps(payload, default=str))

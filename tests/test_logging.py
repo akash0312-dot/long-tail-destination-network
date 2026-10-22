@@ -32,6 +32,13 @@ def test_json_log_line_has_required_fields():
     assert line["correlation_id"] == "cid-1"
 
 
+def test_extra_fields_cannot_overwrite_reserved_fields():
+    rec = logging.LogRecord("x", logging.INFO, __file__, 1, "hello", None, None)
+    rec.level = "L3"
+    line = json.loads(JsonFormatter().format(rec))
+    assert line["level"] == "INFO" and line["extra_level"] == "L3"
+
+
 def test_secret_from_env_ref_never_logged(client, mock, monkeypatch, capsys):
     monkeypatch.setenv("LEMMY_SECRET_PW", "s3cret-lemmy-password")
     body = {"rendition": {"title": "hello", "body": "x"},

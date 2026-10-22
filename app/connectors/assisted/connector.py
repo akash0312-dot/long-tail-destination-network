@@ -75,11 +75,12 @@ class Connector(BaseConnector):
         storage = get_storage()
         post_md = f"# {r.get('title', '')}\n\n{caption}\n\n---\nSubmit here: {deep_link}\n\nChecklist:\n" + \
                   "\n".join(f"- [ ] {c}" for c in checklist)
-        files = [{"name": "post.md", "mime_type": "text/markdown", "kind": "caption",
+        files = [{"name": "post.md", "mime_type": "text/markdown", "kind": "caption", "storage_key": f"{prefix}/post.md",
                   "url": storage.put_bytes(f"{prefix}/post.md", post_md.encode(), "text/markdown")}]
         pack = {"caption": caption, "deep_link": deep_link, "checklist": checklist, "media": media,
                 "warnings": warnings}
         files.append({"name": "pack.json", "mime_type": "application/json", "kind": "pack",
+                      "storage_key": f"{prefix}/pack.json",
                       "url": storage.put_bytes(f"{prefix}/pack.json", json.dumps(pack, indent=2).encode(),
                                                "application/json")})
         return {"files": files + media, "caption": caption, "deep_link": deep_link, "checklist": checklist,

@@ -5,14 +5,16 @@ from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.schemas import (ConnectionCreate, ConnectionUpdate, DestinationCreate, DestinationUpdate,
-                             PublicationCreate)
+from app.api.schemas import (CertificationCreate, ConnectionCreate, ConnectionUpdate, DestinationCreate,
+                             DestinationUpdate, PublicationCreate)
 from app.config import get_settings
 from app.connectors.registry import all_connectors, get_connector
+from app.connectors.router import call_method
 from app.db import get_db
 from app.errors import AppError, ErrorCode
 from app.jobs import create_job, job_view
-from app.models import Connection, Destination, Job, Publication
+from app.models import CertificationRun, Connection, Destination, Job, Publication
+from app.services.publishing import connection_ref, destination_ref
 from app.storage import LocalStorage, get_storage
 from app.urls import normalize_url
 
@@ -51,6 +53,25 @@ def create_connection(body: ConnectionCreate, db: Session = Depends(get_db)) -> 
 @router.get("/connections", tags=["catalogue"])
 def list_connections(db: Session = Depends(get_db)) -> dict:
     return {"items": [_connection_view(c) for c in db.execute(select(Connection)).scalars()]}
+
+
+@router.post("/connections/{connection_id}/reconnect", tags=["catalogue"],
+             summary="Verify credentials (refresh_auth where supported) and reactivate the connection")
+def reconnect_connection(connection_id: str, db: Session = Depends(get_db)) -> dict:
+    c = db.get(Connection, connection_id)
+    if c is None:
+        raise AppError(ErrorCode.NOT_FOUND, "Connection not found")
+    connector = get_connector(c.connector_key, check_enabled=False)
+    dest = db.execute(select(Destination).where(Destination.connection_id == c.id)).scalars().first()
+    verified, expires_at = False, None
+    if "refresh_auth" in connector.manifest.capabilities:
+        result = call_method(c.connector_key, "refresh_auth", {
+            "connection": connection_ref(c).model_dump(),
+            "destination": destination_ref(dest).model_dump() if dest else None})
+        verified, expires_at = True, result.get("expires_at")
+    c.status = "active"
+    return {"connection_id": c.id, "status": c.status, "verified": verified, "expires_at": expires_at,
+            "note": None if verified else "This connector cannot check credentials directly; run a certification."}
 
 
 @router.patch("/connections/{connection_id}", tags=["catalogue"], summary="Update status (e.g. revoked) or refs")
@@ -136,6 +157,25 @@ def get_publication(publication_id: str, db: Session = Depends(get_db)) -> dict:
     if p is None:
         raise AppError(ErrorCode.NOT_FOUND, "Publication not found")
     return _row(p)
+
+
+# ---------------------------------------------------------------- certification
+@router.post("/certifications", status_code=202, tags=["certification"],
+             summary="Certify a destination: real test post, live check, status, delete, evidence (job)")
+def create_certification(body: CertificationCreate, db: Session = Depends(get_db)):
+    if db.get(Destination, body.destination_id) is None:
+        raise AppError(ErrorCode.NOT_FOUND, "Destination not found", {"destination_id": body.destination_id})
+    job = create_job("certification", {"destination_id": body.destination_id},
+                     str(body.callback_url) if body.callback_url else None)
+    return JSONResponse(jsonable_encoder(job_view(job)), status_code=202, headers={"Location": f"/api/v1/jobs/{job.id}"})
+
+
+@router.get("/certifications", tags=["certification"], summary="Certification runs with evidence links")
+def list_certifications(destination_id: str | None = None, db: Session = Depends(get_db)) -> dict:
+    q = select(CertificationRun).order_by(CertificationRun.created_at.desc())
+    if destination_id:
+        q = q.where(CertificationRun.destination_id == destination_id)
+    return {"items": [_row(r) for r in db.execute(q.limit(200)).scalars()]}
 
 
 # ---------------------------------------------------------------- jobs

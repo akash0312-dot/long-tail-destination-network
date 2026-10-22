@@ -70,6 +70,12 @@ class DestinationUpdate(BaseModel):
     level: str | None = Field(default=None, pattern="^L[0-4]$")
 
 
+class CertificationCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    destination_id: str
+    callback_url: HttpUrl | None = None
+
+
 class PublicationCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     destination_id: str
