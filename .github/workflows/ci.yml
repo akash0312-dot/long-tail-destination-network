@@ -58,6 +58,11 @@ jobs:
       - name: Batch runner over every hard-case scenario
         run: python -m app.batch --input test_inputs --output ci_batch
 
+      - name: Log audit (own hosts only, every test post deleted, 429 backoff, no secrets)
+        run: |
+          docker compose logs --no-color > compose.log 2>&1
+          python scripts/log_audit.py compose.log --out ci_log_audit
+
       - name: Collect logs
         if: always()
         run: docker compose logs --no-color > compose.log 2>&1 || true
@@ -70,3 +75,4 @@ jobs:
             bootstrap.log
             compose.log
             ci_batch/
+            ci_log_audit/

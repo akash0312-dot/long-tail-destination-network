@@ -23,8 +23,8 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - [x] **Clean-machine test** of `docker compose up` + tests (must-have 8) — CI run #1 passed on a fresh Ubuntu runner (3 m 24 s), runs on every push
 - [x] **Secret scan** (gitleaks) — clean over the full history, locally and in CI run #1 (12 s)
 - [x] **Certification pack** exported into the repo (must-have 2 evidence) — [certification_pack/](certification_pack/README.md): 9 destinations, one per connector (L1–L4), each with run.json, live snapshot, screenshot and deletion confirmation; cleanup 0.1–2.1 s. Credentials in captured pages are redacted (Ghost embeds its Content API key). Re-export: `python scripts/export_certification_pack.py`
-- [ ] **No-spam evidence** written up: log review + policy in REPORT (must-have 5) — *me*
-- [ ] **Clarification email** (contract JSON shape; is mock certification accepted for Discourse/Dev.to/webhook) (must-haves 1, 2) — *you send; questions drafted in docs/PLAN.md §5*
+- [x] **No-spam evidence** (must-have 5) — [docs/NO_SPAM.md](docs/NO_SPAM.md) + log audit, also in CI
+- [ ] **Clarification email** (must-haves 1, 2) — *you send*: draft ready in `notes/clarification_email.md` (git-ignored, not in the repo); 8 questions
 - [x] Real-instance E2E (`RUN_E2E=1`) — runs in every CI build (passed in run #1); re-check after the last change before submitting
 
 **B. Outstanding level (counts only if every item is verified)**
@@ -52,7 +52,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 2 | Six Core connectors certified | 🟡 | `tests/test_certification.py`, bootstrap log, `tests/test_e2e_local.py`, [certification_pack/](certification_pack/README.md) | All 6 certify (plus MRSS, Hashnode, PeerTube). Ghost + Lemmy on real local instances; Discourse, Dev.to, webhook on faithful mocks — **ask whether mock certification is accepted** |
 | 3 | Configuration, not code | ✅ | `test_one_connector_many_destinations` (7 posting connectors); every batch scenario adds its destination as one API row | |
 | 4 | Rules checked before every post | ✅ | `tests/test_rules.py` (21-case rule set + API tests), batch `04a`, `04b`, `07` | Also enforced on the raw contract path via `validate()` |
-| 5 | Never spam, never cheat | 🟡 | 429 reset-time backoff, certification cleanup always deletes test posts, robots.txt honoured by rules capture, SSRF guard, only own instances/mocks used | Log review evidence + written policy in REPORT ⬜ |
+| 5 | Never spam, never cheat | ✅ | Policy + clause-by-clause evidence: [docs/NO_SPAM.md](docs/NO_SPAM.md). **Log audit** of a full fresh-stack run ([test_pack/log_audit/report.md](test_pack/log_audit/report.md), excerpt in `excerpt.jsonl`): every request went to `ghost:2368`, `lemmy:8536` or `mock:9000`; 22 test posts created, 22 deleted, slowest 2.46 s; a 429 waited 2.0 s from `Retry-After`; 0 secrets. The audit runs in CI on every push (`scripts/log_audit.py`, `tests/test_log_audit.py`) | Third-party connectors certified on mocks by design (see NO_SPAM.md › Limits) |
 | 6 | Safe retries (no duplicate after timeout) | ✅ | `test_timeout_then_retry_same_key_never_duplicates` (7 connectors), `test_publication_job_retries_timeout_with_same_key_and_never_duplicates`, batch `01` | Mutation-checked on Day 1 |
 | 7 | Secrets protected + simulation mode | ✅ | **CI run #1 `secret-scan` passed** (gitleaks v8.18.4, full history, 12 s; [Actions](https://github.com/akash0312-dot/long-tail-destination-network/actions)); `.gitleaks.toml` (default rules + 2-pattern allowlist; a planted fake key is still caught); credentials redacted from captured pages; log redaction `tests/test_logging.py`; container log scan clean (Day 1); `SIMULATION_MODE=true` | Optional: add an automated log scan step to CI |
 | 8 | `docker compose up` with local Lemmy + Ghost + mocks | ✅ | **CI run #1 `clean-machine` passed on a fresh Ubuntu runner (3 m 24 s)**: `.env` from `.env.example` only, `docker compose up --build`, bootstrap certified all 9 seeds, full test suite, real Ghost/Lemmy E2E, all batch scenarios; logs in the `clean-machine-evidence` artifact | |
@@ -61,7 +61,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 ## Levels
 | Level | Item | Status | Evidence |
 |---|---|---|---|
-| Core | All must-haves | ⬜ | blocked on 1, 2, 5, 9 above |
+| Core | All must-haves | ⬜ | blocked on 1, 2 (clarification answers) and 9 (live demo) |
 | Core | Full certification run per Core connector | 🟡 | `test_certification_passes_and_promotes`; bootstrap certifies all 6 on the stack. Export of evidence files ⬜ |
 | Core | Platform errors mapped to shared codes | ✅ | `tests/test_connectors.py` matrix × 7 connectors: 429, expired token, rejected, 5xx/circuit, schema change |
 | Advanced | Catalogue import (1,000 rows < 5 min, row report) | ✅ | `app/catalogue/importer.py`; `test_one_thousand_rows_under_five_minutes` (~10 s); `test_hard_case_csv_*`; batch `09` |
@@ -86,7 +86,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 7 | Files in (upload/URL), files out (S3 links) | ✅ | In: CSV upload or `csv_url` (`test_hard_case_csv_*`, `test_import_from_csv_url`). Out: reports, manifests, evidence, assist packs, feeds in SeaweedFS with links |
 | 8 | JSON logs + correlation id, /health, /ready | ✅ | `app/logging_setup.py`, `test_correlation_id_is_echoed`, `test_health_and_ready` |
 | 9 | Output manifest on every result | ✅ | publication, assist pack, certification, catalogue import, rules capture (providers, model, tokens, cost) |
-| 10 | Batch runner CLI | ✅ | `app/batch.py`, `test_inputs/` (13 scenarios), `test_pack/` |
+| 10 | Batch runner CLI | ✅ | `app/batch.py`, `test_inputs/` (14 scenarios), `test_pack/` |
 
 ## Hard cases
 | # | Situation | Status | Test / scenario |

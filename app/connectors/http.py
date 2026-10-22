@@ -12,6 +12,7 @@ import time
 from collections import deque
 from collections.abc import Callable
 from email.utils import parsedate_to_datetime
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -144,7 +145,8 @@ class PlatformHttp:
                 resp = self.client.request(method, url, **kwargs)
             except httpx.TimeoutException:
                 n = breaker.failure(self.breaker_key)
-                log.warning("platform timeout", extra={"connector": self.connector_key, "op": op, "failures": n})
+                log.warning("platform timeout", extra={"connector": self.connector_key, "op": op, "failures": n,
+                                                       "host": urlsplit(url).netloc})
                 raise AppError(ErrorCode.PLATFORM_UNAVAILABLE, f"Platform did not answer in time during {op}",
                                {"op": op, "timeout": True, "consecutive_failures": n})
             except httpx.TransportError as e:
@@ -153,14 +155,16 @@ class PlatformHttp:
                                {"op": op, "transport_error": type(e).__name__, "consecutive_failures": n})
             elapsed_ms = round((time.monotonic() - started) * 1000)
             log.info("platform call", extra={"connector": self.connector_key, "op": op, "method": method,
-                                              "status": resp.status_code, "elapsed_ms": elapsed_ms})
+                                              "host": urlsplit(url).netloc, "status": resp.status_code,
+                                              "elapsed_ms": elapsed_ms})  # host: audit where every request went
 
             if resp.status_code == 429:
                 wait, source = parse_reset_seconds(resp)
                 if wait <= s.max_inline_backoff_s and attempt < s.max_rate_limit_retries:
                     attempt += 1
                     log.warning("rate limited, backing off", extra={"connector": self.connector_key, "op": op,
-                                                                    "wait_s": wait, "reset_source": source})
+                                                                    "host": urlsplit(url).netloc, "wait_s": wait,
+                                                                    "reset_source": source})
                     time.sleep(wait)
                     continue
                 raise AppError(ErrorCode.PLATFORM_RATE_LIMIT, "Platform rate limit reached; retry after reset time",

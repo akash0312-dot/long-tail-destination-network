@@ -20,6 +20,24 @@
     ]
   },
   {
+    "name": "02d_rate_limit_short_reset_backoff",
+    "description": "Hard case 2a (short reset): 429 with a 2 s reset; the connector waits for the platform's reset time, then succeeds",
+    "setup": {
+      "connection": {"connector_key": "devto", "name": "batch forem", "secret_refs": {"api_key": "env:MOCK_API_KEY"}},
+      "destination": {"name": "batch-02d {run_id}", "url": "{mock}/batch/forem-02d-{run_id}", "connector_key": "devto",
+                      "frequency_cap": {"posts": 5, "per_days": 1}, "link_policy": {"allowed": true}, "self_promo_allowed": true}
+    },
+    "steps": [
+      {"method": "POST", "url": "{mock_host}/__admin/faults", "body": {"platform": "devto", "instance": "batch/forem-02d-{run_id}", "op": "publish", "kind": "rate_limit", "reset_s": 2}},
+      {"method": "POST", "path": "/api/v1/publications", "save_as": "pub",
+       "body": {"destination_id": "{dest.id}", "rendition": {"title": "Repurposing long videos into clips", "body": "A walkthrough.", "content_type": "article"}}}
+    ],
+    "expect": [
+      {"step": "pub", "path": "status", "equals": "succeeded"},
+      {"step": "pub", "path": "result.status", "equals": "published"}
+    ]
+  },
+  {
     "name": "02b_expired_token_then_reconnect",
     "description": "Hard case 2b: expired token pauses the connection; posting resumes only after reconnect",
     "setup": {

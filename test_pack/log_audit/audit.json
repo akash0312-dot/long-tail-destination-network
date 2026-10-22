@@ -1,0 +1,218 @@
+{
+  "log_events": 756,
+  "platform_calls": 169,
+  "hosts_contacted": [
+    "ghost:2368",
+    "lemmy:8536",
+    "mock:9000"
+  ],
+  "allowed_hosts": [
+    "127.0.0.1:9000",
+    "api:8000",
+    "ghost:2368",
+    "lemmy:8536",
+    "localhost:8000",
+    "localhost:9000",
+    "mock:9000"
+  ],
+  "certification_test_posts": [
+    {
+      "job_id": "261a4adf892c401fb4eb61529e1e7c61",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:58.850862+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.06
+    },
+    {
+      "job_id": "3c487c405b5947878d3976f75d130299",
+      "connector": "webhook",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:48:54.910928+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.04
+    },
+    {
+      "job_id": "3c6e43b32b2b42028d0222e3038250e1",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:49:30.723056+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.07
+    },
+    {
+      "job_id": "64600cc73d9a496b8f3657f642a43cca",
+      "connector": "lemmy",
+      "host": "lemmy:8536",
+      "published_at": "2026-10-22T19:48:54.063155+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.26
+    },
+    {
+      "job_id": "678f13c2dc1a48ada24d1a71275b0deb",
+      "connector": "ghost",
+      "host": "ghost:2368",
+      "published_at": "2026-10-22T19:48:50.325978+00:00",
+      "deleted": true,
+      "seconds_to_delete": 2.46
+    },
+    {
+      "job_id": "74c068dba71a4ae0abab75579cca67d8",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:48:54.544864+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.14
+    },
+    {
+      "job_id": "759938bb60884395ac33eae9f77e4767",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:49:56.781973+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.06
+    },
+    {
+      "job_id": "7f32f6522e4a4f159948c7ab24fdb03a",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:09.063586+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.07
+    },
+    {
+      "job_id": "8b180fa6d2df46c799fa5804a3fc825b",
+      "connector": "hashnode",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:48:55.262735+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.05
+    },
+    {
+      "job_id": "8d7ded10f1564be1be9eea832d2ad9df",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:49:48.060839+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.07
+    },
+    {
+      "job_id": "9843d852b92b46b5bfc2193f6861a000",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:49:52.356761+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.07
+    },
+    {
+      "job_id": "9ced53df5c0248259d79c03e808cf943",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:51:07.419405+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.08
+    },
+    {
+      "job_id": "aa7f2d80d31e4ad1a9286e07b4bd87d7",
+      "connector": "peertube",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:48:55.387684+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.1
+    },
+    {
+      "job_id": "b7a2d3bf9d8543d38548768daad82bc9",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:51:11.891986+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.08
+    },
+    {
+      "job_id": "bbadfa2a43f44a2a93a3e169d111c622",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:48:54.772081+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.06
+    },
+    {
+      "job_id": "bd0ab9d40a2745c0a21c43885ad98ffc",
+      "connector": "devto",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:51:03.079577+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.07
+    },
+    {
+      "job_id": "e363d9f442914fa38fe9fcfb41f8d90c",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:05.808057+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.1
+    },
+    {
+      "job_id": "e4864a5c01b84288b3c7d2e7fb3a0d7c",
+      "connector": "webhook",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:16.482352+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.11
+    },
+    {
+      "job_id": "eea7ec304ed14560b7135f736e9834d0",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:19.814168+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.08
+    },
+    {
+      "job_id": "efea29bbaee64dbdaefe531f5757debd",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:49:59.034777+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.12
+    },
+    {
+      "job_id": "f277024d925c4eda85c73e8ae166e7bb",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:13.260630+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.07
+    },
+    {
+      "job_id": "fbdf46804f3a43ce94d0f29ec0715356",
+      "connector": "discourse",
+      "host": "mock:9000",
+      "published_at": "2026-10-22T19:50:02.440439+00:00",
+      "deleted": true,
+      "seconds_to_delete": 0.09
+    }
+  ],
+  "max_seconds_to_delete": 2.46,
+  "rate_limit_backoffs": [
+    {
+      "connector": "devto",
+      "host": "mock:9000",
+      "op": "publish",
+      "wait_s": 2.0,
+      "reset_source": "Retry-After",
+      "at": "2026-10-22T19:51:04.300046+00:00"
+    }
+  ],
+  "jobs_ending_in_rate_limit": 2,
+  "circuit_breaker_openings": 0,
+  "secret_matches": {
+    "jwt": 0,
+    "bearer token": 0,
+    "ghost admin token": 0,
+    "local default password": 0
+  },
+  "redactions_in_logs": 0,
+  "violations": [],
+  "passed": true
+}
