@@ -1,0 +1,386 @@
+{
+  "name": "08_assisted_pack",
+  "description": "Assisted tier: a community that bans automation gets a ready-to-post pack (caption, deep link, rules checklist) and nothing is posted",
+  "steps": [
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/destinations",
+        "body": {
+          "name": "batch-08 d3844472",
+          "url": "https://news-d3844472.example/submit",
+          "connector_key": "assisted",
+          "params": {
+            "submit_url_template": "https://news-d3844472.example/submit?url={url}&title={title}"
+          },
+          "automation_allowed": false,
+          "self_promo_allowed": false,
+          "rules_url": "https://news-d3844472.example/guidelines",
+          "frequency_cap": {
+            "posts": 1,
+            "per_days": 30
+          },
+          "link_policy": {
+            "allowed": true,
+            "max_links": 1
+          }
+        },
+        "idempotency_key": "1abde29d987d424b8b583556c68f5427"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "3f9f74e7d1084fd498db95bb6127fcdc",
+        "name": "batch-08 d3844472",
+        "url": "https://news-d3844472.example/submit",
+        "normalized_url": "https://news-d3844472.example/submit",
+        "platform_key": "assisted",
+        "connector_key": "assisted",
+        "surface": "post",
+        "params": {
+          "submit_url_template": "https://news-d3844472.example/submit?url={url}&title={title}",
+          "url": "https://news-d3844472.example/submit"
+        },
+        "connection_id": null,
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": "https://news-d3844472.example/guidelines",
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 30
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true,
+          "max_links": 1
+        },
+        "disclosure_required": false,
+        "automation_allowed": false,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T20:04:57.239447Z"
+      },
+      "ms": 78
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/certifications",
+        "body": {
+          "destination_id": "3f9f74e7d1084fd498db95bb6127fcdc"
+        },
+        "idempotency_key": "820e44bd456040d08c270f06e2924ece"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "023aa8a1706d447c80c232758903c001",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "023aa8a1706d447c80c232758903c001",
+          "destination_id": "3f9f74e7d1084fd498db95bb6127fcdc",
+          "passed": true,
+          "level": "L1",
+          "duration_s": 0.07,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 1,
+                  "per_days": 30
+                },
+                "link_policy": {
+                  "allowed": true,
+                  "max_links": 1
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": false,
+                "language": "en",
+                "rules_url": "https://news-d3844472.example/guidelines"
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "post",
+                "content_types": [
+                  "text",
+                  "article",
+                  "image",
+                  "video",
+                  "video_link"
+                ],
+                "spec": {
+                  "title_max_chars": null,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": null,
+                  "links_allowed": true,
+                  "title_required": false,
+                  "media_types": null,
+                  "max_media": null,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "build_assist_pack",
+              "ok": true,
+              "ms": 34,
+              "result": {
+                "files": [
+                  {
+                    "name": "post.md",
+                    "mime_type": "text/markdown",
+                    "kind": "caption",
+                    "storage_key": "assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/bfac77111495f9dc/post.md",
+                    "url": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/bfac77111495f9dc/post.md"
+                  },
+                  {
+                    "name": "pack.json",
+                    "mime_type": "application/json",
+                    "kind": "pack",
+                    "storage_key": "assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/bfac77111495f9dc/pack.json",
+                    "url": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/bfac77111495f9dc/pack.json"
+                  }
+                ],
+                "caption": "Connector certification test 023aa8a1 - please ignore\n\nAutomated connectivity test from the Long-Tail Destination Network. This post is deleted within seconds.",
+                "deep_link": "https://news-d3844472.example/submit?url=&title=Connector%20certification%20test%20023aa8a1%20-%20please%20ignore",
+                "checklist": [
+                  "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+                  "Read the community rules first: https://news-d3844472.example/guidelines",
+                  "Post at most 1 time(s) per 30 day(s) here.",
+                  "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+                  "Use at most 1 link(s).",
+                  "Write in the community's language (en).",
+                  "After posting, paste the live URL back so the post is tracked."
+                ],
+                "warnings": []
+              }
+            },
+            {
+              "step": "pack_files_downloadable",
+              "ok": true,
+              "ms": 16,
+              "result": [
+                "post.md",
+                "pack.json"
+              ]
+            }
+          ],
+          "links": {
+            "evidence": "https://localhost/api/v1/files/certifications/3f9f74e7d1084fd498db95bb6127fcdc/023aa8a1706d447c80c232758903c001/run.json"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/023aa8a1706d447c80c232758903c001",
+          "evidence": "https://localhost/api/v1/files/certifications/3f9f74e7d1084fd498db95bb6127fcdc/023aa8a1706d447c80c232758903c001/run.json"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:57.304922Z",
+        "started_at": "2026-10-22T20:04:57.578158Z",
+        "finished_at": "2026-10-22T20:04:57.690866Z"
+      },
+      "ms": 1095
+    },
+    {
+      "name": "pack",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/publications",
+        "body": {
+          "destination_id": "3f9f74e7d1084fd498db95bb6127fcdc",
+          "rendition": {
+            "title": "Show: a free checklist for planning video weeks",
+            "body": "Feedback welcome.",
+            "link_url": "https://example.org/checklist"
+          }
+        },
+        "idempotency_key": "f14249306c284a1f9d4dc2a8182422db"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "8bdc490a22004b75a4a1419480035521",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "80edd99c8326425a825ee5d0430368bd",
+          "destination_id": "3f9f74e7d1084fd498db95bb6127fcdc",
+          "status": "awaiting_human",
+          "platform_post_id": null,
+          "live_url": null,
+          "assist_pack": {
+            "files": [
+              {
+                "name": "post.md",
+                "mime_type": "text/markdown",
+                "kind": "caption",
+                "storage_key": "assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/post.md",
+                "url": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/post.md"
+              },
+              {
+                "name": "pack.json",
+                "mime_type": "application/json",
+                "kind": "pack",
+                "storage_key": "assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/pack.json",
+                "url": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/pack.json"
+              }
+            ],
+            "caption": "Show: a free checklist for planning video weeks\n\nFeedback welcome.\n\nhttps://example.org/checklist",
+            "deep_link": "https://news-d3844472.example/submit?url=https%3A%2F%2Fexample.org%2Fchecklist&title=Show%3A%20a%20free%20checklist%20for%20planning%20video%20weeks",
+            "checklist": [
+              "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+              "Read the community rules first: https://news-d3844472.example/guidelines",
+              "Post at most 1 time(s) per 30 day(s) here.",
+              "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+              "Use at most 1 link(s).",
+              "Write in the community's language (en).",
+              "After posting, paste the live URL back so the post is tracked."
+            ],
+            "warnings": []
+          },
+          "warnings": [],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/1 posts in the last 30 days, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "1 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "8bdc490a22004b75a4a1419480035521",
+            "kind": "assist_pack",
+            "created_at": "2026-10-22T20:04:58.765232+00:00",
+            "connectors": [
+              {
+                "key": "assisted",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo"
+            },
+            "seed": null,
+            "timings_ms": {
+              "total": 28
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "https://localhost/api/v1/files/publications/80edd99c8326425a825ee5d0430368bd/result.json",
+            "post.md": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/post.md",
+            "pack.json": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/pack.json"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/8bdc490a22004b75a4a1419480035521",
+          "manifest": "https://localhost/api/v1/files/publications/80edd99c8326425a825ee5d0430368bd/result.json",
+          "post.md": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/post.md",
+          "pack.json": "https://localhost/api/v1/files/assist-packs/3f9f74e7d1084fd498db95bb6127fcdc/c81e025f14f4ffde/pack.json"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:58.410340Z",
+        "started_at": "2026-10-22T20:04:58.717665Z",
+        "finished_at": "2026-10-22T20:04:58.773962Z"
+      },
+      "ms": 1100
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "result.level",
+      "equals": "L1",
+      "actual": "L1",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.status",
+      "equals": "awaiting_human",
+      "actual": "awaiting_human",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.deep_link",
+      "contains": "submit?url=https%3A%2F%2Fexample.org%2Fchecklist",
+      "actual": "https://news-d3844472.example/submit?url=https%3A%2F%2Fexample.org%2Fchecklist&title=Show%3A%20a%20free%20checklist%20for%20planning%20video%20weeks",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.checklist",
+      "contains": "guidelines",
+      "actual": [
+        "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+        "Read the community rules first: https://news-d3844472.example/guidelines",
+        "Post at most 1 time(s) per 30 day(s) here.",
+        "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+        "Use at most 1 link(s).",
+        "Write in the community's language (en).",
+        "After posting, paste the live URL back so the post is tracked."
+      ],
+      "ok": true
+    }
+  ],
+  "passed": true
+}

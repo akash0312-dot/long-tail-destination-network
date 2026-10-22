@@ -4,8 +4,12 @@ Plan and full requirements: [`docs/PLAN.md`](docs/PLAN.md). Status keys: ✅ don
 Every ✅ must link to evidence (test, file, log) — this feeds the Submission Form. Mark honestly: a false "Yes" in the
 form disqualifies; "Partial" with a reason does not.
 
-**Test status (2026-10-22, Outstanding work):**
-- `docker compose --profile test run --rm tests` → **208 passed**, 2 skipped (the 2 real-instance E2E tests need the stack)
+**Test status (2026-10-23, live demo setup):**
+- `docker compose --profile test run --rm tests` → **216 passed**, 2 skipped (the 2 real-instance E2E tests need the stack)
+- Live demo rehearsed locally over HTTPS + token: **14/14** batch scenarios ([rehearsal](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md))
+
+**Outstanding work (2026-10-22):**
+- `docker compose --profile test run --rm tests` → 208 passed, 2 skipped
 - Batch on a fresh stack → **13/13** ([run 5](test_pack/batch_2026-10-22_run5_outstanding/summary.md)); seeds certify at Ghost L3, **Lemmy L4 (real)**, Discourse L4, Dev.to L4, webhook L3, assisted L1
 
 **Earlier (end of Day 3):**
@@ -19,7 +23,7 @@ form disqualifies; "Partial" with a reason does not.
 Ordered by risk: a single failed must-have means "not selected", so those come first.
 
 **A. Must-have gaps**
-- [ ] **Live demo** deployed and kept up for the whole review (must-have 9): VM with ≥ 4 GB RAM, `API_TOKEN`, rate limit, `CALLBACK_SIGNATURE_HEADER` set to the brief's header name, cold-start time noted — *you: choose/pay for the VM; me: deploy config + steps*
+- [ ] **Live demo** deployed and kept up for the whole review (must-have 9): VM with ≥ 4 GB RAM, `API_TOKEN`, rate limit, `CALLBACK_SIGNATURE_HEADER` set to the brief's header name, cold-start time noted — *you: choose/pay for the VM and follow [deploy/DEPLOY.md](deploy/DEPLOY.md) (~20 min)*. Config and steps ✅ ready and rehearsed locally: Caddy HTTPS, token on everything but docs/health/feeds, `/mock` behind the token, storage and platforms never exposed, 14/14 batch through HTTPS; `/docs` has an Authorize button
 - [x] **Clean-machine test** of `docker compose up` + tests (must-have 8) — CI run #1 passed on a fresh Ubuntu runner (3 m 24 s), runs on every push
 - [x] **Secret scan** (gitleaks) — clean over the full history, locally and in CI run #1 (12 s)
 - [x] **Certification pack** exported into the repo (must-have 2 evidence) — [certification_pack/](certification_pack/README.md): 9 destinations, one per connector (L1–L4), each with run.json, live snapshot, screenshot and deletion confirmation; cleanup 0.1–2.1 s. Credentials in captured pages are redacted (Ghost embeds its Content API key). Re-export: `python scripts/export_certification_pack.py`
@@ -56,7 +60,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 6 | Safe retries (no duplicate after timeout) | ✅ | `test_timeout_then_retry_same_key_never_duplicates` (7 connectors), `test_publication_job_retries_timeout_with_same_key_and_never_duplicates`, batch `01` | Mutation-checked on Day 1 |
 | 7 | Secrets protected + simulation mode | ✅ | **CI run #1 `secret-scan` passed** (gitleaks v8.18.4, full history, 12 s; [Actions](https://github.com/akash0312-dot/long-tail-destination-network/actions)); `.gitleaks.toml` (default rules + 2-pattern allowlist; a planted fake key is still caught); credentials redacted from captured pages; log redaction `tests/test_logging.py`; container log scan clean (Day 1); `SIMULATION_MODE=true` | Optional: add an automated log scan step to CI |
 | 8 | `docker compose up` with local Lemmy + Ghost + mocks | ✅ | **CI run #1 `clean-machine` passed on a fresh Ubuntu runner (3 m 24 s)**: `.env` from `.env.example` only, `docker compose up --build`, bootstrap certified all 9 seeds, full test suite, real Ghost/Lemmy E2E, all batch scenarios; logs in the `clean-machine-evidence` artifact | |
-| 9 | Integration Standard + live demo up | ⬜ | | Live demo not deployed |
+| 9 | Integration Standard + live demo up | 🟡 | Integration Standard ✅ (table below); demo config [deploy/](deploy/DEPLOY.md), rehearsal [14/14 over HTTPS](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md) | Not on a public server yet: needs your VM |
 
 ## Levels
 | Level | Item | Status | Evidence |
@@ -121,7 +125,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | Certification pack | ✅ [certification_pack/](certification_pack/README.md) — 9 destinations with run record, live snapshot, screenshot, deletion confirmation |
 | Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json`; labels need your review |
 | Demo video | ⬜ |
-| Live demo deployed | ⬜ |
+| Live demo deployed | 🟡 config + guide ready and rehearsed ([deploy/DEPLOY.md](deploy/DEPLOY.md)); public server ⬜ (*you*) |
 | Clarification email sent to the hiring team | ⬜ (questions drafted in `docs/PLAN.md` §5) |
 | Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, 19 commits, all pushed (2026-10-23). Reviewer invite ⬜ (username comes in the invitation email) |
 | Submission Form filled | ⬜ |
@@ -144,6 +148,8 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 10-22 | AI behind `AI_PROVIDER` (mock default, Claude optional); Claude default model `claude-opus-5-5`, effort `low`, schema-constrained JSON, refusal fallback on | Brief: swappable providers + mock; no key needed for tests; cost reported per call |
 | 10-22 | Rule proposals apply only after `confirm` by a named reviewer | Brief: "a person confirms them before they are used" |
 | 10-22 | SSRF guard on every user-supplied URL; `ALLOW_INTERNAL_HOSTS` only for the local stack | Catalogue, rules and CSV URLs make the server fetch arbitrary URLs |
+| 10-23 | Live demo = same compose + Caddy overlay; download links proxied through the API (`STORAGE_LINKS=proxy`); `/mock` behind the API token | One stack to test and to demo; only 80/443 public, object storage and platforms stay private |
+| 10-23 | Cloud metadata hosts refused even with `ALLOW_INTERNAL_HOSTS=true` | The demo needs internal hosts for its mocks; metadata endpoints are the real SSRF prize on a VM |
 | 10-22 | Local-only default passwords for Lemmy/Postgres stay in `.env.example` for now | Only open containers we own on 127.0.0.1; revisit before submission |
 
 ## Daily log
@@ -175,3 +181,13 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
   decide whether to run Claude rules capture over the catalogue (costs money; needs `ANTHROPIC_API_KEY`).
 - **Then:** certification-pack export, gitleaks, clean-machine test, live demo, REPORT / SOURCES / AI_USE,
   clarification email, Submission Form.
+
+### Day 5 — Evidence and live demo — 2026-10-23
+- CI (gitleaks + clean-machine) passed; certification pack exported; no-spam policy + log audit (must-have 5 ✅).
+- `/docs` **Authorize** button (bearer scheme on protected routes only); `openapi.yaml` regenerated.
+- **Live demo config:** `deploy/docker-compose.demo.yml` + `deploy/Caddyfile` + [deploy/DEPLOY.md](deploy/DEPLOY.md).
+  Hardening found while preparing it: presigned links would have exposed object storage (now proxied through the
+  API), and `ALLOW_INTERNAL_HOSTS=true` would have allowed cloud metadata URLs (now always refused).
+- Rehearsed on this machine with `DEMO_DOMAIN=localhost`: 401 without / with a wrong token, 200 with it; HTTP→HTTPS;
+  HSTS; 9/9 seeds certified; batch 14/14 through HTTPS and `/mock`.
+- **Your action:** create the VM and follow `deploy/DEPLOY.md`; then I run the batch against the public URL.

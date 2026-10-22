@@ -1,0 +1,45 @@
+# Live demo overlay:  docker compose -f docker-compose.yml -f deploy/docker-compose.demo.yml up -d --build
+# Adds HTTPS (Caddy) in front of the API, requires an API token, and keeps every other service private.
+# Settings come from .env (see deploy/DEPLOY.md); a missing required value stops `up` with a clear message.
+
+x-demo-env: &demo-env
+  API_TOKEN: "${API_TOKEN:?Set API_TOKEN in .env, for example with openssl rand -hex 32}"
+  PUBLIC_BASE_URL: "https://${DEMO_DOMAIN:?Set DEMO_DOMAIN in .env to the demo hostname}"
+  CALLBACK_SIGNATURE_HEADER: "${CALLBACK_SIGNATURE_HEADER:?Set CALLBACK_SIGNATURE_HEADER in .env to the header name the brief specifies}"
+  STORAGE_LINKS: "proxy"           # download links go through the token-protected API, storage stays private
+  RATE_LIMIT_PER_MINUTE: "${RATE_LIMIT_PER_MINUTE:-120}"
+  ENVIRONMENT: "demo"
+
+services:
+  api:
+    ports: !override
+      - "127.0.0.1:8000:8000"   # only Caddy and the VM itself can reach the API directly
+    environment: *demo-env
+
+  worker:
+    environment: *demo-env
+
+  bootstrap:
+    environment:
+      <<: *demo-env
+      API_URL: http://api:8000
+
+  caddy:
+    image: caddy:2.8.4-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DEMO_DOMAIN: ${DEMO_DOMAIN}
+      API_TOKEN: ${API_TOKEN}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api: {condition: service_healthy}
+
+volumes:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,419 @@
+{
+  "name": "03_limits_and_media",
+  "description": "Hard case 3: title longer than allowed and media the destination does not accept; field-level reasons, nothing posted",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "27d1407d6dc94429b1a72fb3b8454d30"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "c4483d7987464854a5c2ea7d0bde3813",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-22T20:04:36.467152Z"
+      },
+      "ms": 92
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/destinations",
+        "body": {
+          "name": "batch-03 d3844472",
+          "url": "http://mock:9000/batch/forum-03-d3844472",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "c4483d7987464854a5c2ea7d0bde3813"
+        },
+        "idempotency_key": "ce2a5dcf40cd4bcf8712fb52bcfd64f7"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "3d88b3b56d55490098b77a73f225c94c",
+        "name": "batch-03 d3844472",
+        "url": "http://mock:9000/batch/forum-03-d3844472",
+        "normalized_url": "https://mock:9000/batch/forum-03-d3844472",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-03-d3844472"
+        },
+        "connection_id": "c4483d7987464854a5c2ea7d0bde3813",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T20:04:36.520499Z"
+      },
+      "ms": 49
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/certifications",
+        "body": {
+          "destination_id": "3d88b3b56d55490098b77a73f225c94c"
+        },
+        "idempotency_key": "e6588c60dc674e1db32e30e80650f4c3"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "c4639f9d1ca24fb993b934b482d32a3d",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "c4639f9d1ca24fb993b934b482d32a3d",
+          "destination_id": "3d88b3b56d55490098b77a73f225c94c",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.16,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 45,
+              "result": {
+                "platform_post_id": "18",
+                "live_url": "http://mock:9000/batch/forum-03-d3844472/t/connector-certification-test-c4639f9d-please-ignore/18",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 13,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 13,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-03-d3844472/t/connector-certification-test-c4639f9d-please-ignore/18"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "views": 120,
+                "likes": 9,
+                "comments": 3,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": 9
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 12,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 26,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.2,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://localhost/api/v1/files/certifications/3d88b3b56d55490098b77a73f225c94c/c4639f9d1ca24fb993b934b482d32a3d/run.json",
+            "live_snapshot": "https://localhost/api/v1/files/certifications/3d88b3b56d55490098b77a73f225c94c/c4639f9d1ca24fb993b934b482d32a3d/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/c4639f9d1ca24fb993b934b482d32a3d",
+          "evidence": "https://localhost/api/v1/files/certifications/3d88b3b56d55490098b77a73f225c94c/c4639f9d1ca24fb993b934b482d32a3d/run.json",
+          "live_snapshot": "https://localhost/api/v1/files/certifications/3d88b3b56d55490098b77a73f225c94c/c4639f9d1ca24fb993b934b482d32a3d/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:36.555912Z",
+        "started_at": "2026-10-22T20:04:37.390024Z",
+        "finished_at": "2026-10-22T20:04:37.598750Z"
+      },
+      "ms": 2079
+    },
+    {
+      "name": "long_title",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/publications",
+        "body": {
+          "destination_id": "3d88b3b56d55490098b77a73f225c94c",
+          "rendition": {
+            "title": "This title goes on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on",
+            "body": "A body that is long enough to pass."
+          }
+        },
+        "idempotency_key": "0b8e4a2231b040b28f0e162d09a42dc8"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "94fdcfe04f054181bdd34aa40aaeef0f",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 20,
+        "result": null,
+        "error": {
+          "code": "DEST_SPEC_VIOLATION",
+          "message": "Content breaks the destination's format limits",
+          "retryable": false,
+          "details": {
+            "violations": [
+              {
+                "field": "title",
+                "code": "TITLE_TOO_LONG",
+                "limit": 255,
+                "actual": 256,
+                "message": "Title is 256 characters; limit is 255"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/94fdcfe04f054181bdd34aa40aaeef0f"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:38.678659Z",
+        "started_at": "2026-10-22T20:04:39.629564Z",
+        "finished_at": "2026-10-22T20:04:39.670850Z"
+      },
+      "ms": 1099
+    },
+    {
+      "name": "bad_media",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/publications",
+        "body": {
+          "destination_id": "3d88b3b56d55490098b77a73f225c94c",
+          "rendition": {
+            "title": "A question with a photo attached",
+            "body": "A body that is long enough to pass.",
+            "content_type": "image",
+            "media": [
+              {
+                "url": "https://cdn.example/photo.heic",
+                "type": "image"
+              }
+            ]
+          }
+        },
+        "idempotency_key": "2251a1ee2e334fa6b43d6a4aa0c41baa"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "559630aefea744818bf53269756c0dbe",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 20,
+        "result": null,
+        "error": {
+          "code": "DEST_SPEC_VIOLATION",
+          "message": "Content breaks the destination's format limits",
+          "retryable": false,
+          "details": {
+            "violations": [
+              {
+                "field": "media[0]",
+                "code": "MEDIA_TYPE_UNSUPPORTED",
+                "actual": "image/heic",
+                "limit": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif",
+                  "image/webp"
+                ],
+                "message": "Media type 'image/heic' is not accepted by this destination"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/559630aefea744818bf53269756c0dbe"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:39.785866Z",
+        "started_at": "2026-10-22T20:04:40.694834Z",
+        "finished_at": "2026-10-22T20:04:40.716918Z"
+      },
+      "ms": 1105
+    }
+  ],
+  "checks": [
+    {
+      "step": "long_title",
+      "path": "error.code",
+      "equals": "DEST_SPEC_VIOLATION",
+      "actual": "DEST_SPEC_VIOLATION",
+      "ok": true
+    },
+    {
+      "step": "long_title",
+      "path": "error.details.violations.0.code",
+      "equals": "TITLE_TOO_LONG",
+      "actual": "TITLE_TOO_LONG",
+      "ok": true
+    },
+    {
+      "step": "bad_media",
+      "path": "error.code",
+      "equals": "DEST_SPEC_VIOLATION",
+      "actual": "DEST_SPEC_VIOLATION",
+      "ok": true
+    },
+    {
+      "step": "bad_media",
+      "path": "error.details.violations.0.code",
+      "equals": "MEDIA_TYPE_UNSUPPORTED",
+      "actual": "MEDIA_TYPE_UNSUPPORTED",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

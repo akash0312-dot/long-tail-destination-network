@@ -127,6 +127,13 @@ All errors: `{"error": {"code", "message", "retryable", "details"}}`.
 | `SECRET_UNAVAILABLE` | 500 | no | A secret reference could not be resolved |
 | `INTERNAL_ERROR` | 500 | yes | Unexpected error (logged with correlation id) |
 
+## Live demo
+
+The same stack plus Caddy for HTTPS: `docker compose -f docker-compose.yml -f deploy/docker-compose.demo.yml up -d`.
+Only `/docs`, `/health`, `/ready`, `/openapi.json` and the MRSS feeds are public; everything else needs the API token
+(use **Authorize** in `/docs`), and object storage, Ghost, Lemmy and Postgres are never exposed. Step-by-step server
+setup, settings and checks: [deploy/DEPLOY.md](deploy/DEPLOY.md).
+
 ## Settings
 
 Every setting is an environment variable; see [.env.example](.env.example) for the full annotated list.

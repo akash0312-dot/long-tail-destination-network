@@ -1,0 +1,608 @@
+{
+  "name": "05_renamed_field_demotes",
+  "description": "Hard case 5: the platform renames a field; certification fails, the destination is demoted to L0 and excluded, an alert is written, the test post is cleaned up",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "c866de40ffed4478a38d6593794c0618"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "316ada1e5a2543ebaa198eaf5f6f690d",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-22T20:04:46.793723Z"
+      },
+      "ms": 87
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/destinations",
+        "body": {
+          "name": "batch-05 d3844472",
+          "url": "http://mock:9000/batch/forum-05-d3844472",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "316ada1e5a2543ebaa198eaf5f6f690d"
+        },
+        "idempotency_key": "4662c17589994e26b7a9699945ddb50d"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "3a26e7b59a294154ab7cca509012411f",
+        "name": "batch-05 d3844472",
+        "url": "http://mock:9000/batch/forum-05-d3844472",
+        "normalized_url": "https://mock:9000/batch/forum-05-d3844472",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-05-d3844472"
+        },
+        "connection_id": "316ada1e5a2543ebaa198eaf5f6f690d",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T20:04:46.839307Z"
+      },
+      "ms": 40
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/certifications",
+        "body": {
+          "destination_id": "3a26e7b59a294154ab7cca509012411f"
+        },
+        "idempotency_key": "bbed5df55155443a8c50937b4e5af021"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "a1324e8ab51c425f97b5cfd8bb0b3929",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "a1324e8ab51c425f97b5cfd8bb0b3929",
+          "destination_id": "3a26e7b59a294154ab7cca509012411f",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.12,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 16,
+              "result": {
+                "platform_post_id": "26",
+                "live_url": "http://mock:9000/batch/forum-05-d3844472/t/connector-certification-test-a1324e8a-please-ignore/26",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 16,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 17,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-05-d3844472/t/connector-certification-test-a1324e8a-please-ignore/26"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 12,
+              "result": {
+                "views": 120,
+                "likes": 9,
+                "comments": 3,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": 9
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 14,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://localhost/api/v1/files/certifications/3a26e7b59a294154ab7cca509012411f/a1324e8ab51c425f97b5cfd8bb0b3929/run.json",
+            "live_snapshot": "https://localhost/api/v1/files/certifications/3a26e7b59a294154ab7cca509012411f/a1324e8ab51c425f97b5cfd8bb0b3929/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/a1324e8ab51c425f97b5cfd8bb0b3929",
+          "evidence": "https://localhost/api/v1/files/certifications/3a26e7b59a294154ab7cca509012411f/a1324e8ab51c425f97b5cfd8bb0b3929/run.json",
+          "live_snapshot": "https://localhost/api/v1/files/certifications/3a26e7b59a294154ab7cca509012411f/a1324e8ab51c425f97b5cfd8bb0b3929/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:46.882598Z",
+        "started_at": "2026-10-22T20:04:47.379658Z",
+        "finished_at": "2026-10-22T20:04:47.529984Z"
+      },
+      "ms": 1065
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/mock/__admin/faults",
+        "body": {
+          "platform": "discourse",
+          "instance": "batch/forum-05-d3844472",
+          "op": "get_status",
+          "kind": "rename_field"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "discourse",
+          "op": "get_status",
+          "kind": "rename_field",
+          "instance": "batch/forum-05-d3844472",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 49
+    },
+    {
+      "name": "recert",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/certifications",
+        "body": {
+          "destination_id": "3a26e7b59a294154ab7cca509012411f"
+        },
+        "idempotency_key": "f7bded39eec349e7bfe1646c6cf9a5b9"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "50142b87d8b04242b7174fa2b2048ce7",
+        "kind": "certification",
+        "status": "failed",
+        "progress": 90,
+        "result": null,
+        "error": {
+          "code": "CERTIFICATION_FAILED",
+          "message": "Certification failed at status_published: Platform response for get_status no longer has expected field 'slug'; destination demoted to L0",
+          "retryable": false,
+          "details": {
+            "destination_id": "3a26e7b59a294154ab7cca509012411f",
+            "level": "L0",
+            "steps": [
+              {
+                "step": "rules_recorded",
+                "ok": true,
+                "ms": 0,
+                "result": {
+                  "frequency_cap": {
+                    "posts": 5,
+                    "per_days": 1
+                  },
+                  "link_policy": {
+                    "allowed": true
+                  },
+                  "self_promo_allowed": false,
+                  "disclosure_required": false,
+                  "automation_allowed": true,
+                  "language": "en",
+                  "rules_url": null
+                }
+              },
+              {
+                "step": "format_limits_recorded",
+                "ok": true,
+                "ms": 0,
+                "result": {
+                  "key": "topic",
+                  "content_types": [
+                    "text",
+                    "image",
+                    "video_link",
+                    "article"
+                  ],
+                  "spec": {
+                    "title_max_chars": 255,
+                    "title_min_chars": 15,
+                    "body_max_chars": 31900,
+                    "body_min_chars": 20,
+                    "max_tags": 5,
+                    "links_allowed": true,
+                    "title_required": true,
+                    "media_types": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/gif",
+                      "image/webp"
+                    ],
+                    "max_media": 4,
+                    "min_video": null
+                  }
+                }
+              },
+              {
+                "step": "connection_active",
+                "ok": true,
+                "ms": 0,
+                "result": {
+                  "status": "active"
+                }
+              },
+              {
+                "step": "publish_test_post",
+                "ok": true,
+                "ms": 19,
+                "result": {
+                  "platform_post_id": "28",
+                  "live_url": "http://mock:9000/batch/forum-05-d3844472/t/connector-certification-test-50142b87-please-ignore/28",
+                  "status": "published",
+                  "warnings": []
+                }
+              },
+              {
+                "step": "confirm_live_url",
+                "ok": true,
+                "ms": 18,
+                "result": {
+                  "status": 200,
+                  "accept": "text/html,application/xhtml+xml",
+                  "content_type": "text/html; charset=utf-8",
+                  "bytes": 238,
+                  "attempts": [
+                    {
+                      "accept": "text/html,application/xhtml+xml",
+                      "status": 200
+                    }
+                  ]
+                }
+              },
+              {
+                "step": "status_published",
+                "ok": false,
+                "ms": 22,
+                "error": {
+                  "code": "PLATFORM_SCHEMA_CHANGED",
+                  "message": "Platform response for get_status no longer has expected field 'slug'",
+                  "retryable": false,
+                  "details": {
+                    "op": "get_status",
+                    "missing_field": "slug",
+                    "received_keys": [
+                      "deleted_at",
+                      "details",
+                      "id",
+                      "like_count",
+                      "post_stream",
+                      "posts_count",
+                      "title",
+                      "topic_slug",
+                      "views",
+                      "visible"
+                    ]
+                  }
+                }
+              },
+              {
+                "step": "cleanup",
+                "ok": true,
+                "result": {
+                  "deleted_post_id": "28"
+                }
+              }
+            ],
+            "links": {
+              "evidence": "https://localhost/api/v1/files/certifications/3a26e7b59a294154ab7cca509012411f/50142b87d8b04242b7174fa2b2048ce7/run.json",
+              "live_snapshot": "https://localhost/api/v1/files/certifications/3a26e7b59a294154ab7cca509012411f/50142b87d8b04242b7174fa2b2048ce7/live_snapshot.html",
+              "alert": "https://localhost/api/v1/files/alerts/3a26e7b59a294154ab7cca509012411f/50142b87d8b04242b7174fa2b2048ce7.json"
+            }
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/50142b87d8b04242b7174fa2b2048ce7"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:48.048846Z",
+        "started_at": "2026-10-22T20:04:48.556162Z",
+        "finished_at": "2026-10-22T20:04:48.739512Z"
+      },
+      "ms": 1122
+    },
+    {
+      "name": "after",
+      "request": {
+        "method": "GET",
+        "url": "https://localhost/api/v1/destinations/3a26e7b59a294154ab7cca509012411f",
+        "body": null,
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "id": "3a26e7b59a294154ab7cca509012411f",
+        "name": "batch-05 d3844472",
+        "url": "http://mock:9000/batch/forum-05-d3844472",
+        "normalized_url": "https://mock:9000/batch/forum-05-d3844472",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-05-d3844472"
+        },
+        "connection_id": "316ada1e5a2543ebaa198eaf5f6f690d",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "failed",
+        "last_certified_at": "2026-10-22T20:04:47.522769Z",
+        "enabled": true,
+        "created_at": "2026-10-22T20:04:46.839307Z"
+      },
+      "ms": 16
+    },
+    {
+      "name": "excluded",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/publications",
+        "body": {
+          "destination_id": "3a26e7b59a294154ab7cca509012411f",
+          "rendition": {
+            "title": "How do small teams plan weekly video?",
+            "body": "We batch-record on Mondays. What works for you?"
+          }
+        },
+        "idempotency_key": "887c7eeb4a704e9aafd75b4269c57eb4"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "dc5b0b098a1b473bb2020ba8598f4f90",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "DEST_NOT_CERTIFIED",
+          "message": "Destination is failed; only certified destinations receive posts",
+          "retryable": false,
+          "details": {
+            "destination_id": "3a26e7b59a294154ab7cca509012411f",
+            "certification_status": "failed",
+            "level": "L0"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/dc5b0b098a1b473bb2020ba8598f4f90"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:49.178020Z",
+        "started_at": "2026-10-22T20:04:49.762455Z",
+        "finished_at": "2026-10-22T20:04:49.773108Z"
+      },
+      "ms": 1109
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "recert",
+      "path": "error.code",
+      "equals": "CERTIFICATION_FAILED",
+      "actual": "CERTIFICATION_FAILED",
+      "ok": true
+    },
+    {
+      "step": "recert",
+      "path": "error.details.links.alert",
+      "actual": "https://localhost/api/v1/files/alerts/3a26e7b59a294154ab7cca509012411f/50142b87d8b04242b7174fa2b2048ce7.json",
+      "ok": true
+    },
+    {
+      "step": "after",
+      "path": "level",
+      "equals": "L0",
+      "actual": "L0",
+      "ok": true
+    },
+    {
+      "step": "after",
+      "path": "certification_status",
+      "equals": "failed",
+      "actual": "failed",
+      "ok": true
+    },
+    {
+      "step": "excluded",
+      "path": "error.code",
+      "equals": "DEST_NOT_CERTIFIED",
+      "actual": "DEST_NOT_CERTIFIED",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

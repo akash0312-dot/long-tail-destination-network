@@ -1,0 +1,27 @@
+# Live demo front door: HTTPS (automatic certificates), the API, and the mock platforms behind the API token.
+# Nothing else is reachable: object storage, Ghost, Lemmy and Postgres stay on the private Docker network.
+{$DEMO_DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+
+	# Mock platforms (fault injection for the batch scenarios): same bearer token as the API
+	handle_path /mock/* {
+		@token header Authorization "Bearer {$API_TOKEN}"
+		handle @token {
+			reverse_proxy mock:9000
+		}
+		handle {
+			respond "Unauthorized: send Authorization: Bearer <API token>" 401
+		}
+	}
+
+	# The service: /docs, /health and /ready are public, everything else checks the token itself
+	handle {
+		reverse_proxy api:8000
+	}
+}

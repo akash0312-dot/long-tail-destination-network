@@ -1,0 +1,78 @@
+{
+  "run_at": "2026-10-22T20:05:01.982079+00:00",
+  "api": "https://localhost",
+  "passed": 14,
+  "total": 14,
+  "scenarios": [
+    {
+      "name": "01_timeout_retry_same_key",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02a_rate_limit_429_reset",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02d_rate_limit_short_reset_backoff",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02b_expired_token_then_reconnect",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "02c_content_rejected",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "03_limits_and_media",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "04a_second_post_inside_weekly_cap",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "04b_promo_to_no_promo_community",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "05_renamed_field_demotes",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "06_partner_revokes",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "07_language_and_disclosure",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "08_assisted_pack",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "09_catalogue_csv",
+      "passed": true,
+      "failed_checks": []
+    },
+    {
+      "name": "10_rules_capture_confirm",
+      "passed": true,
+      "failed_checks": []
+    }
+  ]
+}

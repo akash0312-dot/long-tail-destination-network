@@ -1,0 +1,432 @@
+{
+  "name": "02d_rate_limit_short_reset_backoff",
+  "description": "Hard case 2a (short reset): 429 with a 2 s reset; the connector waits for the platform's reset time, then succeeds",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/connections",
+        "body": {
+          "connector_key": "devto",
+          "name": "batch forem",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          }
+        },
+        "idempotency_key": "621e8537b3e54fe9b7334d8aa11788ea"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "6ad56987e44e409397d072cc78382427",
+        "connector_key": "devto",
+        "name": "batch forem",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-22T20:04:23.866776Z"
+      },
+      "ms": 71
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/destinations",
+        "body": {
+          "name": "batch-02d d3844472",
+          "url": "http://mock:9000/batch/forem-02d-d3844472",
+          "connector_key": "devto",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "6ad56987e44e409397d072cc78382427"
+        },
+        "idempotency_key": "313f361074b048689449c71a1b001e39"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "0f8ec2c193a644dcb98d5f4c49ad1388",
+        "name": "batch-02d d3844472",
+        "url": "http://mock:9000/batch/forem-02d-d3844472",
+        "normalized_url": "https://mock:9000/batch/forem-02d-d3844472",
+        "platform_key": "devto",
+        "connector_key": "devto",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/batch/forem-02d-d3844472"
+        },
+        "connection_id": "6ad56987e44e409397d072cc78382427",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-22T20:04:23.942743Z"
+      },
+      "ms": 80
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/certifications",
+        "body": {
+          "destination_id": "0f8ec2c193a644dcb98d5f4c49ad1388"
+        },
+        "idempotency_key": "c4ae7ff638344c70b555c6285cba25aa"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "d2f9baeb34f04fcebcfecc6476dcedc9",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "d2f9baeb34f04fcebcfecc6476dcedc9",
+          "destination_id": "0f8ec2c193a644dcb98d5f4c49ad1388",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.1,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "article",
+                "content_types": [
+                  "article",
+                  "text"
+                ],
+                "spec": {
+                  "title_max_chars": 128,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": 4,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 1,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 14,
+              "result": {
+                "platform_post_id": "13",
+                "live_url": "http://mock:9000/batch/forem-02d-d3844472/__live/devto/13",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forem-02d-d3844472/__live/devto/13"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 15,
+              "result": {
+                "views": 340,
+                "likes": 21,
+                "comments": 5,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": null
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 12,
+              "result": {
+                "deleted": true,
+                "note": "Forem API cannot delete articles; the article was unpublished"
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://localhost/api/v1/files/certifications/0f8ec2c193a644dcb98d5f4c49ad1388/d2f9baeb34f04fcebcfecc6476dcedc9/run.json",
+            "live_snapshot": "https://localhost/api/v1/files/certifications/0f8ec2c193a644dcb98d5f4c49ad1388/d2f9baeb34f04fcebcfecc6476dcedc9/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/d2f9baeb34f04fcebcfecc6476dcedc9",
+          "evidence": "https://localhost/api/v1/files/certifications/0f8ec2c193a644dcb98d5f4c49ad1388/d2f9baeb34f04fcebcfecc6476dcedc9/run.json",
+          "live_snapshot": "https://localhost/api/v1/files/certifications/0f8ec2c193a644dcb98d5f4c49ad1388/d2f9baeb34f04fcebcfecc6476dcedc9/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:24.036027Z",
+        "started_at": "2026-10-22T20:04:24.224119Z",
+        "finished_at": "2026-10-22T20:04:24.359197Z"
+      },
+      "ms": 1120
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/mock/__admin/faults",
+        "body": {
+          "platform": "devto",
+          "instance": "batch/forem-02d-d3844472",
+          "op": "publish",
+          "kind": "rate_limit",
+          "reset_s": 2
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "devto",
+          "op": "publish",
+          "kind": "rate_limit",
+          "instance": "batch/forem-02d-d3844472",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 52
+    },
+    {
+      "name": "pub",
+      "request": {
+        "method": "POST",
+        "url": "https://localhost/api/v1/publications",
+        "body": {
+          "destination_id": "0f8ec2c193a644dcb98d5f4c49ad1388",
+          "rendition": {
+            "title": "Repurposing long videos into clips",
+            "body": "A walkthrough.",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "f06c404a59ba41328eb42c08bda3049d"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "cef4cca7506540f39a7be556b496459c",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "3bf6eb9cd213444cb649a7e2c1e668cc",
+          "destination_id": "0f8ec2c193a644dcb98d5f4c49ad1388",
+          "platform_post_id": "14",
+          "live_url": "http://mock:9000/batch/forem-02d-d3844472/__live/devto/14",
+          "status": "published",
+          "warnings": [],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/5 posts in the last 1 day, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "Destination allows self-promotion",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "cef4cca7506540f39a7be556b496459c",
+            "kind": "publication",
+            "created_at": "2026-10-22T20:04:27.467067+00:00",
+            "connectors": [
+              {
+                "key": "devto",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 12,
+              "validate": 19,
+              "publish": 2025,
+              "total": 2071
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "https://localhost/api/v1/files/publications/3bf6eb9cd213444cb649a7e2c1e668cc/result.json",
+            "live_url": "http://mock:9000/batch/forem-02d-d3844472/__live/devto/14"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/cef4cca7506540f39a7be556b496459c",
+          "manifest": "https://localhost/api/v1/files/publications/3bf6eb9cd213444cb649a7e2c1e668cc/result.json",
+          "live_url": "http://mock:9000/batch/forem-02d-d3844472/__live/devto/14"
+        },
+        "run_after": null,
+        "created_at": "2026-10-22T20:04:25.199060Z",
+        "started_at": "2026-10-22T20:04:25.389399Z",
+        "finished_at": "2026-10-22T20:04:27.483795Z"
+      },
+      "ms": 3137
+    }
+  ],
+  "checks": [
+    {
+      "step": "pub",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "result.status",
+      "equals": "published",
+      "actual": "published",
+      "ok": true
+    }
+  ],
+  "passed": true
+}
