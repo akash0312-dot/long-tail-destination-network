@@ -19,7 +19,7 @@ from app.jobs import JobContext, handler
 from app.models import Destination, RuleProposal, utcnow
 from app.output_manifest import build_manifest
 from app.storage import get_storage
-from app.urls import is_internal_host
+from app.urls import url_refused
 
 log = logging.getLogger("app.rules_capture")
 RULE_FIELDS = ("frequency_cap", "self_promo_allowed", "link_policy", "disclosure_required", "automation_allowed",
@@ -60,7 +60,7 @@ def fetch_rules_page(url: str) -> str:
     s = get_settings()
     headers = {"User-Agent": s.crawler_user_agent}
     parts = urlsplit(url)
-    if parts.scheme not in ("http", "https") or (is_internal_host(parts.hostname) and not s.allow_internal_hosts):
+    if parts.scheme not in ("http", "https") or url_refused(parts.hostname, s.allow_internal_hosts):
         raise AppError(ErrorCode.RULES_PAGE_UNAVAILABLE, "Rules page must be http(s) on a public host",
                        {"host": parts.hostname})
     with httpx.Client(timeout=10, follow_redirects=True, headers=headers) as client:

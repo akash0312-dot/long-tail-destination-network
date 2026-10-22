@@ -352,14 +352,21 @@ def get_feed(feed_key: str):
 
 
 # ---------------------------------------------------------------- files (local storage backend only)
-@router.get("/files/{key:path}", tags=["files"], summary="Download an output file (local storage backend)")
+MEDIA_TYPES = {"json": "application/json", "jsonl": "application/x-ndjson", "csv": "text/csv", "md": "text/markdown",
+               "txt": "text/plain", "html": "text/html", "xml": "application/rss+xml", "png": "image/png"}
+
+
+@router.get("/files/{key:path}", tags=["files"],
+            summary="Download an output file (local storage, or object storage when STORAGE_LINKS=proxy)")
 def get_file(key: str):
     storage = get_storage()
-    if not isinstance(storage, LocalStorage):
+    if not isinstance(storage, LocalStorage) and get_settings().storage_links != "proxy":
         raise AppError(ErrorCode.NOT_FOUND, "Files are served from object storage via signed links")
+    if ".." in key.split("/"):
+        raise AppError(ErrorCode.NOT_FOUND, "File not found")
     try:
         data = storage.get_bytes(key)
-    except (FileNotFoundError, ValueError):
+    except Exception:  # missing key: FileNotFoundError locally, a ClientError from S3
         raise AppError(ErrorCode.NOT_FOUND, "File not found")
-    media = "application/json" if key.endswith(".json") else "application/octet-stream"
+    media = MEDIA_TYPES.get(key.rsplit(".", 1)[-1].lower(), "application/octet-stream")
     return Response(content=data, media_type=media)

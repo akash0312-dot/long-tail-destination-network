@@ -53,6 +53,7 @@ class S3Storage:
         self.public_client = boto3.client("s3", endpoint_url=s.s3_public_endpoint_url or s.s3_endpoint_url, **common)
         self.bucket = s.s3_bucket
         self.ttl = s.download_url_ttl_s
+        self.proxy_base = f"{s.public_base_url.rstrip('/')}/api/v1/files" if s.storage_links == "proxy" else None
         self._bucket_ok = False
 
     def _ensure_bucket(self):
@@ -73,6 +74,8 @@ class S3Storage:
         return self.client.get_object(Bucket=self.bucket, Key=key)["Body"].read()
 
     def url_for(self, key: str) -> str:
+        if self.proxy_base:
+            return f"{self.proxy_base}/{key}"
         return self.public_client.generate_presigned_url(
             "get_object", Params={"Bucket": self.bucket, "Key": key}, ExpiresIn=self.ttl)
 

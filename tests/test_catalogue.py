@@ -221,6 +221,30 @@ def test_ssrf_guard_refuses_internal_hosts(client, monkeypatch):
     assert err["code"] == "RULES_PAGE_UNAVAILABLE" and "public host" in err["message"]
 
 
+def test_cloud_metadata_refused_even_when_internal_hosts_allowed(client):
+    """The demo allows internal hosts for its mocks; the VM's credential endpoint must still be unreachable."""
+    from app.config import get_settings
+    from app.urls import is_metadata_host, url_refused
+    assert get_settings().allow_internal_hosts is True  # as on the local stack and the live demo
+    assert all(map(is_metadata_host, ["169.254.169.254", "metadata.google.internal", "[fe80::1]"]))
+    assert url_refused("169.254.169.254", allow_internal=True) and not url_refused("mock", allow_internal=True)
+    job = import_csv(client, "name,url\nmetadata,http://169.254.169.254/latest/meta-data\n", check_reachability=True)
+    (row,) = report_rows(client, job)
+    assert row["status"] == "invalid" and "private or internal host" in row["errors"]
+    d = client.post("/api/v1/destinations", headers=_key(), json={
+        "name": f"m {uuid.uuid4().hex[:6]}", "url": f"https://m-{uuid.uuid4().hex[:6]}.example",
+        "connector_key": "assisted", "rules_url": "http://169.254.169.254/latest/meta-data/iam"}).json()
+    job = client.post(f"/api/v1/destinations/{d['id']}/rules/capture", headers=_key(), json={}).json()
+    assert client.get(f"/api/v1/jobs/{job['job_id']}").json()["error"]["code"] == "RULES_PAGE_UNAVAILABLE"
+
+
+def test_proxy_storage_links_go_through_the_api(monkeypatch):
+    from app.config import get_settings
+    from app.storage import S3Storage
+    s = get_settings().model_copy(update={"storage_links": "proxy", "public_base_url": "https://demo.example"})
+    assert S3Storage(s).url_for("imports/x/report.csv") == "https://demo.example/api/v1/files/imports/x/report.csv"
+
+
 def test_relevance_endpoint(client):
     d = client.post("/api/v1/destinations", headers=_key(), json={
         "name": "Indie Hackers", "url": f"https://indie-{uuid.uuid4().hex[:6]}.example", "connector_key": "assisted",

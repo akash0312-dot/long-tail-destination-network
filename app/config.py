@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     s3_secret_key: str = ""
     s3_region: str = "us-east-1"
     download_url_ttl_s: int = 3600
+    # presigned = links straight to object storage; proxy = links through GET /api/v1/files/... (token-protected),
+    # so object storage never has to be reachable from the internet (live demo)
+    storage_links: str = "presigned"
 
     # connectors
     connectors_dir: str = "app/connectors"

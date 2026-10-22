@@ -40,10 +40,12 @@ def dig(obj, path: str):
 
 
 class Runner:
-    def __init__(self, api: str, mock: str, mock_host: str, token: str | None, job_timeout_s: float):
+    def __init__(self, api: str, mock: str, mock_host: str, token: str | None, job_timeout_s: float,
+                 verify_tls: bool = True):
         self.api, self.job_timeout_s = api.rstrip("/"), job_timeout_s
         self.mock, self.mock_host = mock.rstrip("/"), mock_host.rstrip("/")
-        self.client = httpx.Client(timeout=60, headers={"Authorization": f"Bearer {token}"} if token else {})
+        self.client = httpx.Client(timeout=60, headers={"Authorization": f"Bearer {token}"} if token else {},
+                                   verify=verify_tls)
         self._dest_ids: dict[str, str] | None = None
         self.run_id = uuid.uuid4().hex[:8]  # {run_id}: same value for the whole run (unique names, fixed keys)
 
@@ -177,9 +179,11 @@ def main(argv: list[str] | None = None) -> int:
                     help="mock platform URL as this machine sees it ({mock_host}, e.g. to arm faults)")
     ap.add_argument("--token", default=None)
     ap.add_argument("--job-timeout", type=float, default=120)
+    ap.add_argument("--insecure", action="store_true",
+                    help="skip TLS verification (only for a local rehearsal with a self-signed certificate)")
     args = ap.parse_args(argv)
 
-    runner = Runner(args.api, args.mock, args.mock_host, args.token, args.job_timeout)
+    runner = Runner(args.api, args.mock, args.mock_host, args.token, args.job_timeout, verify_tls=not args.insecure)
     args.output.mkdir(parents=True, exist_ok=True)
     results = []
     for scenario in load_inputs(args.input):

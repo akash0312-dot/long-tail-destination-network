@@ -28,13 +28,12 @@ from app.models import Destination
 from app.output_manifest import build_manifest
 from app.rules import primary_lang
 from app.storage import get_storage, put_json
-from app.urls import is_internal_host, normalize_url
+from app.urls import normalize_url, url_refused
 
 
 def guard_url(url: str) -> None:
     host = urlsplit(url).hostname
-    if urlsplit(url).scheme not in ("http", "https") or (is_internal_host(host)
-                                                         and not get_settings().allow_internal_hosts):
+    if urlsplit(url).scheme not in ("http", "https") or url_refused(host, get_settings().allow_internal_hosts):
         raise AppError(ErrorCode.CATALOGUE_INPUT_INVALID, "URL must be http(s) on a public host", {"host": host})
 
 log = logging.getLogger("app.catalogue")
@@ -132,7 +131,7 @@ def validate_row(n: int, raw: dict, known: set[str]) -> tuple[dict | None, list[
     if not url or " " in url or p.scheme not in ("http", "https") or not p.hostname:
         errors.append(f"url: '{url}' is not a valid http(s) URL")
         return None, errors, warnings
-    if is_internal_host(p.hostname) and not get_settings().allow_internal_hosts:
+    if url_refused(p.hostname, get_settings().allow_internal_hosts):
         errors.append(f"url: '{p.hostname}' is a private or internal host")
         return None, errors, warnings
     url = p.geturl()

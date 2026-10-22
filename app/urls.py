@@ -18,6 +18,25 @@ def is_internal_host(host: str | None) -> bool:
     return ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_unspecified
 
 
+METADATA_HOSTS = {"metadata.google.internal", "metadata", "instance-data", "metadata.azure.com"}
+
+
+def is_metadata_host(host: str | None) -> bool:
+    """Cloud instance-metadata endpoints hold the VM's credentials: refused always, even with ALLOW_INTERNAL_HOSTS."""
+    host = (host or "").strip("[]").lower()
+    if host in METADATA_HOSTS:
+        return True
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return ip.is_link_local or ip == ipaddress.ip_address("100.100.100.200")  # 169.254.0.0/16, fe80::/10, Alibaba
+
+
+def url_refused(host: str | None, allow_internal: bool) -> bool:
+    return is_metadata_host(host) or (is_internal_host(host) and not allow_internal)
+
+
 def normalize_url(url: str) -> str:
     """Canonical form used for de-duplication: lowercase host without www, no default port, fragment,
     tracking params or trailing slash. 'https://WWW.Example.com:443/c/AI/?utm_source=x' -> 'https://example.com/c/ai'.
