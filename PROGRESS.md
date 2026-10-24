@@ -4,9 +4,11 @@ Plan and full requirements: [`docs/PLAN.md`](docs/PLAN.md). Status keys: ✅ don
 Every ✅ must link to evidence (test, file, log) — this feeds the Submission Form. Mark honestly: a false "Yes" in the
 form disqualifies; "Partial" with a reason does not.
 
-**Test status (2026-10-23, live demo setup):**
+**Test status (2026-10-25, documents and metrics):**
 - `docker compose --profile test run --rm tests` → **216 passed**, 2 skipped (the 2 real-instance E2E tests need the stack)
 - Live demo rehearsed locally over HTTPS + token: **14/14** batch scenarios ([rehearsal](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md))
+- Publishing cost run: **100/100** publications, 77 ms worker time each, $0 AI ([report](test_pack/publishing_cost_2026-10-25/report.md))
+- CI on the last push (3e1d0d3): passed
 
 **Outstanding work (2026-10-22):**
 - `docker compose --profile test run --rm tests` → 208 passed, 2 skipped
@@ -37,10 +39,11 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - [ ] Optional: one live run of the Claude provider to replace "fake-client only" with real evidence and a real cost per page — *needs your key*
 
 **C. Documents and evidence**
-- [ ] README: recommender, metrics, scheduler/tickets, real catalogue — *me*
-- [ ] REPORT.md (2–4 pages), SOURCES.md, AI_USE.md — *me drafts; you check AI_USE describes how you worked*
-- [ ] Test-pack index: each claim → its file — *me*
-- [ ] Missing metrics: certification time per run, cost per 1,000 publications, Claude cost per rules page — *me (Claude cost needs your key)*
+- [x] README: recommender, metrics, scheduler/tickets, real catalogue, measured results
+- [x] [REPORT.md](REPORT.md) (approaches, what works, numbers, what doesn't, next steps), [SOURCES.md](SOURCES.md)
+- [ ] [AI_USE.md](AI_USE.md) — drafted; *you: check it describes how you worked and fill in its last section*
+- [x] Test-pack index: [test_pack/INDEX.md](test_pack/INDEX.md), each claim → its file
+- [x] Missing metrics: certification time per run (0.06–2.09 s), cost per 1,000 publications (0.021 worker-hours + $0 AI). Claude cost per rules page: **not measured** (needs your key)
 - [ ] Decide on local-only default passwords in `.env.example` (generate them, or keep and justify) — *your call*
 
 **D. Only you can do**
@@ -58,15 +61,15 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 4 | Rules checked before every post | ✅ | `tests/test_rules.py` (21-case rule set + API tests), batch `04a`, `04b`, `07` | Also enforced on the raw contract path via `validate()` |
 | 5 | Never spam, never cheat | ✅ | Policy + clause-by-clause evidence: [docs/NO_SPAM.md](docs/NO_SPAM.md). **Log audit** of a full fresh-stack run ([test_pack/log_audit/report.md](test_pack/log_audit/report.md), excerpt in `excerpt.jsonl`): every request went to `ghost:2368`, `lemmy:8536` or `mock:9000`; 22 test posts created, 22 deleted, slowest 2.46 s; a 429 waited 2.0 s from `Retry-After`; 0 secrets. The audit runs in CI on every push (`scripts/log_audit.py`, `tests/test_log_audit.py`) | Third-party connectors certified on mocks by design (see NO_SPAM.md › Limits) |
 | 6 | Safe retries (no duplicate after timeout) | ✅ | `test_timeout_then_retry_same_key_never_duplicates` (7 connectors), `test_publication_job_retries_timeout_with_same_key_and_never_duplicates`, batch `01` | Mutation-checked on Day 1 |
-| 7 | Secrets protected + simulation mode | ✅ | **CI run #1 `secret-scan` passed** (gitleaks v8.18.4, full history, 12 s; [Actions](https://github.com/akash0312-dot/long-tail-destination-network/actions)); `.gitleaks.toml` (default rules + 2-pattern allowlist; a planted fake key is still caught); credentials redacted from captured pages; log redaction `tests/test_logging.py`; container log scan clean (Day 1); `SIMULATION_MODE=true` | Optional: add an automated log scan step to CI |
+| 7 | Secrets protected + simulation mode | ✅ | **CI run #1 `secret-scan` passed** (gitleaks v8.18.4, full history, 12 s; [Actions](https://github.com/akash0312-dot/long-tail-destination-network/actions)); `.gitleaks.toml` (default rules + 2-pattern allowlist; a planted fake key is still caught); credentials redacted from captured pages; log redaction `tests/test_logging.py`; container log scan clean (Day 1); log audit (secrets included) in CI on every push; `SIMULATION_MODE=true` | |
 | 8 | `docker compose up` with local Lemmy + Ghost + mocks | ✅ | **CI run #1 `clean-machine` passed on a fresh Ubuntu runner (3 m 24 s)**: `.env` from `.env.example` only, `docker compose up --build`, bootstrap certified all 9 seeds, full test suite, real Ghost/Lemmy E2E, all batch scenarios; logs in the `clean-machine-evidence` artifact | |
 | 9 | Integration Standard + live demo up | 🟡 | Integration Standard ✅ (table below); demo config [deploy/](deploy/DEPLOY.md), rehearsal [14/14 over HTTPS](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md) | Not on a public server yet: needs your VM |
 
 ## Levels
 | Level | Item | Status | Evidence |
 |---|---|---|---|
-| Core | All must-haves | ⬜ | blocked on 1, 2 (clarification answers) and 9 (live demo) |
-| Core | Full certification run per Core connector | 🟡 | `test_certification_passes_and_promotes`; bootstrap certifies all 6 on the stack. Export of evidence files ⬜ |
+| Core | All must-haves | 🟡 | 3–8 ✅; 1 and 2 wait for the clarification answers; 9 needs the public server |
+| Core | Full certification run per Core connector | ✅ | [certification_pack/](certification_pack/README.md) (run record, live snapshot, screenshot, deletion for each); `test_full_certification_cycle`; every seed certifies in CI |
 | Core | Platform errors mapped to shared codes | ✅ | `tests/test_connectors.py` matrix × 7 connectors: 429, expired token, rejected, 5xx/circuit, schema change |
 | Advanced | Catalogue import (1,000 rows < 5 min, row report) | ✅ | `app/catalogue/importer.py`; `test_one_thousand_rows_under_five_minutes` (~10 s); `test_hard_case_csv_*`; batch `09` |
 | Advanced | AI rules capture + human confirm | ✅ | `app/catalogue/rules_capture.py`; `test_rules_capture_proposes_and_a_person_confirms`, `test_rejected_proposal_changes_nothing`, `test_rules_capture_respects_robots_txt`; batch `10`. Default provider = heuristics; **Claude path unit-tested with a fake client, not yet run against the live API** |
@@ -109,25 +112,26 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | Catalogue: time for 1,000 rows | ~10 s (9.6–10.8 s over 3 runs) | Windows laptop, reachability on, 50 concurrent checks against the local mock; 921 imported, 49 duplicates, 30 invalid, 20 unreachable |
 | Real catalogue | 199 verified / 226 candidates; 190 relevance ≥ 3 | live checks 2026-10-22; 27 dropped with reasons (`catalogue_data/dropped.csv`) |
 | Recommendation precision@10 | 0.41 (10 items) | AI-drafted labels, not yet reviewed; variant chosen on this set |
-| Certification time per run | ⬜ to extract from evidence (`duration_s` in run.json) | |
+| Certification time per run | 0.10–0.18 s on mocks, 1.23 s real Lemmy, 2.09 s real Ghost, 0.06 s assisted | [certification_pack/](certification_pack/README.md) |
+| Reliability (simulation) | 100/100 publications, 73 rescheduled by the connection's rate limit and published after the reset | [publishing cost run](test_pack/publishing_cost_2026-10-25/report.md) |
 | Duplicates under retry tests | 0 | all timeout/retry tests and batch `01` |
 | Rule safety (caught / missed) | 21 / 0 on our rule set | `tests/test_rules.py::RULE_CASES` |
-| Cost per 1,000 publications | $0 on the default path (no AI on publish); AI only in rules capture/relevance | ⬜ measure Claude cost per rules page |
+| Cost per 1,000 publications | 0.021 worker-hours + $0 AI (77 ms worker time per publication) → 0.021 × the server's hourly price | [publishing cost run](test_pack/publishing_cost_2026-10-25/report.md); Claude cost per rules page not measured (needs your key) |
 
 ## Deliverables
 | Item | Status |
 |---|---|
-| README.md | 🟡 Day 3 version: recommender, metrics, scheduler/tickets and the real catalogue are not documented yet |
+| README.md | ✅ all levels, measured results, live demo |
 | openapi.yaml | ✅ |
-| REPORT.md | ⬜ |
-| SOURCES.md / AI_USE.md | ⬜ |
-| Test pack | 🟡 `test_pack/` batch runs incl. failed runs; claim → file index ⬜ |
+| REPORT.md | ✅ [REPORT.md](REPORT.md) |
+| SOURCES.md / AI_USE.md | ✅ [SOURCES.md](SOURCES.md) / 🟡 [AI_USE.md](AI_USE.md) drafted, needs your check |
+| Test pack | ✅ batch runs incl. failed runs, log audit, recommender and cost runs; [claim → file index](test_pack/INDEX.md) |
 | Certification pack | ✅ [certification_pack/](certification_pack/README.md) — 9 destinations with run record, live snapshot, screenshot, deletion confirmation |
 | Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json`; labels need your review |
 | Demo video | ⬜ |
 | Live demo deployed | 🟡 config + guide ready and rehearsed ([deploy/DEPLOY.md](deploy/DEPLOY.md)); public server ⬜ (*you*) |
-| Clarification email sent to the hiring team | ⬜ (questions drafted in `docs/PLAN.md` §5) |
-| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, 19 commits, all pushed (2026-10-23). Reviewer invite ⬜ (username comes in the invitation email) |
+| Clarification email sent to the hiring team | ⬜ draft ready in `notes/clarification_email.md` (*you send*) |
+| Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, one commit per step of work. Reviewer invite ⬜ (username comes in the invitation email) |
 | Submission Form filled | ⬜ |
 
 ## Decisions log
@@ -191,3 +195,11 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - Rehearsed on this machine with `DEMO_DOMAIN=localhost`: 401 without / with a wrong token, 200 with it; HTTP→HTTPS;
   HSTS; 9/9 seeds certified; batch 14/14 through HTTPS and `/mock`.
 - **Your action:** create the VM and follow `deploy/DEPLOY.md`; then I run the batch against the public URL.
+
+### Day 6 — Documents and metrics — 2026-10-25
+- README brought up to date; REPORT.md, SOURCES.md (licences read from package metadata), AI_USE.md (draft for your
+  check), test-pack index.
+- Measured publishing cost (`scripts/measure_publishing.py`): 100/100, 77 ms worker time each, $0 AI. Found while
+  measuring: posts rescheduled by a rate limit all wake at the reset and most are rescheduled again (229 attempts for
+  100 posts): correct, but wasteful; listed as a next step in REPORT.md.
+- **Your actions:** check AI_USE.md; review the labelled set; send the clarification email; decide on catalogue rules.

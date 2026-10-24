@@ -4,25 +4,31 @@ Containerised connector service that publishes creator content to long-tail dest
 developer blogs, Ghost, partner sites…) through a standard connector contract — with idempotent retries, rate-limit
 backoff, error mapping to shared codes, and a mock platform server for simulation.
 
-> Status: Day 3 of the build (Core + Advanced implemented). See [PROGRESS.md](PROGRESS.md) for what works today and [docs/PLAN.md](docs/PLAN.md) for
-> requirements, architecture and plan.
+> Status: Core, Advanced and Outstanding levels implemented; 9 connectors. What works, what doesn't and the numbers:
+> [REPORT.md](REPORT.md). Claim-by-claim evidence: [test_pack/INDEX.md](test_pack/INDEX.md). Live tracker:
+> [PROGRESS.md](PROGRESS.md). Requirements and architecture: [docs/PLAN.md](docs/PLAN.md). Tools and AI used:
+> [SOURCES.md](SOURCES.md), [AI_USE.md](AI_USE.md).
 
 ## Quick start (≤ 10 commands)
 
 ```bash
 cp .env.example .env
 docker compose up -d --build          # api, worker, postgres, S3 (SeaweedFS), mock platforms, Ghost, Lemmy, bootstrap
-docker compose wait bootstrap         # test accounts, 6 seeded destinations (one per Core connector), certifies them
+docker compose wait bootstrap         # test accounts, 9 seeded destinations (one per connector), certifies them
 curl http://localhost:8000/ready
-open http://localhost:8000/docs       # interactive API docs
+# then open http://localhost:8000/docs in a browser: interactive API docs (the service has no other UI)
 ```
+The first build and start take a few minutes (image downloads); later starts take about a minute.
 
 ## Tests (one command, no API keys)
 
 ```bash
-docker compose --profile test run --rm tests       # unit + integration + simulated end-to-end
+docker compose --profile test run --rm tests       # unit + integration + simulated end-to-end (216 tests)
 RUN_E2E=1 E2E_API_URL=http://localhost:8000 pytest tests/test_e2e_local.py   # real posts on local Ghost + Lemmy
 ```
+CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every push: a gitleaks secret scan, then a
+clean-machine job that starts the stack from `.env.example`, requires every seed to certify, and runs the tests, the
+real-instance E2E, every batch scenario and the log audit.
 
 ## Batch runner
 
@@ -45,16 +51,20 @@ to `<output>/<scenario>/steps.json` plus `summary.json` / `summary.md`; the exit
 
 `POST /api/v1/certifications {"destination_id"}` runs: rules recorded → format limits → real test post → live URL
 answers → status published → delete → status deleted, within 10 minutes. Evidence (`run.json`, live snapshot) goes to
-object storage. Pass → level L1/L2/L3 by tier; fail → demoted to L0, excluded, alert written. A created test post is
-always cleaned up, even when a step fails.
+object storage. Pass → level L1/L2/L3 by tier, L4 when `fetch_metrics` also works; fail → demoted to L0, excluded,
+alert and ticket written. A created test post is always cleaned up, even when a step fails. Exported evidence for
+every seeded destination: [certification_pack/](certification_pack/README.md).
 
 ## Architecture
 
 ```
 client ──► API (/api/v1, /connector/v1) ──► jobs table ──► worker ──► connectors ──► Ghost | Lemmy | mock platforms
-             │ idempotency · auth · rate limit · correlation id · JSON logs
-             └── Postgres (catalogue, ledger, jobs, idempotency)   S3/SeaweedFS (manifests, evidence)
+             │ idempotency · auth · rate limit · correlation id · JSON logs     │
+             │                                         recertification scheduler (in the worker loop)
+             └── Postgres (catalogue, ledger, jobs, idempotency, tickets)   S3/SeaweedFS (manifests, evidence, reports)
 ```
+Rules engine, tailoring and recommender are pure functions (no I/O), so every decision can be tested on its own. The
+AI provider sits behind one adapter (`app/ai.py`: mock or Claude).
 Full diagram and design decisions: [docs/PLAN.md §4](docs/PLAN.md#4-architecture).
 
 ## Connector contract
@@ -88,6 +98,42 @@ Adding a connector = a new folder with `manifest.yaml` + `connector.py`. Adding 
   publication applies it.
 - AI provider: `AI_PROVIDER=mock` (default: deterministic heuristics, no key) or `anthropic` (Claude, model from
   `AI_MODEL`, token cost in every result manifest).
+
+## Recommendations, metrics, recertification
+
+- `POST /api/v1/recommendations` ranks destinations for one content item: topic fit (audience segments + rare shared
+  words), the destination's relevance score, past results there, and whether the frequency cap allows a post now. Every
+  entry has its reasons; excluded destinations are listed with why (demoted, content type, a rule that would block).
+  Evaluated offline with `python scripts/eval_recommender.py` (precision@10 on `catalogue_data/labelled_set.json`).
+- `POST /api/v1/publications/{id}/metrics` calls `fetch_metrics` (Lemmy, Discourse, Dev.to, PeerTube) and stores a
+  snapshot normalised to views, likes, comments, shares, saves, watch time and clicks; a value the platform does not
+  expose is `null`, never 0. Destinations with working metrics certify at L4; past results feed the recommender.
+- Recertification: the worker re-tests every certified destination before its certification is 30 days old
+  (`RECERTIFY_AFTER_DAYS=25`, checked every `SCHEDULER_INTERVAL_S`; or `POST /api/v1/recertifications/run`). A failure
+  demotes the destination to L0, excludes it from publishing and recommendations, writes an alert
+  (`ALERT_WEBHOOK_URL`) and opens a ticket (`GET /api/v1/tickets`); a pass later resolves it. A temporary 429 or
+  timeout is *inconclusive* and does not demote.
+
+## Real catalogue
+
+[catalogue_data/destinations.csv](catalogue_data/destinations.csv): 199 real destinations (Lemmy communities,
+Discourse forums, Dev.to tags, Hashnode, PeerTube instances, video aggregators, assisted communities), each verified
+live, with connector type, relevance 1–5 with a reason, and posting rules. Import it with `POST
+/api/v1/catalogue/imports`. Method and limits: [catalogue_data/RESEARCH.md](catalogue_data/RESEARCH.md) (rules are
+read from the community's own text for 24 rows; the rest use labelled conservative defaults). Nothing was posted to
+any of them: every third-party community stays `automation_allowed=false` until its owner agrees.
+
+## Measured results
+
+| What | Result | Evidence |
+|---|---|---|
+| Tests | 216 passed, 2 skipped (the 2 need the running stack and run in CI) | `docker compose --profile test run --rm tests` |
+| Hard-case batch | all scenarios pass, also over HTTPS with the demo token | [test_pack/](test_pack/INDEX.md) |
+| Certification run time | 0.1–0.2 s on the mocks, 1.2 s real Lemmy, 2.1 s real Ghost; test posts deleted in ≤ 2.5 s | [certification_pack/](certification_pack/README.md) |
+| Duplicates under timeout + retry | 0 | `test_timeout_then_retry_same_key_never_duplicates` |
+| Catalogue import | 1,000 rows in ~10 s (limit 5 min) | `test_one_thousand_rows_under_five_minutes` |
+| Publishing cost | 77 ms worker time per publication, $0 AI, so 0.021 worker-hours per 1,000 | [test_pack/publishing_cost_2026-10-25/](test_pack/publishing_cost_2026-10-25/report.md) |
+| Recommender precision@10 | 0.41 on 10 items (labels drafted by AI, not yet reviewed) | [test_pack/recommender_eval/](test_pack/recommender_eval/report.md) |
 
 ## Error codes
 
