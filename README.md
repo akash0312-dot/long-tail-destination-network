@@ -90,7 +90,8 @@ Adding a connector = a new folder with `manifest.yaml` + `connector.py`. Adding 
 
 - `POST /api/v1/catalogue/imports` (CSV `file` upload or `csv_url`) → job: validation, de-duplication (normalised
   URL + platform), language detection, reachability, member-count enrichment, relevance 1–5 with a reason, and a
-  row-by-row `report.csv`. 1,000 rows take about 10 s.
+  row-by-row `report.csv`. 1,000 rows take about 3.5 s. Reachability checks run at most 4 at a time per host (many
+  communities share one host) and retry once after a timeout.
 - `POST /api/v1/destinations/{id}/rules/capture` → job: reads the rules page (robots.txt honoured), proposes posting
   rules with evidence quotes. `POST /api/v1/rule-proposals/{id}/confirm` (named reviewer, optional corrections) is the
   only way they are applied; `/reject` discards them.
@@ -133,7 +134,7 @@ any of them: every third-party community stays `automation_allowed=false` until 
 | Hard-case batch | all scenarios pass, also over HTTPS with the demo token | [test_pack/](test_pack/INDEX.md) |
 | Certification run time | 0.1–0.2 s on the mocks, 1.2 s real Lemmy, 2.1 s real Ghost; test posts deleted in ≤ 2.5 s | [certification_pack/](certification_pack/README.md) |
 | Duplicates under timeout + retry | 0 | `test_timeout_then_retry_same_key_never_duplicates` |
-| Catalogue import | 1,000 rows in ~10 s (limit 5 min) | `test_one_thousand_rows_under_five_minutes` |
+| Catalogue import | 1,000 rows in ~3.5 s (limit 5 min); the real catalogue's report in [test_pack/catalogue_import_2026-10-25/](test_pack/catalogue_import_2026-10-25/report.csv) | `test_one_thousand_rows_under_five_minutes` |
 | Publishing cost | 77 ms worker time per publication, $0 AI, so 0.021 worker-hours per 1,000 | [test_pack/publishing_cost_2026-10-25/](test_pack/publishing_cost_2026-10-25/report.md) |
 | Recommender precision@10 | 0.41 on 10 items (AI-drafted labels, reviewed by the candidate and kept unchanged) | [test_pack/recommender_eval/](test_pack/recommender_eval/report.md) |
 

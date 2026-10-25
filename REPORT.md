@@ -57,7 +57,7 @@ All measured on the local stack (Windows laptop, Docker Desktop) unless stated o
 | Reliability (local instances) | Ghost and Lemmy E2E pass in every CI run; batch 14/14 scenarios | CI; [rehearsal batch](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md) |
 | Duplicates under retry | 0 | timeout-after-create tests on 7 connectors; batch `01` |
 | Rule safety (caught / missed) | 21 / 0 | our 21-case rule set (`tests/test_rules.py::RULE_CASES`); not an external benchmark |
-| Catalogue: 1,000 rows | ~10 s (9.6–10.8 s over 3 runs; limit 5 min): 921 imported, 49 duplicates, 30 invalid, 20 unreachable | `test_one_thousand_rows_under_five_minutes`, 50 concurrent checks against the local mock |
+| Catalogue: 1,000 rows | ~3.5 s (3.4–3.7 s over 3 runs; limit 5 min): 921 imported, 49 duplicates, 30 invalid, 20 unreachable | `test_one_thousand_rows_under_five_minutes`, against the local mock (at most 4 checks at a time per host) |
 | Real catalogue | 199 kept of 226 candidates, verified live on 2026-10-22; 27 dropped with reasons | [RESEARCH.md](catalogue_data/RESEARCH.md) |
 | Recommendation precision@10 | **0.41** (baseline 0.31; a rejected variant 0.38) | 10 items; AI-drafted labels, reviewed by the candidate on 2026-10-25 and kept unchanged (0 added, 0 removed) |
 | Cost per 1,000 publications | **0.021 worker-hours + $0 AI** | 77 ms worker time per publication including rescheduled attempts |
@@ -76,15 +76,19 @@ cost is reported per call but has not been measured live.
 
 - **Third-party platforms are proven on mocks only.** Discourse, Dev.to, the webhook, Hashnode and PeerTube certify
   against the mock platform server, which follows their public APIs. Only Ghost and Lemmy run as real instances.
-  Whether mock certification is accepted is one of the clarification questions for the hiring team.
+  The brief does not say whether certification on mock servers is accepted.
 - **Contract field names are not confirmed.** The methods, manifest and codes follow the brief. The exact JSON field
-  names in a few places are inferred and listed in the clarification questions.
+  names in a few places are inferred, because the brief does not specify them.
 - **The Claude provider is not proven live.** It is unit-tested with a fake client; the default provider is the
   deterministic one. There is no live cost per rules page yet.
 - **The recommender is weak on some topics, and its labels are the AI draft.** Precision@10 is 0.41 over only 10
   items. Two items score 0 (UX of AI chat, creator income): the catalogue has few such destinations, and word
   overlap misses synonyms. The labels were drafted by AI and the candidate's review kept them unchanged, and the
   chosen variant was picked on the same set (no held-out set), so 0.41 is optimistic.
+- **Reachability checks run from one IP and can be blocked.** The first imports of the real catalogue sent too many
+  checks at once to hosts with many communities and were throttled; checks are now limited per host and retried once.
+  In the final run 57 of 199 were not reachable: lemmy.world (30) was by then refusing this IP, and 16 sites block
+  bots ([import report](test_pack/catalogue_import_2026-10-25/README.md)).
 - **Most catalogue rules are defaults.** Rules come from the community's own text for 24 of 199 rows. The other 175
   use conservative defaults, labelled as defaults per row.
 - **Rescheduling is correct but wasteful.** Posts rescheduled by a rate limit all wake at the same reset, and most

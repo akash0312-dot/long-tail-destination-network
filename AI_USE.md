@@ -23,7 +23,12 @@ The work happened in one long conversation between the candidate and Claude Code
 - Set the constraints: a private repository, the repository's name, and neutral naming throughout.
 - Chose the order of work (Day 1 core → Core connectors and rules → Advanced → Outstanding → evidence → live demo)
   and approved each step before it started.
-- Created the GitHub repository, signed in to GitHub, ran a push themselves, and checked the CI runs.
+- Created the GitHub repository (its first commit, `2dcee17`, is theirs), signed in to GitHub, ran the later pushes
+  themselves, and checked the CI runs.
+- Chose the live-demo host after the options were checked (Oracle needs a credit card; AWS's Free plan accepts a
+  debit card), created the AWS account and the server, attached the Elastic IP, opened the ports, and approved the
+  deployment plan before anything went public.
+- Reviewed the recommender's labelled set in the review workbook and kept every draft label (signed 2026-10-25).
 - Asked the questions that changed the work, for example whether the service needs a frontend (it does not; the
   `/docs` page gained an Authorize button instead).
 
@@ -40,7 +45,9 @@ The work happened in one long conversation between the candidate and Claude Code
 - **Drafted the recommender's labelled set** (`catalogue_data/labelled_set.json`). The brief asks for a set the
   candidate labels, so the candidate reviewed it in a spreadsheet on 2026-10-25 and kept every label unchanged
   (0 added, 0 removed; recorded in the file). Precision@10 is reported as AI-drafted labels with that review.
-- Drafted the clarification email to the hiring team (the candidate sends it).
+- Drafted clarification questions for the hiring team (the candidate decided not to send them).
+- Deployed the live demo to the candidate's AWS server over SSH once the plan was approved (server setup, code copy,
+  generated secrets kept out of the repository), then verified it from outside and ran every batch scenario.
 - Wrote the documents: README, REPORT, SOURCES, this file, the no-spam policy, the partner webhook protocol and the
   deployment guide.
 
@@ -61,7 +68,8 @@ candidate's request that a name be removed from every file. Every later commit i
 ## To complete by the candidate
 
 - [ ] Which parts you reviewed line by line, and which you checked by running them.
-- [ ] Anything you wrote or changed yourself.
+- [ ] Anything you wrote or changed yourself. Known from the sessions (check and extend): the repository's first
+      commit; the live-demo server on AWS; the review of the labelled set.
 - [ ] How you prepared to explain the code live (architecture walkthrough, one output field traced from request to
       file, the rules engine, idempotency).
 - [ ] Confirm or correct every statement above, then delete the draft note at the top.

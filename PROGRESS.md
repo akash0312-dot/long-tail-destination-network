@@ -31,7 +31,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - [x] **Secret scan** (gitleaks) — clean over the full history, locally and in CI run #1 (12 s)
 - [x] **Certification pack** exported into the repo (must-have 2 evidence) — [certification_pack/](certification_pack/README.md): 9 destinations, one per connector (L1–L4), each with run.json, live snapshot, screenshot and deletion confirmation; cleanup 0.1–2.1 s. Credentials in captured pages are redacted (Ghost embeds its Content API key). Re-export: `python scripts/export_certification_pack.py`
 - [x] **No-spam evidence** (must-have 5) — [docs/NO_SPAM.md](docs/NO_SPAM.md) + log audit, also in CI
-- [ ] **Clarification email** (must-haves 1, 2) — *you send*: draft ready in `notes/clarification_email.md` (git-ignored, not in the repo); 8 questions
+- [x] **Clarification email** — decided not to send (2026-10-25). Must-haves 1 and 2 stay unconfirmed on two points (contract field names the brief does not specify; certification on mocks), stated in REPORT.md
 - [x] Real-instance E2E (`RUN_E2E=1`) — runs in every CI build (passed in run #1); re-check after the last change before submitting
 
 **B. Outstanding level (counts only if every item is verified)**
@@ -48,7 +48,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - [ ] Decide on local-only default passwords in `.env.example` (generate them, or keep and justify) — *your call*
 
 **D. Only you can do**
-- [ ] Demo video: unedited, ≤ 8 min (clean run, a failure handled, tests running, one design decision in code)
+- [ ] Demo video: unedited, ≤ 8 min (clean run, a failure handled, tests running, one design decision in code) — script with commands and narration in `notes/demo_video_script.md` (git-ignored)
 - [ ] Invite the reviewer to the GitHub repo (username from the email)
 - [ ] Fill and sign the Submission Form (I can pre-fill a draft from this tracker); send before the deadline in the email
 - [ ] Practise the live session: architecture walkthrough, predict-and-run, debugging from logs, adding a connector test-first
@@ -56,8 +56,8 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 ## Must-haves
 | # | Must-have | Status | Evidence | Notes |
 |---|---|---|---|---|
-| 1 | Exact connector contract | 🟡 | `app/connectors/router.py`, `tests/test_contract.py`, 9 manifests | All 7 methods routed, manifests validated, shared codes. Exact JSON field names unconfirmed → clarification email |
-| 2 | Six Core connectors certified | 🟡 | `tests/test_certification.py`, bootstrap log, `tests/test_e2e_local.py`, [certification_pack/](certification_pack/README.md) | All 6 certify (plus MRSS, Hashnode, PeerTube). Ghost + Lemmy on real local instances; Discourse, Dev.to, webhook on faithful mocks — **ask whether mock certification is accepted** |
+| 1 | Exact connector contract | 🟡 | `app/connectors/router.py`, `tests/test_contract.py`, 9 manifests | All 7 methods routed, manifests validated, shared codes. JSON field names the brief does not specify are inferred (stated in REPORT.md) |
+| 2 | Six Core connectors certified | 🟡 | `tests/test_certification.py`, bootstrap log, `tests/test_e2e_local.py`, [certification_pack/](certification_pack/README.md) | All 6 certify (plus MRSS, Hashnode, PeerTube). Ghost + Lemmy on real local instances; Discourse, Dev.to, webhook on faithful mocks (whether mock certification is accepted is unconfirmed) |
 | 3 | Configuration, not code | ✅ | `test_one_connector_many_destinations` (7 posting connectors); every batch scenario adds its destination as one API row | |
 | 4 | Rules checked before every post | ✅ | `tests/test_rules.py` (21-case rule set + API tests), batch `04a`, `04b`, `07` | Also enforced on the raw contract path via `validate()` |
 | 5 | Never spam, never cheat | ✅ | Policy + clause-by-clause evidence: [docs/NO_SPAM.md](docs/NO_SPAM.md). **Log audit** of a full fresh-stack run ([test_pack/log_audit/report.md](test_pack/log_audit/report.md), excerpt in `excerpt.jsonl`): every request went to `ghost:2368`, `lemmy:8536` or `mock:9000`; 22 test posts created, 22 deleted, slowest 2.46 s; a 429 waited 2.0 s from `Retry-After`; 0 secrets. The audit runs in CI on every push (`scripts/log_audit.py`, `tests/test_log_audit.py`) | Third-party connectors certified on mocks by design (see NO_SPAM.md › Limits) |
@@ -69,10 +69,10 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 ## Levels
 | Level | Item | Status | Evidence |
 |---|---|---|---|
-| Core | All must-haves | 🟡 | 3–8 ✅; 1 and 2 wait for the clarification answers; 9: deployed and verified, callback header name to set |
+| Core | All must-haves | 🟡 | 3–8 ✅; 1 and 2 implemented, with field names and mock certification unconfirmed; 9: deployed and verified, callback header name to set |
 | Core | Full certification run per Core connector | ✅ | [certification_pack/](certification_pack/README.md) (run record, live snapshot, screenshot, deletion for each); `test_full_certification_cycle`; every seed certifies in CI |
 | Core | Platform errors mapped to shared codes | ✅ | `tests/test_connectors.py` matrix × 7 connectors: 429, expired token, rejected, 5xx/circuit, schema change |
-| Advanced | Catalogue import (1,000 rows < 5 min, row report) | ✅ | `app/catalogue/importer.py`; `test_one_thousand_rows_under_five_minutes` (~10 s); `test_hard_case_csv_*`; batch `09` |
+| Advanced | Catalogue import (1,000 rows < 5 min, row report) | ✅ | `app/catalogue/importer.py`; `test_one_thousand_rows_under_five_minutes` (~3.5 s); `test_hard_case_csv_*`; batch `09`; real-catalogue import report `test_pack/catalogue_import_2026-10-25/` |
 | Advanced | AI rules capture + human confirm | ✅ | `app/catalogue/rules_capture.py`; `test_rules_capture_proposes_and_a_person_confirms`, `test_rejected_proposal_changes_nothing`, `test_rules_capture_respects_robots_txt`; batch `10`. Default provider = heuristics; **Claude path unit-tested with a fake client, not yet run against the live API** |
 | Advanced | Relevance score 1–5 + reason | ✅ | `app/catalogue/heuristics.py`, `POST /api/v1/destinations/{id}/relevance`, scored on every import; `test_relevance_endpoint` |
 | Advanced | Tailoring | ✅ | `app/tailoring.py`, `POST /api/v1/tailor`, `tailor: true` on publications; `tests/test_tailoring.py` |
@@ -110,7 +110,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 ## Metrics measured so far (for form tab 5)
 | Metric | Value | Conditions |
 |---|---|---|
-| Catalogue: time for 1,000 rows | ~10 s (9.6–10.8 s over 3 runs) | Windows laptop, reachability on, 50 concurrent checks against the local mock; 921 imported, 49 duplicates, 30 invalid, 20 unreachable |
+| Catalogue: time for 1,000 rows | ~3.5 s (3.4–3.7 s over 3 runs, 2026-10-25) | Windows laptop, reachability on against the local mock, at most 4 checks at a time per host (was ~10 s with 50 at once to one host); 921 imported, 49 duplicates, 30 invalid, 20 unreachable |
 | Real catalogue | 199 verified / 226 candidates; 190 relevance ≥ 3 | live checks 2026-10-22; 27 dropped with reasons (`catalogue_data/dropped.csv`) |
 | Recommendation precision@10 | 0.41 (10 items) | AI-drafted labels, reviewed by the candidate on 2026-10-25 and kept unchanged (0 added, 0 removed); variant chosen on this set |
 | Certification time per run | 0.10–0.18 s on mocks, 1.23 s real Lemmy, 2.09 s real Ghost, 0.06 s assisted | [certification_pack/](certification_pack/README.md) |
@@ -131,7 +131,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json` (reviewed 2026-10-25, unchanged) + the review workbook |
 | Demo video | ⬜ |
 | Live demo deployed | ✅ https://16-178-103-126.sslip.io (AWS Free plan, t3.small): 22/22 checks, 14/14 scenarios; token in `notes/aws_demo.env` (git-ignored) for the Submission Form |
-| Clarification email sent to the hiring team | ⬜ draft ready in `notes/clarification_email.md` (*you send*) |
+| Clarification email sent to the hiring team | — decided not to send |
 | Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, one commit per step of work. Reviewer invite ⬜ (username comes in the invitation email) |
 | Submission Form filled | ⬜ |
 
