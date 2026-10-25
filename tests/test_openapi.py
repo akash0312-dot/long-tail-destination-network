@@ -34,6 +34,18 @@ def test_token_entered_in_docs_is_what_the_api_checks(client, monkeypatch):
     assert client.get("/docs").status_code == 200 and client.get("/openapi.json").status_code == 200
 
 
+def test_docs_declare_the_idempotency_key_exactly_where_the_middleware_requires_it(client):
+    """Every POST under /api/v1/ needs Idempotency-Key (IdempotencyMiddleware); /docs must offer the field there, so
+    "Try it out" works, and nowhere else."""
+    spec = client.get("/openapi.json").json()
+    param = spec["components"]["parameters"]["IdempotencyKey"]
+    assert (param["name"], param["in"], param["required"]) == ("Idempotency-Key", "header", True)
+    ref = {"$ref": "#/components/parameters/IdempotencyKey"}
+    for path, ops in spec["paths"].items():
+        for method, op in ops.items():
+            assert (ref in op.get("parameters", [])) is (method == "post" and path.startswith("/api/v1/")), path
+
+
 def test_openapi_version_and_route_prefixes(client):
     spec = client.get("/openapi.json").json()
     assert spec["openapi"].startswith("3.1")

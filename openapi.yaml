@@ -94,6 +94,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
   /api/v1/connections/{connection_id}/reconnect:
     post:
       tags:
@@ -107,6 +109,7 @@ paths:
         schema:
           type: string
           title: Connection Id
+      - $ref: '#/components/parameters/IdempotencyKey'
       responses:
         '200':
           description: Successful Response
@@ -189,6 +192,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
     get:
       tags:
       - catalogue
@@ -319,6 +324,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
   /api/v1/publications/{publication_id}:
     get:
       tags:
@@ -374,6 +381,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
   /api/v1/destinations/{destination_id}/rules/capture:
     post:
       tags:
@@ -387,6 +396,7 @@ paths:
         schema:
           type: string
           title: Destination Id
+      - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -460,6 +470,7 @@ paths:
         schema:
           type: string
           title: Proposal Id
+      - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -496,6 +507,7 @@ paths:
         schema:
           type: string
           title: Proposal Id
+      - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -532,6 +544,7 @@ paths:
         schema:
           type: string
           title: Destination Id
+      - $ref: '#/components/parameters/IdempotencyKey'
       responses:
         '200':
           description: Successful Response
@@ -578,6 +591,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
   /api/v1/tailor:
     post:
       tags:
@@ -607,6 +622,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
   /api/v1/certifications:
     post:
       tags:
@@ -633,6 +650,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
     get:
       tags:
       - certification
@@ -681,6 +700,8 @@ paths:
                 title: Response Run Recertification Api V1 Recertifications Run Post
       security:
       - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
   /api/v1/tickets:
     get:
       tags:
@@ -734,6 +755,7 @@ paths:
         schema:
           type: string
           title: Publication Id
+      - $ref: '#/components/parameters/IdempotencyKey'
       responses:
         '200':
           description: Successful Response
@@ -1441,3 +1463,14 @@ components:
       scheme: bearer
       description: The API token (`API_TOKEN`). Required when the service runs with a token, as the live demo does; not needed
         locally.
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 200
+      description: Any unique value, for example a UUID. Sending the same request again with the same key returns the first
+        response instead of doing the work twice; the same key with a different body is refused (409 IDEMPOTENCY_KEY_CONFLICT).

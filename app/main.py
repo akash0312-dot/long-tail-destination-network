@@ -12,23 +12,36 @@ from app.logging_setup import setup_logging
 from app.middleware import PROTECTED_PREFIXES, PUBLIC_PREFIXES, IdempotencyMiddleware, RequestContextMiddleware
 
 BEARER = "bearerAuth"
+IDEMPOTENCY_KEY = "IdempotencyKey"
 
 
 def openapi_with_auth(app: FastAPI):
-    """The token check lives in middleware, so declare it in the spec: /docs gets an Authorize button and every
-    protected operation says it needs the bearer token."""
+    """The token check and the Idempotency-Key check live in middleware, so declare both in the spec: /docs gets an
+    Authorize button, every protected operation says it needs the bearer token, and every POST under /api/v1/ has
+    an Idempotency-Key field (so "Try it out" works there too)."""
     def build():
         if app.openapi_schema:
             return app.openapi_schema
         spec = get_openapi(title=app.title, version=app.version, description=app.description, routes=app.routes)
-        spec.setdefault("components", {})["securitySchemes"] = {BEARER: {
+        components = spec.setdefault("components", {})
+        components["securitySchemes"] = {BEARER: {
             "type": "http", "scheme": "bearer",
             "description": "The API token (`API_TOKEN`). Required when the service runs with a token, as the live "
                            "demo does; not needed locally."}}
+        components["parameters"] = {IDEMPOTENCY_KEY: {
+            "name": "Idempotency-Key", "in": "header", "required": True,
+            "schema": {"type": "string", "minLength": 1, "maxLength": 200},
+            "description": "Any unique value, for example a UUID. Sending the same request again with the same key "
+                           "returns the first response instead of doing the work twice; the same key with a "
+                           "different body is refused (409 IDEMPOTENCY_KEY_CONFLICT)."}}
         for path, operations in spec["paths"].items():
-            if path.startswith(PROTECTED_PREFIXES) and not path.startswith(PUBLIC_PREFIXES):
-                for operation in operations.values():
+            protected = path.startswith(PROTECTED_PREFIXES) and not path.startswith(PUBLIC_PREFIXES)
+            for method, operation in operations.items():
+                if protected:
                     operation["security"] = [{BEARER: []}]
+                if method == "post" and path.startswith("/api/v1/"):  # the rule IdempotencyMiddleware enforces
+                    operation.setdefault("parameters", []).append(
+                        {"$ref": f"#/components/parameters/{IDEMPOTENCY_KEY}"})
         app.openapi_schema = spec
         return spec
     return build
