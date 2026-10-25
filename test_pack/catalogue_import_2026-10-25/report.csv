@@ -1,0 +1,200 @@
+row,status,destination_id,name,url,normalized_url,connector_key,language,reachable,http_status,est_audience,relevance_score,errors,warnings
+2,updated,86313faad8bb42d0bb82b6fd92df831d,lemmy.world Technology,https://lemmy.world/c/technology,https://lemmy.world/c/technology,lemmy,en,False,,88982,5,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+3,updated,2842925e32ee4d80a5d31f51afa7d304,lemmy.world Artificial Intelligence,https://lemmy.world/c/artificial_intelligence,https://lemmy.world/c/artificial_intelligence,lemmy,en,False,,72,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+4,updated,ce70b7628fb24932991eae950b00e8a7,lemmy.world LocalLLaMA,https://lemmy.world/c/localllama,https://lemmy.world/c/localllama,lemmy,en,False,,3,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+5,updated,7bffe71e71014c4d8fc1046ea4cea0d4,lemmy.world YouTube,https://lemmy.world/c/youtube,https://lemmy.world/c/youtube,lemmy,en,False,,232,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+6,updated,6134b145fc384e5da5523b67d4d6d5e1,lemmy.world Videos,https://lemmy.world/c/videos,https://lemmy.world/c/videos,lemmy,en,False,,18897,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+7,updated,11c64c90e60846e1ada77b6b9701bbd3,lemmy.world Videography,https://lemmy.world/c/videography,https://lemmy.world/c/videography,lemmy,en,False,,63,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+8,updated,768362dd2b64426e86e450af5dc0c6e0,lemmy.world Photography,https://lemmy.world/c/photography,https://lemmy.world/c/photography,lemmy,en,False,,8144,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+9,updated,b1aed244a85a4b1d93e33f0593ffd3c7,lemmy.world Blender,https://lemmy.world/c/blender,https://lemmy.world/c/blender,lemmy,en,False,,3671,5,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+10,updated,c9a5ed317e794ad99e6b28f8e318d853,lemmy.world Startups,https://lemmy.world/c/startups,https://lemmy.world/c/startups,lemmy,en,False,,81,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+11,updated,01633a570902438988a9758fae199035,lemmy.world Entrepreneur,https://lemmy.world/c/entrepreneur,https://lemmy.world/c/entrepreneur,lemmy,en,False,,31,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+12,updated,e9df2eb06c18445a92d32d5b855269bb,lemmy.world Small Business,https://lemmy.world/c/smallbusiness,https://lemmy.world/c/smallbusiness,lemmy,en,False,,64,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+13,updated,291cb2bb2865498e9d00324615481c8a,lemmy.world Productivity,https://lemmy.world/c/productivity,https://lemmy.world/c/productivity,lemmy,en,False,,1106,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+14,updated,67ff5b08ef584e77ac6e2c9425100585,lemmy.world Selfhosted,https://lemmy.world/c/selfhosted,https://lemmy.world/c/selfhosted,lemmy,en,False,,63143,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+15,updated,d1e0dc7286794bd48d48344abc0637e1,lemmy.world Open Source,https://lemmy.world/c/opensource,https://lemmy.world/c/opensource,lemmy,en,False,,339,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+16,updated,363359bbde6045ae87cf193d887f633f,lemmy.world Web Development,https://lemmy.world/c/webdev,https://lemmy.world/c/webdev,lemmy,en,False,,1371,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+17,updated,fdef88a370d945beadfaa7910f26aaa5,lemmy.world Programming,https://lemmy.world/c/programming,https://lemmy.world/c/programming,lemmy,en,False,,186,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+18,updated,4fb1e922337a402b8b15db5479be5bb3,lemmy.world Python,https://lemmy.world/c/python,https://lemmy.world/c/python,lemmy,en,False,,265,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+19,updated,3dc194bdd332497d94fe70a1e09f24e8,lemmy.world Podcasts,https://lemmy.world/c/podcasts,https://lemmy.world/c/podcasts,lemmy,en,False,,103,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+20,updated,6afc91b963b14df7bdc496fd014bdece,lemmy.world Writing,https://lemmy.world/c/writing,https://lemmy.world/c/writing,lemmy,en,False,,299,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+21,updated,11eae22134d34aa388d17b55335cd46b,lemmy.world Design,https://lemmy.world/c/design,https://lemmy.world/c/design,lemmy,en,False,,162,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+22,updated,984c581df56846a886223dbdda9bdeb9,lemmy.world Social Media,https://lemmy.world/c/socialmedia,https://lemmy.world/c/socialmedia,lemmy,en,False,,13,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+23,updated,11545a00768c4e179de1e03b79f02f9e,lemmy.world Fediverse,https://lemmy.world/c/fediverse,https://lemmy.world/c/fediverse,lemmy,en,False,,44485,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+24,updated,6a271078b5294afea4bfa12cf4b8346e,lemmy.world Machine Learning,https://lemmy.world/c/machinelearning,https://lemmy.world/c/machinelearning,lemmy,en,False,,1267,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+25,updated,373cb0993e08401ab9bcbd3676c82ec9,lemmy.world Data Science,https://lemmy.world/c/datascience,https://lemmy.world/c/datascience,lemmy,en,False,,115,2,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+26,updated,ab763986d6b940858b7101b3eea8a288,lemmy.world Indie Dev,https://lemmy.world/c/indiedev,https://lemmy.world/c/indiedev,lemmy,en,False,,287,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+27,updated,1c43297cd79d44d2adae87ff34ddae70,lemmy.world ChatGPT,https://lemmy.world/c/chatgpt,https://lemmy.world/c/chatgpt,lemmy,en,False,,10130,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+28,updated,6aa113dcce1c4ae7b3d4350eacb64dce,lemmy.world Futurology,https://lemmy.world/c/futurology,https://lemmy.world/c/futurology,lemmy,en,False,,3052,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+29,updated,0e0517ebbbfd4703902bac41fea9b9db,lemmy.world Linux,https://lemmy.world/c/linux,https://lemmy.world/c/linux,lemmy,en,False,,19616,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+30,updated,263af7904b9b4d4ab95cbe22107ea89a,lemmy.world Android,https://lemmy.world/c/android,https://lemmy.world/c/android,lemmy,en,False,,34885,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+31,updated,c3b3d1b907ac4521bdf34dc06b1850f1,lemmy.world Privacy,https://lemmy.world/c/privacy,https://lemmy.world/c/privacy,lemmy,en,False,,10956,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+32,updated,534264e86b1c4935893135f59bb3bbe5,programming.dev Programming,https://programming.dev/c/programming,https://programming.dev/c/programming,lemmy,en,True,200,28925,3,,
+33,updated,a746fce2e8fd44a797584de143374f00,programming.dev Web Development,https://programming.dev/c/webdev,https://programming.dev/c/webdev,lemmy,en,True,200,5894,3,,
+34,updated,5b9d88cbeb0f486e97e51a536273ca44,programming.dev Python,https://programming.dev/c/python,https://programming.dev/c/python,lemmy,en,True,200,8083,3,,
+35,updated,43498712caf740129ad6052cf576aa87,programming.dev JavaScript,https://programming.dev/c/javascript,https://programming.dev/c/javascript,lemmy,en,True,200,2840,3,,
+36,updated,c9260f46632744e1807569ea9371960a,programming.dev Rust,https://programming.dev/c/rust,https://programming.dev/c/rust,lemmy,en,True,200,8337,3,,
+37,updated,23c0c36dca8a445983cd00d8abaaad57,programming.dev Open Source,https://programming.dev/c/opensource,https://programming.dev/c/opensource,lemmy,en,True,200,6896,3,,
+38,updated,105b0e9f44514da1b82a730f19d21c89,programming.dev Machine Learning,https://programming.dev/c/machine_learning,https://programming.dev/c/machine_learning,lemmy,en,True,200,656,3,,
+39,updated,95fb1e3d5d484b23b0a2c16c69bbbda6,programming.dev Experienced Devs,https://programming.dev/c/experienced_devs,https://programming.dev/c/experienced_devs,lemmy,en,True,200,5749,3,,
+40,updated,c4ee671725b344709ba847af71a18834,programming.dev DevOps,https://programming.dev/c/devops,https://programming.dev/c/devops,lemmy,en,True,200,2244,3,,
+41,updated,e8f01e970d2543c2aa6c9e03cfc466df,programming.dev Game Development,https://programming.dev/c/gamedev,https://programming.dev/c/gamedev,lemmy,en,True,200,6453,3,,
+42,updated,42d64b18119d42e5b3e98d940a66c00a,programming.dev TypeScript,https://programming.dev/c/typescript,https://programming.dev/c/typescript,lemmy,en,True,200,1134,3,,
+43,updated,0bdb0aaf2de04df58acdf81b7bedf1d3,programming.dev Golang,https://programming.dev/c/golang,https://programming.dev/c/golang,lemmy,en,True,200,2786,3,,
+44,updated,94a5eb71f58a4505a613e196f2933263,programming.dev C++,https://programming.dev/c/cpp,https://programming.dev/c/cpp,lemmy,en,True,200,2384,3,,
+45,updated,7a8508ba13e54086a3fe6146c07c1266,programming.dev Technology,https://programming.dev/c/technology,https://programming.dev/c/technology,lemmy,en,True,200,1077,5,,
+46,updated,d2bb1f677d904f15b6cf4869342a452f,programming.dev Learn Programming,https://programming.dev/c/learn_programming,https://programming.dev/c/learn_programming,lemmy,en,True,200,2266,3,,
+47,updated,0bc2b216021a4b9eab54d16716a930a2,lemmy.ml Technology,https://lemmy.ml/c/technology,https://lemmy.ml/c/technology,lemmy,en,True,200,43448,4,,
+48,updated,863f416c84894cbf8a99903374600ba1,lemmy.ml Open Source,https://lemmy.ml/c/opensource,https://lemmy.ml/c/opensource,lemmy,en,True,200,49645,3,,
+49,updated,853c9ab3ef824eb98f6b0d8d4b33eaae,lemmy.ml Privacy,https://lemmy.ml/c/privacy,https://lemmy.ml/c/privacy,lemmy,en,True,200,51554,4,,
+50,updated,c277b0ee6a964d7cb51ea56fa016f58c,lemmy.ml Linux,https://lemmy.ml/c/linux,https://lemmy.ml/c/linux,lemmy,en,True,200,68224,4,,
+51,updated,d94c69643bb44293907e6dacc0cb24d0,lemmy.ml Programming,https://lemmy.ml/c/programming,https://lemmy.ml/c/programming,lemmy,en,True,200,10039,3,,
+52,updated,be359a5501b042b19ee41a2a5134f575,lemmy.ml Fediverse,https://lemmy.ml/c/fediverse,https://lemmy.ml/c/fediverse,lemmy,en,True,200,26159,3,,
+53,updated,35db8d4f7a1544ba9ed3a3accff3e421,beehaw.org Technology,https://beehaw.org/c/technology,https://beehaw.org/c/technology,lemmy,en,True,200,43733,4,,
+54,updated,9d2207ba7b0542f6b03112896ad32bad,beehaw.org Programming,https://beehaw.org/c/programming,https://beehaw.org/c/programming,lemmy,en,True,200,15621,3,,
+55,updated,2da5c492024c424080e80c92eb5695dc,beehaw.org Creative,https://beehaw.org/c/creative,https://beehaw.org/c/creative,lemmy,en,True,200,5269,3,,
+56,updated,b68e99f52b1f4b0cad6bc6e6ae8d3f34,lemmy.dbzer0.com Stable Diffusion,https://lemmy.dbzer0.com/c/stable_diffusion,https://lemmy.dbzer0.com/c/stable_diffusion,lemmy,en,False,,5723,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+57,updated,cb42a962cfab447aafbbea3cf2058f23,lemmy.dbzer0.com AI Horde,https://lemmy.dbzer0.com/c/aihorde,https://lemmy.dbzer0.com/c/aihorde,lemmy,en,False,,434,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+58,updated,e47f8660d5604078aafd491a3d90d2bb,lemmy.zip Technology,https://lemmy.zip/c/technology,https://lemmy.zip/c/technology,lemmy,en,True,200,7423,5,,
+59,updated,94ba9178c985455eb2f1fd762e9c2ee4,infosec.pub Cybersecurity,https://infosec.pub/c/cybersecurity,https://infosec.pub/c/cybersecurity,lemmy,en,True,200,6541,3,,
+60,updated,756719e818f54797a151125d8d31fe6a,feddit.org Technik,https://feddit.org/c/technik,https://feddit.org/c/technik,lemmy,en,True,200,1143,3,,
+61,updated,d85b740cc0fa4501b8d9ec3d477aa047,OpenAI Developer Community,https://community.openai.com,https://community.openai.com,discourse,en,True,200,1042518,5,,
+62,updated,d7043d3c578348f69af51c0b84d354ad,Hugging Face Forums,https://discuss.huggingface.co,https://discuss.huggingface.co,discourse,en,True,200,104376,4,,
+63,updated,3dcf2c0a94224d878a486fcedf371bcc,Cursor Community Forum,https://forum.cursor.com,https://forum.cursor.com,discourse,en,True,200,131903,5,,
+64,updated,11139b11402b4ebc9645f1ca2feb6e28,n8n Community,https://community.n8n.io,https://community.n8n.io,discourse,en,True,200,183151,5,,
+65,updated,7c721886ed1f461e876122a2d4c5a843,Make Community,https://community.make.com,https://community.make.com,discourse,en,True,200,62516,5,,
+66,updated,51bf3adc803441d19d6772aaf3b4ccaa,Obsidian Forum,https://forum.obsidian.md,https://forum.obsidian.md,discourse,en,True,200,102233,5,,
+67,updated,226e54511bbb4badab141f1990b11178,Python Discourse,https://discuss.python.org,https://discuss.python.org,discourse,en,True,200,57581,5,,
+68,updated,01763d3ed2dc4d4faaca5064a9fea5e4,Django Forum,https://forum.djangoproject.com,https://forum.djangoproject.com,discourse,en,True,200,16227,3,,
+69,updated,215192f580e842a3912c81b7d7571519,PyTorch Forums,https://discuss.pytorch.org,https://discuss.pytorch.org,discourse,en,True,200,68075,4,,
+70,updated,c093ba71fa2f425693df7e03c1549b54,Google AI Developers Forum,https://discuss.ai.google.dev,https://discuss.ai.google.dev,discourse,en,True,200,164572,4,,
+71,updated,4cf59cd5b3ef4e91a9b8b1ea2d681284,freeCodeCamp Forum,https://forum.freecodecamp.org,https://forum.freecodecamp.org,discourse,en,True,200,361029,4,,
+72,updated,e4d6095b0a6340b2a69dca1ebe6aec65,Fly.io Community,https://community.fly.io,https://community.fly.io,discourse,en,True,200,23737,3,,
+73,updated,a6d97ccd628b446b84282c471431e689,Bubble Forum,https://forum.bubble.io,https://forum.bubble.io,discourse,en,True,200,72415,5,,
+74,updated,0e2f0d8b949a41fe98bb9bc348db5745,Retool Community,https://community.retool.com,https://community.retool.com,discourse,en,True,200,17656,3,,
+75,updated,2fe09d4a50f84807b374a324437722b8,Mozilla Discourse,https://discourse.mozilla.org,https://discourse.mozilla.org,discourse,en,True,200,31320,3,,
+76,updated,53d039eb322d45f58379444c9b43e17f,Ghost Forum,https://forum.ghost.org,https://forum.ghost.org,discourse,en,True,200,16972,3,,
+77,updated,1a58cd25489847caa09c7632990f1bb5,Discourse Meta,https://meta.discourse.org,https://meta.discourse.org,discourse,en,True,200,69193,5,,
+78,updated,206958b3ee53443d95e3ad1b984194ec,Streamlit Community,https://discuss.streamlit.io,https://discuss.streamlit.io,discourse,en,True,200,66190,4,,
+79,updated,f7893171079343ac92e883fe36c12b7a,Ray Forum,https://discuss.ray.io,https://discuss.ray.io,discourse,en,True,200,6051,3,,
+80,updated,c6b01b49157444dc91c20e2298e19e48,LangChain Forum,https://forum.langchain.com,https://forum.langchain.com,discourse,en,True,200,3586,3,,
+81,updated,556c03a74809478abc15dc9d63a286d7,Elastic Discuss,https://discuss.elastic.co,https://discuss.elastic.co,discourse,en,True,200,142662,4,,
+82,updated,d44c72f3b6e84bf78b41c148806970a5,fast.ai Forums,https://forums.fast.ai,https://forums.fast.ai,discourse,en,True,200,38301,4,,
+83,updated,6938e9695d8344d19e356b718b3643ab,Level1Techs Forum,https://forum.level1techs.com,https://forum.level1techs.com,discourse,en,True,200,136795,5,,
+84,updated,3d146fa6b2184e74a1acae3b66078ea2,Shotcut Forum,https://forum.shotcut.org,https://forum.shotcut.org,discourse,en,True,200,14211,4,,
+85,updated,518bd36a6c7649919a6373d34cd2bd6d,KDE Discuss,https://discuss.kde.org,https://discuss.kde.org,discourse,en,True,200,21001,4,,
+86,updated,9f5b56b0b66741588db50b455fea3031,Blender Artists,https://blenderartists.org,https://blenderartists.org,discourse,en,True,200,192461,5,,
+87,updated,feace873a8964320a39357a04312e95a,Blender Developer Talk,https://devtalk.blender.org,https://devtalk.blender.org,discourse,en,False,,9967,5,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+88,updated,937ba288861542d8bee12f6a2e362d0a,Hugo Discourse,https://discourse.gohugo.io,https://discourse.gohugo.io,discourse,en,True,200,14920,3,,
+89,updated,b5d3731ba27f450d9e9d58ab466d57bc,Jekyll Talk,https://talk.jekyllrb.com,https://talk.jekyllrb.com,discourse,en,True,200,3045,3,,
+90,updated,5fe3e83f55a34b5db53520f0991093c1,Grafana Community,https://community.grafana.com,https://community.grafana.com,discourse,en,True,200,48953,3,,
+91,updated,a3627b502efc4de2a781cc9ff60a1c98,UiPath Forum,https://forum.uipath.com,https://forum.uipath.com,discourse,en,True,200,235659,5,,
+92,updated,a8ed508d4f544d6bb623294960b60f19,DeepLearning.AI Community,https://community.deeplearning.ai,https://community.deeplearning.ai,discourse,en,True,200,786186,4,,
+93,updated,fc908ac87aa0420c8dbab7b3836694f5,Kubernetes Discuss,https://discuss.kubernetes.io,https://discuss.kubernetes.io,discourse,en,True,200,11919,3,,
+94,updated,273e8c749cf547d3b379742e3574aecf,Home Assistant Community,https://community.home-assistant.io,https://community.home-assistant.io,discourse,en,True,200,347723,4,,
+95,updated,9cc2cb7637654cfabb51e64098111609,Let's Encrypt Community,https://community.letsencrypt.org,https://community.letsencrypt.org,discourse,en,True,200,66773,4,,
+96,updated,f50d6216603743cd863d8180641281c5,Wappler Community,https://community.wappler.io,https://community.wappler.io,discourse,en,True,200,22802,4,,
+97,updated,f58af207e95b4344911c6093a587d928,Rasa Forum,https://forum.rasa.com,https://forum.rasa.com,discourse,en,True,200,17989,3,,
+98,updated,f8d9b7a828a549ebbe3888d47989e882,Weaviate Forum,https://forum.weaviate.io,https://forum.weaviate.io,discourse,en,True,200,10592,3,,
+99,updated,50576bccc2364cb593f85e6b487ec57c,Vercel Community,https://community.vercel.com,https://community.vercel.com,discourse,en,True,200,32483,3,,
+100,updated,312bee5ff16b483a9d6b4835838a0773,Netlify Support Forums,https://answers.netlify.com,https://answers.netlify.com,discourse,en,True,200,50088,4,,
+101,updated,bfdafc6c692545d1922a65b821bfd417,Sublime Forum,https://forum.sublimetext.com,https://forum.sublimetext.com,discourse,en,True,200,30224,3,,
+102,updated,eea73c375eee42a88abba596640241f1,Godot Forum,https://forum.godotengine.org,https://forum.godotengine.org,discourse,en,True,200,42559,3,,
+103,updated,3d518cf351b64d6e9b93c18f2877cdc3,GameDev.tv Community,https://community.gamedev.tv,https://community.gamedev.tv,discourse,en,False,,91223,5,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+104,updated,a5f1223e0f5a44b687516dc9ca262507,Babylon.js Forum,https://forum.babylonjs.com,https://forum.babylonjs.com,discourse,en,True,200,10267,3,,
+105,updated,d8c5f616842e4f659563edf59365102b,three.js Forum,https://discourse.threejs.org,https://discourse.threejs.org,discourse,en,True,200,30322,3,,
+106,updated,85c69fc4fd8b4783b3758e94b5be03e8,Processing Forum,https://discourse.processing.org,https://discourse.processing.org,discourse,en,False,,11468,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+107,updated,a2994ac0e2e743dda2f83eb6b930a0b2,Plotly Community,https://community.plotly.com,https://community.plotly.com,discourse,en,True,200,25416,3,,
+108,updated,1fb7318591a7434e804329a5128caba7,Ardour Discourse,https://discourse.ardour.org,https://discourse.ardour.org,discourse,en,False,,96264,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+109,updated,600adde9360b4f72ac65e97906ae9947,Framacolibri,https://framacolibri.org,https://framacolibri.org,discourse,en,False,,8287,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+110,updated,205fee2102c34f6590d4f212a1a02834,Julia Discourse,https://discourse.julialang.org,https://discourse.julialang.org,discourse,en,True,200,24984,3,,
+111,updated,bcfc354a8c76439f9470a864ebad7540,DEV Community #ai,https://dev.to/t/ai,https://dev.to/t/ai,devto,en,True,200,,4,,
+112,updated,b62e33a1bbc54ae2b9bb74acb7559a63,DEV Community #machinelearning,https://dev.to/t/machinelearning,https://dev.to/t/machinelearning,devto,en,True,200,,4,,
+113,updated,784c35fd08e240e289a75e6fa2db0f44,DEV Community #llm,https://dev.to/t/llm,https://dev.to/t/llm,devto,en,True,200,,4,,
+114,updated,622a4089b39742ec9a727db349ec76b6,DEV Community #saas,https://dev.to/t/saas,https://dev.to/t/saas,devto,en,True,200,,4,,
+115,updated,b01abb8fd6b0440bb3a0f4b522740b8e,DEV Community #startup,https://dev.to/t/startup,https://dev.to/t/startup,devto,en,True,200,,4,,
+116,updated,4c7143e1195e4168a3c0671ea9424222,DEV Community #showdev,https://dev.to/t/showdev,https://dev.to/t/showdev,devto,en,True,200,,5,,
+117,updated,0eb5b30aa51149b3b8cef79241fdcc36,DEV Community #productivity,https://dev.to/t/productivity,https://dev.to/t/productivity,devto,en,True,200,,3,,
+118,updated,985ea9aecbff4acca2effe234c1a9ab8,DEV Community #webdev,https://dev.to/t/webdev,https://dev.to/t/webdev,devto,en,True,200,,3,,
+119,updated,bf637cde5f6948d9a63b41deb9676e99,DEV Community #marketing,https://dev.to/t/marketing,https://dev.to/t/marketing,devto,en,True,200,,4,,
+120,updated,c92cb65eda924a079022fd1f596bf382,DEV Community #opensource,https://dev.to/t/opensource,https://dev.to/t/opensource,devto,en,True,200,,3,,
+121,updated,9312d1802bb84387a59a23623d99c48f,DEV Community #python,https://dev.to/t/python,https://dev.to/t/python,devto,en,True,200,,4,,
+122,updated,bbe3befd059845fe83658bd3a32727db,DEV Community #discuss,https://dev.to/t/discuss,https://dev.to/t/discuss,devto,en,True,200,,4,,
+123,updated,4edbcc745282491f91d72ebc0a96878c,Hashnode #ai,https://hashnode.com/n/ai,https://hashnode.com/n/ai,hashnode,en,True,200,,4,,
+124,updated,00911a7ab138494695c7c3c4dbde5f6f,Hashnode #artificial-intelligence,https://hashnode.com/n/artificial-intelligence,https://hashnode.com/n/artificial-intelligence,hashnode,en,True,200,,4,,
+125,updated,47450037f5684b0c95809d14999a4721,Hashnode #saas,https://hashnode.com/n/saas,https://hashnode.com/n/saas,hashnode,en,True,200,,3,,
+126,updated,cc72a46e7683455489ea7bf830af01b4,Hashnode #startups,https://hashnode.com/n/startups,https://hashnode.com/n/startups,hashnode,en,True,200,,4,,
+127,updated,3e89b41d5c20405c97edb4c2f953bbaa,Hashnode #machine-learning,https://hashnode.com/n/machine-learning,https://hashnode.com/n/machine-learning,hashnode,en,True,200,,4,,
+128,updated,541def4834b94a13bce144a7ffee69d4,Hashnode #web-development,https://hashnode.com/n/web-development,https://hashnode.com/n/web-development,hashnode,en,True,200,,3,,
+129,updated,e04d837d126542888b6a507cb4384f21,Framatube,https://framatube.org,https://framatube.org,peertube,fr,True,200,9,2,,"language mismatch: declared 'fr', text looks 'en'"
+130,updated,aef57f5e80554015ad4d5be661de307a,TILvids,https://tilvids.com,https://tilvids.com,peertube,en,True,200,6267,4,,
+131,updated,7bdbe0e00db44d27a2b9c4b760873f07,Blender Video,https://video.blender.org,https://video.blender.org,peertube,en,False,,13,3,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+132,updated,c85378d1d353471693eeb87b39034150,Diode Zone,https://diode.zone,https://diode.zone,peertube,en,True,200,3252,4,,
+133,updated,c7f4fad272054667a16ad0c6c87e6b98,MakerTube,https://makertube.net,https://makertube.net,peertube,en,True,200,3600,4,,
+134,updated,3a0e4033631c4204b112f4cd65c3d15d,Spectra Video,https://spectra.video,https://spectra.video,peertube,en,True,200,1249,4,,
+135,updated,38d59a4d11154a98918dc8d2d0f70888,Kolektiva Media,https://kolektiva.media,https://kolektiva.media,peertube,en,True,200,313,3,,
+136,updated,51ef33e93f034b609d0e564ef81c2775,tube.tchncs.de,https://tube.tchncs.de,https://tube.tchncs.de,peertube,en,True,200,2333,3,,
+137,updated,d5c1e774d3b44feda68f9292f27da412,Toobnix,https://toobnix.org,https://toobnix.org,peertube,en,True,200,233,4,,
+138,updated,f25533e79d1844eb870382b16a6a0fa3,Apple Podcasts (video podcasts),https://podcastsconnect.apple.com,https://podcastsconnect.apple.com,mrss,en,False,401,,4,,"unreachable (401): catalogued, but it cannot be certified until it answers"
+139,updated,bfeaa17399134255b4e2ab72ecd278cd,Spotify for Creators (video podcasts),https://creators.spotify.com,https://creators.spotify.com,mrss,en,True,200,,4,,
+140,updated,678e57053dd64de9b0ff68391a92c50e,Podcast Index,https://podcastindex.org,https://podcastindex.org,mrss,en,True,200,,3,,
+141,updated,23e1d6c1517448f78f8f9b1673d66354,Amazon Music for Podcasters,https://podcasters.amazon.com,https://podcasters.amazon.com,mrss,en,False,,,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+142,updated,ce6bd844fb4343b59239a8ae54ea9b30,Pocket Casts,https://pocketcasts.com/submit/,https://pocketcasts.com/submit,mrss,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+143,updated,b38dc38c9a56496c83a6d67b2a94bc79,Player FM,https://player.fm,https://player.fm,mrss,en,True,200,,3,,
+144,updated,859515191ced40d29eebfa44a1254d25,Castbox,https://castbox.fm,https://castbox.fm,mrss,en,True,200,,3,,
+145,updated,7324fb574c604a0cb8e6543c2e56c648,Podchaser,https://www.podchaser.com,https://podchaser.com,mrss,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+146,updated,1dd8a6411dad4b2cab1bb4311a60d02b,Hacker News,https://news.ycombinator.com,https://news.ycombinator.com,assisted,en,True,200,,5,,
+147,updated,8cd64d6e87ec4fdc894dc892148bf3ab,Show HN,https://news.ycombinator.com/show,https://news.ycombinator.com/show,assisted,en,True,200,,4,,
+148,updated,f004e04b95214d488907f54122175a03,Product Hunt,https://www.producthunt.com,https://producthunt.com,assisted,en,True,200,,5,,
+149,updated,b2c6b7602aca4552bc17dc7389430320,Indie Hackers,https://www.indiehackers.com,https://indiehackers.com,assisted,en,False,403,,4,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+150,updated,273976411d044617abb91ff9d44930fe,Lobsters,https://lobste.rs,https://lobste.rs,assisted,en,True,200,,3,,
+151,updated,0c5c21e5317146268c74a6942f50f160,Tildes,https://tildes.net,https://tildes.net,assisted,en,False,,,4,,"unreachable (ConnectError): catalogued, but it cannot be certified until it answers"
+152,updated,71a261dc34594c2eb0e2833ed95c0f69,Slashdot,https://slashdot.org,https://slashdot.org,assisted,en,True,200,,3,,
+153,updated,e975b3999ab8473197146b902a1a5235,Sidebar,https://sidebar.io,https://sidebar.io,assisted,en,True,200,,3,,
+154,updated,630354dc394e42e2829ec115a401a32e,Echo JS,https://www.echojs.com,https://echojs.com,assisted,en,True,200,,3,,
+155,updated,e7feec39b76c4859a042c84e0cf449a3,BetaList,https://betalist.com,https://betalist.com,assisted,en,True,200,,4,,
+156,updated,947efebf5671403ca387050a379cadc9,AlternativeTo,https://alternativeto.net,https://alternativeto.net,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+157,updated,bba52ee7247a4af8a10e3ba8ac90e905,SaaSHub,https://www.saashub.com,https://saashub.com,assisted,en,True,200,,4,,
+158,updated,04b17a194a4e4670a7e655b485673562,Launching Next,https://www.launchingnext.com,https://launchingnext.com,assisted,en,True,200,,3,,
+159,updated,80ab2418c34341dd9d6ed115ffed8503,Microlaunch,https://microlaunch.net,https://microlaunch.net,assisted,en,True,200,,4,,
+160,updated,5a34826b448b4c2dbf97b4088dae1672,Uneed,https://www.uneed.best,https://uneed.best,assisted,en,True,200,,4,,
+161,updated,0a9bab1fbe7a4c4d8a1b058db0873585,Peerlist Launchpad,https://peerlist.io/launchpad,https://peerlist.io/launchpad,assisted,en,True,200,,4,,
+162,updated,83163c3a8ae74f5f9491eb231702cfce,Future Tools,https://www.futuretools.io,https://futuretools.io,assisted,en,True,200,,4,,
+163,updated,ade2f46055944526a04d509bde0039eb,There's An AI For That,https://theresanaiforthat.com,https://theresanaiforthat.com,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+164,updated,6e9cd69072234baeabf00d9360837507,Toolify,https://www.toolify.ai,https://toolify.ai,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+165,updated,b59a75ce26da4f9b9736b8eb0edf81aa,Futurepedia,https://www.futurepedia.io,https://futurepedia.io,assisted,en,True,200,,5,,
+166,updated,8836e9f3b3754055bb45f4b14bce82d6,TopAI.tools,https://topai.tools,https://topai.tools,assisted,en,True,200,,3,,
+167,updated,7dd7d43cdb1243d7adc651868ba20a83,HackerNoon,https://hackernoon.com,https://hackernoon.com,assisted,en,True,200,,5,,
+168,updated,afa18552126646df923651ecad5abac9,freeCodeCamp News,https://www.freecodecamp.org/news,https://freecodecamp.org/news,assisted,en,True,200,,3,,
+169,updated,feaf0fe258e34145b3d8861a755a029a,DZone,https://dzone.com,https://dzone.com,assisted,en,False,403,,4,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+170,updated,1d31345f03cc4a548367fcaf0d63136d,Smashing Magazine,https://www.smashingmagazine.com,https://smashingmagazine.com,assisted,en,True,200,,3,,
+171,updated,5840765246e944609b91a03b16c28f9b,Towards Data Science,https://towardsdatascience.com,https://towardsdatascience.com,assisted,en,True,200,,3,,
+172,updated,d84aef6b87044069891acb823ca7338c,Towards AI,https://pub.towardsai.net,https://pub.towardsai.net,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+173,updated,2b8a731d8cf84e50aeb2c7d973bcf138,The Startup (Medium),https://medium.com/swlh,https://medium.com/swlh,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+174,updated,974fc7229fca4f20a693a0712a3f74b5,UX Collective,https://uxdesign.cc,https://uxdesign.cc,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+175,updated,0103768030d44539a5122063ea1d5902,Level Up Coding,https://levelup.gitconnected.com,https://levelup.gitconnected.com,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+176,updated,5b35ac05b7c94ac8acccc8d7d72cc51e,Kaggle Discussions,https://www.kaggle.com/discussions,https://kaggle.com/discussions,assisted,en,False,404,,3,,"unreachable (404): catalogued, but it cannot be certified until it answers"
+177,updated,91064eb18f094a908f6d60000a4c1835,LessWrong,https://www.lesswrong.com,https://lesswrong.com,assisted,en,True,200,,3,,
+178,updated,f2d87b838e9a4906b39bbc3ab4ecc666,Online Geniuses,https://onlinegeniuses.com,https://onlinegeniuses.com,assisted,en,True,200,,3,,
+179,updated,5f11623272e947788e9f426c3a61cd55,Superpath Community,https://www.superpath.co/community,https://superpath.co/community,assisted,en,True,200,,4,,
+180,updated,4a4b400bbee24677bf8388ae62df0d85,MLOps Community,https://mlops.community,https://mlops.community,assisted,en,True,200,,3,,
+181,updated,84d7237042c1463abed951957c15d747,DataTalks.Club,https://datatalks.club,https://datatalks.club,assisted,en,True,200,,3,,
+182,updated,2dd9f55a3d824e50888776cbac71b40a,Rands Leadership Slack,https://randsinrepose.com/welcome-to-rands-leadership-slack/,https://randsinrepose.com/welcome-to-rands-leadership-slack,assisted,en,True,200,,4,,
+183,updated,39e949cfb8f74583a2ac88de3dcedbd9,Ben's Bites,https://www.bensbites.com,https://bensbites.com,assisted,en,True,200,,5,,
+184,updated,d9397aa5151c4f378853025e54aa5f62,TLDR Newsletter,https://tldr.tech,https://tldr.tech,assisted,en,True,200,,5,,
+185,updated,0189080401e74a52be7ce1beb0e2c885,Hacker Newsletter,https://hackernewsletter.com,https://hackernewsletter.com,assisted,en,True,200,,5,,
+186,updated,2cead2d298564dc4ae74805523b2c004,Product Hunt Discussions,https://www.producthunt.com/discussions,https://producthunt.com/discussions,assisted,en,True,200,,4,,
+187,updated,baeea971a2694815a04f83941fc635c2,Behance,https://www.behance.net,https://behance.net,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+188,updated,d8d213b441524051b7205f6e4d99b7e7,Dribbble,https://dribbble.com,https://dribbble.com,assisted,en,True,202,,3,,
+189,updated,0e389290511943cda788791034cf53a3,DeviantArt,https://www.deviantart.com,https://deviantart.com,assisted,en,True,200,,3,,
+190,updated,39fd5237766d491c976f97ce7283494a,ArtStation,https://www.artstation.com,https://artstation.com,assisted,en,False,403,,4,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+191,updated,01a40df4faa347458d8749ab5d401ecd,Dailymotion,https://www.dailymotion.com,https://dailymotion.com,assisted,en,True,200,,4,,
+192,updated,ae02df7ece044950b0778c6c91667240,Rumble,https://rumble.com,https://rumble.com,assisted,en,True,200,,4,,
+193,updated,5c97d455e0ba47c28e075d027b6de7b3,Odysee,https://odysee.com,https://odysee.com,assisted,en,True,200,,4,,
+194,updated,8b941a6b8739498e9f7c326f9e1bc163,Patreon,https://www.patreon.com,https://patreon.com,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"
+195,updated,25dfc9cf1acc4be9af792acc2adbd684,Ko-fi,https://ko-fi.com,https://ko-fi.com,assisted,en,True,200,,3,,
+196,updated,70a3a80574554865886cdf2980a9a267,Buy Me a Coffee,https://www.buymeacoffee.com,https://buymeacoffee.com,assisted,en,True,200,,3,,
+197,updated,4a42ad6ea59a4918be3db798ea48eace,Warrior Forum,https://www.warriorforum.com,https://warriorforum.com,assisted,en,True,200,,3,,
+198,updated,d6fadee34de94ddbadb38634836d0ca8,Digital Point Forums,https://forums.digitalpoint.com,https://forums.digitalpoint.com,assisted,en,True,200,,3,,
+199,updated,81217b225c924fec9fb51d2f90ec4db9,YC Startup School,https://www.startupschool.org,https://startupschool.org,assisted,en,True,200,,3,,
+200,updated,b441a887bc594cc698049a8cd1150f4a,F6S,https://www.f6s.com,https://f6s.com,assisted,en,False,403,,3,,"unreachable (403): catalogued, but it cannot be certified until it answers"

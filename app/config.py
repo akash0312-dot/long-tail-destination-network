@@ -71,6 +71,7 @@ class Settings(BaseSettings):
 
     # catalogue import
     catalogue_concurrency: int = 50
+    catalogue_per_host_concurrency: int = 4  # many communities share one host; a burst to it gets throttled
     catalogue_reachability_timeout_s: float = 5.0
     rules_fetch_max_bytes: int = 500_000
     crawler_user_agent: str = "LongTailDestinationBot/1.0 (+catalogue rules check)"

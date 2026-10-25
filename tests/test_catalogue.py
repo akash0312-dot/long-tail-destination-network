@@ -245,6 +245,36 @@ def test_proxy_storage_links_go_through_the_api(monkeypatch):
     assert S3Storage(s).url_for("imports/x/report.csv") == "https://demo.example/api/v1/files/imports/x/report.csv"
 
 
+def test_reachability_checks_are_polite_per_host_and_retry_a_timeout(monkeypatch):
+    """Many communities share one host: at most CATALOGUE_PER_HOST_CONCURRENCY checks hit it at once, and a
+    first-attempt timeout is retried once instead of marking a live site unreachable."""
+    import asyncio
+    from app.catalogue.importer import check_all
+    from app.config import get_settings
+    monkeypatch.setattr(get_settings(), "catalogue_per_host_concurrency", 2)
+    active, peak, attempts = {}, {}, {}
+
+    async def handler(request):
+        host, url = request.url.host, str(request.url)
+        active[host] = active.get(host, 0) + 1
+        peak[host] = max(peak.get(host, 0), active[host])
+        try:
+            await asyncio.sleep(0.01)
+            attempts[url] = attempts.get(url, 0) + 1
+            if request.url.path == "/slow" and attempts[url] == 1:
+                raise httpx.ReadTimeout("slow first answer", request=request)
+            return httpx.Response(200)
+        finally:
+            active[host] -= 1
+
+    rows = [{"url": f"https://shared.example/c/{i}", "connector_key": "lemmy", "params": {}} for i in range(12)]
+    rows.append({"url": "https://other.example/slow", "connector_key": "discourse", "params": {}})
+    results = asyncio.run(check_all(rows, transport=httpx.MockTransport(handler)))
+    assert peak["shared.example"] == 2
+    assert all(r["reachable"] for r in results)
+    assert attempts["https://other.example/slow"] == 2
+
+
 def test_relevance_endpoint(client):
     d = client.post("/api/v1/destinations", headers=_key(), json={
         "name": "Indie Hackers", "url": f"https://indie-{uuid.uuid4().hex[:6]}.example", "connector_key": "assisted",

@@ -6,6 +6,7 @@ enrichment (member counts from Lemmy / Discourse) -> relevance 1-5 with a reason
 Nothing is posted anywhere: an imported destination is catalogued (L0) until it is certified.
 """
 import asyncio
+import collections
 import csv
 import io
 import json
@@ -178,17 +179,22 @@ def validate_row(n: int, raw: dict, known: set[str]) -> tuple[dict | None, list[
     return (None if errors else out), errors, warnings
 
 
-async def _check_one(client: httpx.AsyncClient, sem: asyncio.Semaphore, row: dict) -> dict:
-    async with sem:
+async def _check_one(client: httpx.AsyncClient, sem: asyncio.Semaphore, host_sems: dict, row: dict) -> dict:
+    # a few checks at a time per site: many communities share one host, and a burst gets throttled (timeouts)
+    async with sem, host_sems[urlsplit(row["url"]).hostname or ""]:
         result = {"reachable": False, "http_status": None, "error": None, "est_audience": None, "enriched_from": None}
-        try:
-            r = await client.head(row["url"])
-            if r.status_code in (403, 405, 501) or r.status_code >= 500:
-                r = await client.get(row["url"])
-            result["http_status"] = r.status_code
-            result["reachable"] = r.status_code < 400
-        except httpx.HTTPError as e:
-            result["error"] = type(e).__name__
+        for attempt in range(2):  # one retry after a timeout: usually a slow moment, not a dead site
+            try:
+                r = await client.head(row["url"])
+                if r.status_code in (403, 405, 501) or r.status_code >= 500:
+                    r = await client.get(row["url"])
+                result.update(http_status=r.status_code, reachable=r.status_code < 400, error=None)
+                break
+            except httpx.TimeoutException as e:
+                result["error"] = type(e).__name__
+            except httpx.HTTPError as e:
+                result["error"] = type(e).__name__
+                break
         if not result["reachable"]:
             return result
         params = row["params"]
@@ -207,12 +213,13 @@ async def _check_one(client: httpx.AsyncClient, sem: asyncio.Semaphore, row: dic
         return result
 
 
-async def check_all(rows: list[dict]) -> list[dict]:
+async def check_all(rows: list[dict], transport: httpx.AsyncBaseTransport | None = None) -> list[dict]:
     s = get_settings()
     sem = asyncio.Semaphore(s.catalogue_concurrency)
+    host_sems = collections.defaultdict(lambda: asyncio.Semaphore(s.catalogue_per_host_concurrency))
     async with httpx.AsyncClient(timeout=s.catalogue_reachability_timeout_s, follow_redirects=True,
-                                 headers={"User-Agent": s.crawler_user_agent}) as client:
-        return await asyncio.gather(*(_check_one(client, sem, r) for r in rows))
+                                 headers={"User-Agent": s.crawler_user_agent}, transport=transport) as client:
+        return await asyncio.gather(*(_check_one(client, sem, host_sems, r) for r in rows))
 
 
 def read_csv(data: bytes) -> list[dict]:
