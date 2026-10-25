@@ -33,7 +33,8 @@ The work happened in one long conversation between the candidate and Claude Code
   `/docs` page gained an Authorize button instead).
 
 **Claude Code**
-- Analysed the brief and wrote [docs/PLAN.md](docs/PLAN.md) and the tracker [PROGRESS.md](PROGRESS.md).
+- Analysed the brief and wrote the project plan and a progress tracker (both kept outside the repository), and
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - Wrote nearly all of the code: the service, the 9 connectors and their manifests, the rules engine, certification,
   scheduler, recommender, catalogue tools, the mock platform server, bootstrap, Docker Compose, CI and the live-demo
   deployment.

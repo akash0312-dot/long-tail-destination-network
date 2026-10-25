@@ -5,9 +5,9 @@ developer blogs, Ghost, partner sites…) through a standard connector contract 
 backoff, error mapping to shared codes, and a mock platform server for simulation.
 
 > Status: Core, Advanced and Outstanding levels implemented; 9 connectors. What works, what doesn't and the numbers:
-> [REPORT.md](REPORT.md). Claim-by-claim evidence: [test_pack/INDEX.md](test_pack/INDEX.md). Live tracker:
-> [PROGRESS.md](PROGRESS.md). Requirements and architecture: [docs/PLAN.md](docs/PLAN.md). Tools and AI used:
-> [SOURCES.md](SOURCES.md), [AI_USE.md](AI_USE.md).
+> [REPORT.md](REPORT.md). Claim-by-claim evidence: [test_pack/INDEX.md](test_pack/INDEX.md). Architecture and
+> design decisions: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Live demo: [deploy/DEPLOY.md](deploy/DEPLOY.md).
+> Tools and AI used: [SOURCES.md](SOURCES.md), [AI_USE.md](AI_USE.md).
 
 ## Quick start (≤ 10 commands)
 
@@ -65,7 +65,7 @@ client ──► API (/api/v1, /connector/v1) ──► jobs table ──► wor
 ```
 Rules engine, tailoring and recommender are pure functions (no I/O), so every decision can be tested on its own. The
 AI provider sits behind one adapter (`app/ai.py`: mock or Claude).
-Full diagram and design decisions: [docs/PLAN.md §4](docs/PLAN.md#4-architecture).
+Full diagram and design decisions: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Connector contract
 
