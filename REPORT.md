@@ -59,7 +59,7 @@ All measured on the local stack (Windows laptop, Docker Desktop) unless stated o
 | Rule safety (caught / missed) | 21 / 0 | our 21-case rule set (`tests/test_rules.py::RULE_CASES`); not an external benchmark |
 | Catalogue: 1,000 rows | ~10 s (9.6–10.8 s over 3 runs; limit 5 min): 921 imported, 49 duplicates, 30 invalid, 20 unreachable | `test_one_thousand_rows_under_five_minutes`, 50 concurrent checks against the local mock |
 | Real catalogue | 199 kept of 226 candidates, verified live on 2026-10-22; 27 dropped with reasons | [RESEARCH.md](catalogue_data/RESEARCH.md) |
-| Recommendation precision@10 | **0.41** (baseline 0.31; a rejected variant 0.38) | 10 items, labels drafted by AI and **not yet reviewed** |
+| Recommendation precision@10 | **0.41** (baseline 0.31; a rejected variant 0.38) | 10 items; AI-drafted labels, reviewed by the candidate on 2026-10-25 and kept unchanged (0 added, 0 removed) |
 | Cost per 1,000 publications | **0.021 worker-hours + $0 AI** | 77 ms worker time per publication including rescheduled attempts |
 | Live demo (AWS t3.small) | 22/22 external checks, 14/14 scenarios in 101 s, cold start 118 s | [test_pack/batch_2026-10-25_aws_live_demo/](test_pack/batch_2026-10-25_aws_live_demo/external_checks.md) |
 | Claude cost per rules page | **Not measured** | needs an `ANTHROPIC_API_KEY`; each result manifest reports tokens and cost |
@@ -81,10 +81,10 @@ cost is reported per call but has not been measured live.
   names in a few places are inferred and listed in the clarification questions.
 - **The Claude provider is not proven live.** It is unit-tested with a fake client; the default provider is the
   deterministic one. There is no live cost per rules page yet.
-- **The recommender is weak on some topics, and its labels are not reviewed.** Precision@10 is 0.41 over only 10
+- **The recommender is weak on some topics, and its labels are the AI draft.** Precision@10 is 0.41 over only 10
   items. Two items score 0 (UX of AI chat, creator income): the catalogue has few such destinations, and word
-  overlap misses synonyms. The labels were drafted by AI, and the chosen variant was picked on the same set (no
-  held-out set), so 0.41 is optimistic.
+  overlap misses synonyms. The labels were drafted by AI and the candidate's review kept them unchanged, and the
+  chosen variant was picked on the same set (no held-out set), so 0.41 is optimistic.
 - **Most catalogue rules are defaults.** Rules come from the community's own text for 24 of 199 rows. The other 175
   use conservative defaults, labelled as defaults per row.
 - **Rescheduling is correct but wasteful.** Posts rescheduled by a rate limit all wake at the same reset, and most

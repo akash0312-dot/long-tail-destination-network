@@ -135,7 +135,7 @@ any of them: every third-party community stays `automation_allowed=false` until 
 | Duplicates under timeout + retry | 0 | `test_timeout_then_retry_same_key_never_duplicates` |
 | Catalogue import | 1,000 rows in ~10 s (limit 5 min) | `test_one_thousand_rows_under_five_minutes` |
 | Publishing cost | 77 ms worker time per publication, $0 AI, so 0.021 worker-hours per 1,000 | [test_pack/publishing_cost_2026-10-25/](test_pack/publishing_cost_2026-10-25/report.md) |
-| Recommender precision@10 | 0.41 on 10 items (labels drafted by AI, not yet reviewed) | [test_pack/recommender_eval/](test_pack/recommender_eval/report.md) |
+| Recommender precision@10 | 0.41 on 10 items (AI-drafted labels, reviewed by the candidate and kept unchanged) | [test_pack/recommender_eval/](test_pack/recommender_eval/report.md) |
 
 ## Error codes
 

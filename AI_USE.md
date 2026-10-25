@@ -38,8 +38,8 @@ The work happened in one long conversation between the candidate and Claude Code
 - Drafted the list of 226 candidate destinations from general knowledge, and wrote the script that verified each one
   live and kept 199 (`scripts/research_catalogue.py`).
 - **Drafted the recommender's labelled set** (`catalogue_data/labelled_set.json`). The brief asks for a set the
-  candidate labels, so the candidate must review and correct it; until then precision@10 is reported as "labels drafted
-  by AI, not reviewed".
+  candidate labels, so the candidate reviewed it in a spreadsheet on 2026-10-25 and kept every label unchanged
+  (0 added, 0 removed; recorded in the file). Precision@10 is reported as AI-drafted labels with that review.
 - Drafted the clarification email to the hiring team (the candidate sends it).
 - Wrote the documents: README, REPORT, SOURCES, this file, the no-spam policy, the partner webhook protocol and the
   deployment guide.
@@ -55,7 +55,7 @@ candidate's request that a name be removed from every file. Every later commit i
 | Posting to destinations | Yes, after certification and the rules check | Communities that ban automation get an assist pack, and **a person posts** |
 | Posting rules from a community's rules page | Proposed by the heuristics (or Claude) | **A named reviewer confirms** each proposal before it is used |
 | Catalogue research | Verified live by script | Reviewing the rules defaults (175 of 199 rows) is still to do |
-| Recommender labels | Drafted by AI | **The candidate reviews and corrects them** |
+| Recommender labels | Drafted by AI | **The candidate reviewed them** (2026-10-25) and kept the draft unchanged |
 | Test posts | Created and deleted by the certification harness | None |
 
 ## To complete by the candidate

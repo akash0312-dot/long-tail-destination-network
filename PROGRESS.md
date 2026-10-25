@@ -35,7 +35,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - [x] Real-instance E2E (`RUN_E2E=1`) — runs in every CI build (passed in run #1); re-check after the last change before submitting
 
 **B. Outstanding level (counts only if every item is verified)**
-- [ ] Review and correct the labelled set — *you*: open `catalogue_data/labelled_set_review.xlsx` (one sheet per item, all 199 destinations, column A editable), sign it on the first sheet, then `python scripts/labelled_set_sheet.py import` and `python scripts/eval_recommender.py`. The JSON is signed but no label has changed yet
+- [x] Labelled set reviewed by akash on 2026-10-25 in `catalogue_data/labelled_set_review.xlsx` and imported: the AI draft kept unchanged (0 added, 0 removed; recorded per item in `labelled_set.json`). Precision@10 re-run: 0.41
 - [ ] Catalogue rules: 175 of 199 rows use defaults — run Claude rules capture (needs `ANTHROPIC_API_KEY`, small cost) or review by hand — *your decision*
 - [ ] Optional: one live run of the Claude provider to replace "fake-client only" with real evidence and a real cost per page — *needs your key*
 
@@ -77,7 +77,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | Advanced | Relevance score 1–5 + reason | ✅ | `app/catalogue/heuristics.py`, `POST /api/v1/destinations/{id}/relevance`, scored on every import; `test_relevance_endpoint` |
 | Advanced | Tailoring | ✅ | `app/tailoring.py`, `POST /api/v1/tailor`, `tailor: true` on publications; `tests/test_tailoring.py` |
 | Advanced | Three more connectors | ✅ | MRSS feed (`tests/test_feeds.py`, certifies at L2), Hashnode + PeerTube (hard-case matrix + certification at L3, on mocks) |
-| Outstanding | Recommender + precision@10 | 🟡 | `app/recommender.py`, `POST /api/v1/recommendations`, `tests/test_recommender.py`; **precision@10 = 0.41** on 10 items ([report](test_pack/recommender_eval/report.md); baseline 0.31 and a rejected 0.38 variant kept). **Labels are AI-drafted: you must review/correct `catalogue_data/labelled_set.json` and re-run** — the brief says "a set you label". Variant chosen on the same set (no held-out set) |
+| Outstanding | Recommender + precision@10 | 🟡 | `app/recommender.py`, `POST /api/v1/recommendations`, `tests/test_recommender.py`; **precision@10 = 0.41** on 10 items ([report](test_pack/recommender_eval/report.md); baseline 0.31 and a rejected 0.38 variant kept). AI-drafted labels, reviewed by the candidate on 2026-10-25 and kept unchanged (0 added, 0 removed). Variant chosen on the same set (no held-out set) |
 | Outstanding | fetch_metrics on ≥ 3 connectors | ✅ | Lemmy, Discourse, Dev.to, PeerTube (`tests/test_metrics.py`); **real local Lemmy certifies at L4** (metrics verified); `POST /api/v1/publications/{id}/metrics` |
 | Outstanding | Recertification scheduler | ✅ | `app/services/scheduler.py` (worker loop + `POST /api/v1/recertifications/run`), tickets (`GET /api/v1/tickets`), demotion + exclusion + alert, auto-resolve; temporary failures are inconclusive, not demotions — `tests/test_scheduler.py` |
 | Outstanding | 150+ real destinations | 🟡 | `catalogue_data/destinations.csv`: **199 verified live** (190 with relevance ≥ 3), connector type, relevance + reason, member counts from platform APIs, 0 invalid on import. **Rules: only 24 rows have a rule read from the page; 175 use labelled conservative defaults.** To close: run rules capture with Claude (`AI_PROVIDER=anthropic`, needs your key) or review rules by hand |
@@ -112,7 +112,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 |---|---|---|
 | Catalogue: time for 1,000 rows | ~10 s (9.6–10.8 s over 3 runs) | Windows laptop, reachability on, 50 concurrent checks against the local mock; 921 imported, 49 duplicates, 30 invalid, 20 unreachable |
 | Real catalogue | 199 verified / 226 candidates; 190 relevance ≥ 3 | live checks 2026-10-22; 27 dropped with reasons (`catalogue_data/dropped.csv`) |
-| Recommendation precision@10 | 0.41 (10 items) | AI-drafted labels, not yet reviewed; variant chosen on this set |
+| Recommendation precision@10 | 0.41 (10 items) | AI-drafted labels, reviewed by the candidate on 2026-10-25 and kept unchanged (0 added, 0 removed); variant chosen on this set |
 | Certification time per run | 0.10–0.18 s on mocks, 1.23 s real Lemmy, 2.09 s real Ghost, 0.06 s assisted | [certification_pack/](certification_pack/README.md) |
 | Reliability (simulation) | 100/100 publications, 73 rescheduled by the connection's rate limit and published after the reset | [publishing cost run](test_pack/publishing_cost_2026-10-25/report.md) |
 | Duplicates under retry tests | 0 | all timeout/retry tests and batch `01` |
@@ -128,7 +128,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | SOURCES.md / AI_USE.md | ✅ [SOURCES.md](SOURCES.md) / 🟡 [AI_USE.md](AI_USE.md) drafted, needs your check |
 | Test pack | ✅ batch runs incl. failed runs, log audit, recommender and cost runs; [claim → file index](test_pack/INDEX.md) |
 | Certification pack | ✅ [certification_pack/](certification_pack/README.md) — 9 destinations with run record, live snapshot, screenshot, deletion confirmation |
-| Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json`; labels need your review |
+| Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json` (reviewed 2026-10-25, unchanged) + the review workbook |
 | Demo video | ⬜ |
 | Live demo deployed | ✅ https://16-178-103-126.sslip.io (AWS Free plan, t3.small): 22/22 checks, 14/14 scenarios; token in `notes/aws_demo.env` (git-ignored) for the Submission Form |
 | Clarification email sent to the hiring team | ⬜ draft ready in `notes/clarification_email.md` (*you send*) |

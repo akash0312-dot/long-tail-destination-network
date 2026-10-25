@@ -1,6 +1,6 @@
 # Recommender precision@10: **0.41** (mean over 10 items)
 
-Catalogue: 199 real destinations. Labels: DRAFT by the AI coding assistant (Claude) from destination names and descriptions; must be reviewed and corrected by the candidate before the score is reported. Reviewed by: NOT YET REVIEWED.
+Catalogue: 199 real destinations. Labels: Drafted by the AI coding assistant (Claude); reviewed by akash on 2026-10-25: 0 added and 0 removed against the draft (see each item's `review`). Reviewed by: akash, 2026-10-25.
 
 | Item | P@10 | Hits in top 10 | Top-10 entries not labelled relevant |
 |---|---|---|---|
