@@ -38,4 +38,5 @@ def test_recommender_evaluation_runs(tmp_path):
     mean = main(CATALOGUE, labels, tmp_path)
     results = json.loads((tmp_path / "results.json").read_text(encoding="utf-8"))
     assert 0 <= mean <= 1 and results["items"] == 10 and (tmp_path / "report.md").exists()
-    assert results["labelled_by"].startswith("DRAFT"), "labels must stay marked as a draft until reviewed"
+    assert results["labelled_by"].startswith("DRAFT") or results["reviewed_by"], \
+        "labels must stay marked as a draft until a person signs the review (scripts/labelled_set_sheet.py import)"

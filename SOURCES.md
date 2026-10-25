@@ -56,6 +56,7 @@ checks of other pages. robots.txt was honoured, and the user agent names the bot
 | Markdown | 3.8 | BSD-3-Clause | service (Markdown to HTML for Ghost) |
 | anthropic | 2.1.0 | Apache-2.0 | service (optional Claude provider) |
 | pytest | 8.3.5 | MIT | tests only |
+| openpyxl (+ et-xmlfile) | 3.1.5 (2.0.0) | MIT | labelled-set review workbook (`scripts/labelled_set_sheet.py`) and its tests |
 | Playwright | 1.52.0 | Apache-2.0 | evidence tooling only (certification-pack screenshots), with the Chromium it downloads |
 
 ## Container images and tools

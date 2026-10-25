@@ -121,7 +121,7 @@ def rank(content: dict, destinations: list[dict], history: dict[str, list[dict]]
         d_segs, d_words = segments(destination_text(d)), doc_words[id(d)]
         shared_segs = sorted(set(c_segs) & set(d_segs))
         seg_score = len(shared_segs) / len(c_segs) if c_segs else 0.0
-        shared_words = sorted(c_words & d_words, key=lambda w: -idf.get(w, 0))
+        shared_words = sorted(c_words & d_words, key=lambda w: (-idf.get(w, 0), w))  # ties: alphabetical, stable
         word_score = min(1.0, sum(idf[w] for w in shared_words) / c_weight) if c_weight else 0.0
         topic = 0.4 * seg_score + 0.6 * word_score
         relevance = (d.get("relevance_score") or 3) / 5

@@ -34,7 +34,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - [x] Real-instance E2E (`RUN_E2E=1`) — runs in every CI build (passed in run #1); re-check after the last change before submitting
 
 **B. Outstanding level (counts only if every item is verified)**
-- [ ] Review and correct `catalogue_data/labelled_set.json`, set `reviewed_by`, re-run `python scripts/eval_recommender.py` — *you*
+- [ ] Review and correct the labelled set — *you*: open `catalogue_data/labelled_set_review.xlsx` (one sheet per item, all 199 destinations, column A editable), sign it on the first sheet, then `python scripts/labelled_set_sheet.py import` and `python scripts/eval_recommender.py`. The JSON is signed but no label has changed yet
 - [ ] Catalogue rules: 175 of 199 rows use defaults — run Claude rules capture (needs `ANTHROPIC_API_KEY`, small cost) or review by hand — *your decision*
 - [ ] Optional: one live run of the Claude provider to replace "fake-client only" with real evidence and a real cost per page — *needs your key*
 
@@ -202,4 +202,6 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - Measured publishing cost (`scripts/measure_publishing.py`): 100/100, 77 ms worker time each, $0 AI. Found while
   measuring: posts rescheduled by a rate limit all wake at the reset and most are rescheduled again (229 attempts for
   100 posts): correct, but wasteful; listed as a next step in REPORT.md.
+- Labelled-set review workbook (`scripts/labelled_set_sheet.py`: export to Excel, import back with the AI draft kept and changes recorded; 5 tests).
+- Bug found by comparing two evaluation runs: equally rare shared words in recommender reasons came out in a different order each run (set order). Ties now break alphabetically; `test_reasons_are_identical_across_runs` fails on the old code.
 - **Your actions:** check AI_USE.md; review the labelled set; send the clarification email; decide on catalogue rules.

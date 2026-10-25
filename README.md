@@ -105,6 +105,8 @@ Adding a connector = a new folder with `manifest.yaml` + `connector.py`. Adding 
   words), the destination's relevance score, past results there, and whether the frequency cap allows a post now. Every
   entry has its reasons; excluded destinations are listed with why (demoted, content type, a rule that would block).
   Evaluated offline with `python scripts/eval_recommender.py` (precision@10 on `catalogue_data/labelled_set.json`).
+  The labels are reviewed in a spreadsheet: `python scripts/labelled_set_sheet.py export`, mark Y per destination,
+  then `python scripts/labelled_set_sheet.py import` (keeps the AI draft and records what the reviewer changed).
 - `POST /api/v1/publications/{id}/metrics` calls `fetch_metrics` (Lemmy, Discourse, Dev.to, PeerTube) and stores a
   snapshot normalised to views, likes, comments, shares, saves, watch time and clicks; a value the platform does not
   expose is `null`, never 0. Destinations with working metrics certify at L4; past results feed the recommender.

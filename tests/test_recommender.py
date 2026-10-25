@@ -84,3 +84,20 @@ def test_recommendations_endpoint(client):
                     json={"content": CONTENT, "limit": 5, "include_excluded": True}).json()
     assert r["items"] and len(r["items"]) <= 5 and r["items"][0]["reason"]
     assert r["considered"] >= 1 and isinstance(r["excluded"], list)
+
+
+def test_reasons_are_identical_across_runs():
+    """Same input, same ranking and same reason text, whatever Python's hash seed (sets iterate differently).
+    Uses the real catalogue: its equally rare shared words are what once came out in a different order."""
+    import os
+    import subprocess
+    import sys
+    script = ("import json; from pathlib import Path; "
+              "from scripts.eval_recommender import load_catalogue; from app.recommender import rank; "
+              "dests = load_catalogue(Path('catalogue_data/destinations.csv')); "
+              "items = json.loads(Path('catalogue_data/labelled_set.json').read_text(encoding='utf-8'))['items']; "
+              "print(json.dumps([[(c.destination['name'], c.reasons) for c in "
+              "rank(i['content'], dests, ignore_certification=True)[:10]] for i in items]))")
+    outputs = {subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, check=True,
+                              env={**os.environ, "PYTHONHASHSEED": seed}).stdout for seed in ("1", "2", "3")}
+    assert len(outputs) == 1, "ranking or reasons changed between runs"
