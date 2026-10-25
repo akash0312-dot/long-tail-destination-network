@@ -61,6 +61,7 @@ All measured on the local stack (Windows laptop, Docker Desktop) unless stated o
 | Real catalogue | 199 kept of 226 candidates, verified live on 2026-10-22; 27 dropped with reasons | [RESEARCH.md](catalogue_data/RESEARCH.md) |
 | Recommendation precision@10 | **0.41** (baseline 0.31; a rejected variant 0.38) | 10 items, labels drafted by AI and **not yet reviewed** |
 | Cost per 1,000 publications | **0.021 worker-hours + $0 AI** | 77 ms worker time per publication including rescheduled attempts |
+| Live demo (AWS t3.small) | 22/22 external checks, 14/14 scenarios in 101 s, cold start 118 s | [test_pack/batch_2026-10-25_aws_live_demo/](test_pack/batch_2026-10-25_aws_live_demo/external_checks.md) |
 | Claude cost per rules page | **Not measured** | needs an `ANTHROPIC_API_KEY`; each result manifest reports tokens and cost |
 
 **Cost per unit.** Publishing uses no AI: rules, tailoring and recommendations are deterministic. The cost is server
@@ -91,8 +92,9 @@ cost is reported per call but has not been measured live.
 - **Dev.to `delete` only unpublishes,** because the public Forem API has no delete. The result says so in `note`.
 - **The callback signature header name is a setting** (`CALLBACK_SIGNATURE_HEADER`). The default is `X-Signature`;
   the deployment sets the name the brief specifies.
-- **The live demo** is configured and rehearsed locally over HTTPS (14/14 scenarios) but is not yet on a public
-  server.
+- **The live demo** runs on AWS's Free plan (t3.small: 2 vCPU, 2 GB plus 2 GB swap) at https://16-178-103-126.sslip.io. 22/22 external
+  checks and 14/14 scenarios pass. It is a single small server with no redundancy, and the callback signature
+  header keeps its default name until the owner sets the brief's name.
 
 ## 5. Next steps
 
@@ -104,4 +106,4 @@ cost is reported per call but has not been measured live.
 4. Spread rescheduled posts over the next windows (reserve a slot when rescheduling) instead of waking them all at the
    reset.
 5. Certify against real Discourse, Forem and PeerTube sandboxes once their owners agree.
-6. Deploy the live demo and keep an uptime monitor on `/health` for the review period.
+6. Keep an uptime monitor on the live demo's `/health` for the review period.

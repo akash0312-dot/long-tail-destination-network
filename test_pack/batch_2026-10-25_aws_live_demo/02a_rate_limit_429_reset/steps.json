@@ -1,0 +1,377 @@
+{
+  "name": "02a_rate_limit_429_reset",
+  "description": "Hard case 2a: 429 with a 120 s reset; the post is rescheduled for after the reset time",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/connections",
+        "body": {
+          "connector_key": "devto",
+          "name": "batch forem",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          }
+        },
+        "idempotency_key": "82b5e351275047a4a1a90f5aafb26bbe"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "7792b2c0c206443eb2463adea25c22f0",
+        "connector_key": "devto",
+        "name": "batch forem",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-25T05:45:09.979235Z"
+      },
+      "ms": 453
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-02a af1e4f6e",
+          "url": "http://mock:9000/batch/forem-02a-af1e4f6e",
+          "connector_key": "devto",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "7792b2c0c206443eb2463adea25c22f0"
+        },
+        "idempotency_key": "cbde2441c1054b4b9a06c62b70de81c8"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "502c887edf3c4a55926e95504b0243e0",
+        "name": "batch-02a af1e4f6e",
+        "url": "http://mock:9000/batch/forem-02a-af1e4f6e",
+        "normalized_url": "https://mock:9000/batch/forem-02a-af1e4f6e",
+        "platform_key": "devto",
+        "connector_key": "devto",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/batch/forem-02a-af1e4f6e"
+        },
+        "connection_id": "7792b2c0c206443eb2463adea25c22f0",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:45:10.436243Z"
+      },
+      "ms": 453
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/certifications",
+        "body": {
+          "destination_id": "502c887edf3c4a55926e95504b0243e0"
+        },
+        "idempotency_key": "21251e840735453f8aaae8707aa71f9b"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "fb937d9f34c24da9ac316fccb254754c",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "fb937d9f34c24da9ac316fccb254754c",
+          "destination_id": "502c887edf3c4a55926e95504b0243e0",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.09,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "article",
+                "content_types": [
+                  "article",
+                  "text"
+                ],
+                "spec": {
+                  "title_max_chars": 128,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": 4,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 1,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 13,
+              "result": {
+                "platform_post_id": "12",
+                "live_url": "http://mock:9000/batch/forem-02a-af1e4f6e/__live/devto/12",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forem-02a-af1e4f6e/__live/devto/12"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "views": 340,
+                "likes": 21,
+                "comments": 5,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": null
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "deleted": true,
+                "note": "Forem API cannot delete articles; the article was unpublished"
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/502c887edf3c4a55926e95504b0243e0/fb937d9f34c24da9ac316fccb254754c/run.json",
+            "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/502c887edf3c4a55926e95504b0243e0/fb937d9f34c24da9ac316fccb254754c/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/fb937d9f34c24da9ac316fccb254754c",
+          "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/502c887edf3c4a55926e95504b0243e0/fb937d9f34c24da9ac316fccb254754c/run.json",
+          "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/502c887edf3c4a55926e95504b0243e0/fb937d9f34c24da9ac316fccb254754c/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:10.852741Z",
+        "started_at": "2026-10-25T05:45:11.317462Z",
+        "finished_at": "2026-10-25T05:45:11.421623Z"
+      },
+      "ms": 1844
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/mock/__admin/faults",
+        "body": {
+          "platform": "devto",
+          "instance": "batch/forem-02a-af1e4f6e",
+          "op": "publish",
+          "kind": "rate_limit",
+          "reset_s": 120
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "devto",
+          "op": "publish",
+          "kind": "rate_limit",
+          "instance": "batch/forem-02a-af1e4f6e",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 120.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 594
+    },
+    {
+      "name": "pub",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "502c887edf3c4a55926e95504b0243e0",
+          "rendition": {
+            "title": "Repurposing long videos into clips",
+            "body": "A walkthrough.",
+            "content_type": "article"
+          }
+        },
+        "idempotency_key": "4822cd4b23cd4d5890d424d3506a109b"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "1005ec4c6e7743b0825b059abaffe0c4",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 40,
+        "result": null,
+        "error": {
+          "code": "PLATFORM_RATE_LIMIT",
+          "message": "Platform rate limit reached; retry after reset time; post rescheduled for after the platform's reset time",
+          "retryable": true,
+          "details": {
+            "op": "publish",
+            "retry_after_s": 120.0,
+            "reset_source": "Retry-After",
+            "retry_at_epoch": 1792907233,
+            "rescheduled_job_id": "f506c2ea7ce44658ad540b99da8ec19e"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/1005ec4c6e7743b0825b059abaffe0c4"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:13.302666Z",
+        "started_at": "2026-10-25T05:45:13.435115Z",
+        "finished_at": "2026-10-25T05:45:13.493809Z"
+      },
+      "ms": 1843
+    }
+  ],
+  "checks": [
+    {
+      "step": "pub",
+      "path": "error.code",
+      "equals": "PLATFORM_RATE_LIMIT",
+      "actual": "PLATFORM_RATE_LIMIT",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.retryable",
+      "equals": true,
+      "actual": true,
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.message",
+      "contains": "rescheduled",
+      "actual": "Platform rate limit reached; retry after reset time; post rescheduled for after the platform's reset time",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "error.details.rescheduled_job_id",
+      "actual": "f506c2ea7ce44658ad540b99da8ec19e",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

@@ -18,7 +18,7 @@ included. The newest full run is [batch_2026-10-23_demo_rehearsal_https](batch_2
 | 6 | No duplicate after a timeout | `tests/test_connectors.py::test_timeout_then_retry_same_key_never_duplicates` (7 connectors); `tests/test_api.py::test_publication_job_retries_timeout_with_same_key_and_never_duplicates`; batch `01_timeout_retry_same_key` |
 | 7 | Secrets protected; simulation mode | CI `secret-scan` (gitleaks, full history); `../.gitleaks.toml`; `tests/test_logging.py` (redaction); `tests/test_api.py::test_inline_secret_rejected`, `test_connection_view_hides_refs`; `SIMULATION_MODE` in `../.env.example` |
 | 8 | `docker compose up` with local Lemmy, Ghost and mocks | CI `clean-machine` job ([workflow](../.github/workflows/ci.yml)): fresh runner, `.env.example` only, every seed certifies, tests + E2E + batch + log audit |
-| 9 | Integration Standard; live demo | Table below; demo config [../deploy/](../deploy/DEPLOY.md) and its rehearsal [batch_2026-10-23_demo_rehearsal_https](batch_2026-10-23_demo_rehearsal_https/summary.md). Public server: not deployed yet |
+| 9 | Integration Standard; live demo | Table below; demo config [../deploy/](../deploy/DEPLOY.md) and its rehearsal [batch_2026-10-23_demo_rehearsal_https](batch_2026-10-23_demo_rehearsal_https/summary.md); live at https://16-178-103-126.sslip.io: [22/22 external checks](batch_2026-10-25_aws_live_demo/external_checks.md), [14/14 scenarios](batch_2026-10-25_aws_live_demo/summary.md) |
 
 ## Levels
 
@@ -85,6 +85,7 @@ included. The newest full run is [batch_2026-10-23_demo_rehearsal_https](batch_2
 | [batch_2026-10-22_run4_day3](batch_2026-10-22_run4_day3/summary.md) | 13/13 | End of Advanced |
 | [batch_2026-10-22_run5_outstanding](batch_2026-10-22_run5_outstanding/summary.md) | 13/13 | End of Outstanding |
 | [batch_2026-10-23_demo_rehearsal_https](batch_2026-10-23_demo_rehearsal_https/summary.md) | 14/14 | Live-demo configuration rehearsed locally: HTTPS, API token, `/mock` behind the token |
+| [batch_2026-10-25_aws_live_demo](batch_2026-10-25_aws_live_demo/summary.md) | 14/14 + 22/22 checks | The public live demo on AWS (https://16-178-103-126.sslip.io), run from outside; [external checks](batch_2026-10-25_aws_live_demo/external_checks.md) |
 | [log_audit/](log_audit/report.md) | passed | Must-have 5: where requests went, test-post deletion, 429 handling, secrets |
 | [recommender_eval*/](recommender_eval/report.md) | 0.31 → 0.41, 0.38 rejected | Precision@10 of each recommender variant |
 | [publishing_cost_2026-10-25/](publishing_cost_2026-10-25/report.md) | 100/100 | Worker time and AI cost per publication |

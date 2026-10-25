@@ -1,0 +1,370 @@
+{
+  "name": "04b_promo_to_no_promo_community",
+  "description": "Hard case 4b: promotional post to a community that bans self-promotion is blocked with the reason",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "c55182a6737c4503854cfd656175e1fe"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "9ed0f003c30e4aabbacf145aa107a14f",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-25T05:45:54.768625Z"
+      },
+      "ms": 484
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-04b af1e4f6e",
+          "url": "http://mock:9000/batch/forum-04b-af1e4f6e",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": false,
+          "connection_id": "9ed0f003c30e4aabbacf145aa107a14f"
+        },
+        "idempotency_key": "80faa4f906cd43b6a92faa4fa1a61135"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "26ab19ac6b5a4d7db342898040e1bcb7",
+        "name": "batch-04b af1e4f6e",
+        "url": "http://mock:9000/batch/forum-04b-af1e4f6e",
+        "normalized_url": "https://mock:9000/batch/forum-04b-af1e4f6e",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-04b-af1e4f6e"
+        },
+        "connection_id": "9ed0f003c30e4aabbacf145aa107a14f",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:45:55.226286Z"
+      },
+      "ms": 485
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/certifications",
+        "body": {
+          "destination_id": "26ab19ac6b5a4d7db342898040e1bcb7"
+        },
+        "idempotency_key": "adf888647a1b41d2b9de8ae3ccc9855f"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "14489c2a60af400fb77943408b4a6721",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "14489c2a60af400fb77943408b4a6721",
+          "destination_id": "26ab19ac6b5a4d7db342898040e1bcb7",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.09,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 12,
+              "result": {
+                "platform_post_id": "24",
+                "live_url": "http://mock:9000/batch/forum-04b-af1e4f6e/t/connector-certification-test-14489c2a-please-ignore/24",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-04b-af1e4f6e/t/connector-certification-test-14489c2a-please-ignore/24"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "views": 120,
+                "likes": 9,
+                "comments": 3,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": 9
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/26ab19ac6b5a4d7db342898040e1bcb7/14489c2a60af400fb77943408b4a6721/run.json",
+            "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/26ab19ac6b5a4d7db342898040e1bcb7/14489c2a60af400fb77943408b4a6721/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/14489c2a60af400fb77943408b4a6721",
+          "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/26ab19ac6b5a4d7db342898040e1bcb7/14489c2a60af400fb77943408b4a6721/run.json",
+          "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/26ab19ac6b5a4d7db342898040e1bcb7/14489c2a60af400fb77943408b4a6721/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:55.710319Z",
+        "started_at": "2026-10-25T05:45:55.765171Z",
+        "finished_at": "2026-10-25T05:45:55.874849Z"
+      },
+      "ms": 1906
+    },
+    {
+      "name": "promo",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "26ab19ac6b5a4d7db342898040e1bcb7",
+          "rendition": {
+            "title": "Launching our video editor today",
+            "body": "Try our app and use code LAUNCH for 20% off this week!"
+          }
+        },
+        "idempotency_key": "0d0036ddfda64af0a534540dcd20cbce"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "e1891cbdd9e64ee9a65f56df76e907bc",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "DEST_RULE_SELF_PROMO",
+          "message": "Destination bans self-promotion and the content looks promotional (score 1.00: promotional phrases: use code, try our, our app; price or discount mentioned)",
+          "retryable": false,
+          "details": {
+            "checks": [
+              {
+                "rule": "frequency_cap",
+                "passed": true,
+                "detail": "0/5 posts in the last 1 day, 0:00:00",
+                "code": null
+              },
+              {
+                "rule": "self_promotion",
+                "passed": false,
+                "detail": "Destination bans self-promotion and the content looks promotional (score 1.00: promotional phrases: use code, try our, our app; price or discount mentioned)",
+                "code": "DEST_RULE_SELF_PROMO"
+              },
+              {
+                "rule": "link_policy",
+                "passed": true,
+                "detail": "0 link(s) within policy",
+                "code": null
+              },
+              {
+                "rule": "ai_disclosure",
+                "passed": true,
+                "detail": "Disclosure not required for this content",
+                "code": null
+              },
+              {
+                "rule": "language",
+                "passed": true,
+                "detail": "Language matches (en)",
+                "code": null
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/e1891cbdd9e64ee9a65f56df76e907bc"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:57.600246Z",
+        "started_at": "2026-10-25T05:45:57.887531Z",
+        "finished_at": "2026-10-25T05:45:57.899127Z"
+      },
+      "ms": 1875
+    }
+  ],
+  "checks": [
+    {
+      "step": "promo",
+      "path": "error.code",
+      "equals": "DEST_RULE_SELF_PROMO",
+      "actual": "DEST_RULE_SELF_PROMO",
+      "ok": true
+    },
+    {
+      "step": "promo",
+      "path": "error.message",
+      "contains": "bans self-promotion",
+      "actual": "Destination bans self-promotion and the content looks promotional (score 1.00: promotional phrases: use code, try our, our app; price or discount mentioned)",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

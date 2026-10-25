@@ -6,6 +6,7 @@ form disqualifies; "Partial" with a reason does not.
 
 **Test status (2026-10-25, documents and metrics):**
 - `docker compose --profile test run --rm tests` → **216 passed**, 2 skipped (the 2 real-instance E2E tests need the stack)
+- **Live demo on AWS** (https://16-178-103-126.sslip.io): **22/22** external checks, **14/14** batch scenarios ([run](test_pack/batch_2026-10-25_aws_live_demo/summary.md), [checks](test_pack/batch_2026-10-25_aws_live_demo/external_checks.md)); cold start 118 s
 - Live demo rehearsed locally over HTTPS + token: **14/14** batch scenarios ([rehearsal](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md))
 - Publishing cost run: **100/100** publications, 77 ms worker time each, $0 AI ([report](test_pack/publishing_cost_2026-10-25/report.md))
 - CI on the last push (3e1d0d3): passed
@@ -25,7 +26,7 @@ form disqualifies; "Partial" with a reason does not.
 Ordered by risk: a single failed must-have means "not selected", so those come first.
 
 **A. Must-have gaps**
-- [ ] **Live demo** deployed and kept up for the whole review (must-have 9): VM with ≥ 4 GB RAM, `API_TOKEN`, rate limit, `CALLBACK_SIGNATURE_HEADER` set to the brief's header name, cold-start time noted — *you: choose/pay for the VM and follow [deploy/DEPLOY.md](deploy/DEPLOY.md) (~20 min)*. Config and steps ✅ ready and rehearsed locally: Caddy HTTPS, token on everything but docs/health/feeds, `/mock` behind the token, storage and platforms never exposed, 14/14 batch through HTTPS; `/docs` has an Authorize button
+- [ ] **Live demo** (must-have 9): ✅ deployed and verified on AWS's Free plan (t3.small, Mumbai) at https://16-178-103-126.sslip.io: 22/22 external checks (public docs/health/feed, token enforced, `/mock` behind the token, HTTP→HTTPS, internal ports closed), 14/14 scenarios, cold start 118 s. Left: *you* set `CALLBACK_SIGNATURE_HEADER` to the brief's header name (one command) and keep it up for the review (add an uptime monitor on `/health`)
 - [x] **Clean-machine test** of `docker compose up` + tests (must-have 8) — CI run #1 passed on a fresh Ubuntu runner (3 m 24 s), runs on every push
 - [x] **Secret scan** (gitleaks) — clean over the full history, locally and in CI run #1 (12 s)
 - [x] **Certification pack** exported into the repo (must-have 2 evidence) — [certification_pack/](certification_pack/README.md): 9 destinations, one per connector (L1–L4), each with run.json, live snapshot, screenshot and deletion confirmation; cleanup 0.1–2.1 s. Credentials in captured pages are redacted (Ghost embeds its Content API key). Re-export: `python scripts/export_certification_pack.py`
@@ -63,12 +64,12 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 6 | Safe retries (no duplicate after timeout) | ✅ | `test_timeout_then_retry_same_key_never_duplicates` (7 connectors), `test_publication_job_retries_timeout_with_same_key_and_never_duplicates`, batch `01` | Mutation-checked on Day 1 |
 | 7 | Secrets protected + simulation mode | ✅ | **CI run #1 `secret-scan` passed** (gitleaks v8.18.4, full history, 12 s; [Actions](https://github.com/akash0312-dot/long-tail-destination-network/actions)); `.gitleaks.toml` (default rules + 2-pattern allowlist; a planted fake key is still caught); credentials redacted from captured pages; log redaction `tests/test_logging.py`; container log scan clean (Day 1); log audit (secrets included) in CI on every push; `SIMULATION_MODE=true` | |
 | 8 | `docker compose up` with local Lemmy + Ghost + mocks | ✅ | **CI run #1 `clean-machine` passed on a fresh Ubuntu runner (3 m 24 s)**: `.env` from `.env.example` only, `docker compose up --build`, bootstrap certified all 9 seeds, full test suite, real Ghost/Lemmy E2E, all batch scenarios; logs in the `clean-machine-evidence` artifact | |
-| 9 | Integration Standard + live demo up | 🟡 | Integration Standard ✅ (table below); demo config [deploy/](deploy/DEPLOY.md), rehearsal [14/14 over HTTPS](test_pack/batch_2026-10-23_demo_rehearsal_https/summary.md) | Not on a public server yet: needs your VM |
+| 9 | Integration Standard + live demo up | 🟡 | Integration Standard ✅ (table below); live demo https://16-178-103-126.sslip.io (AWS Free plan): [22/22 checks](test_pack/batch_2026-10-25_aws_live_demo/external_checks.md), [14/14 scenarios](test_pack/batch_2026-10-25_aws_live_demo/summary.md) | Set the brief's callback header name on the server; keep it up during the review |
 
 ## Levels
 | Level | Item | Status | Evidence |
 |---|---|---|---|
-| Core | All must-haves | 🟡 | 3–8 ✅; 1 and 2 wait for the clarification answers; 9 needs the public server |
+| Core | All must-haves | 🟡 | 3–8 ✅; 1 and 2 wait for the clarification answers; 9: deployed and verified, callback header name to set |
 | Core | Full certification run per Core connector | ✅ | [certification_pack/](certification_pack/README.md) (run record, live snapshot, screenshot, deletion for each); `test_full_certification_cycle`; every seed certifies in CI |
 | Core | Platform errors mapped to shared codes | ✅ | `tests/test_connectors.py` matrix × 7 connectors: 429, expired token, rejected, 5xx/circuit, schema change |
 | Advanced | Catalogue import (1,000 rows < 5 min, row report) | ✅ | `app/catalogue/importer.py`; `test_one_thousand_rows_under_five_minutes` (~10 s); `test_hard_case_csv_*`; batch `09` |
@@ -129,7 +130,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | Certification pack | ✅ [certification_pack/](certification_pack/README.md) — 9 destinations with run record, live snapshot, screenshot, deletion confirmation |
 | Catalogue files | 🟡 `catalogue_data/` (destinations.csv 199 rows, candidates, dropped, RESEARCH.md) + `labelled_set.json`; labels need your review |
 | Demo video | ⬜ |
-| Live demo deployed | 🟡 config + guide ready and rehearsed ([deploy/DEPLOY.md](deploy/DEPLOY.md)); public server ⬜ (*you*) |
+| Live demo deployed | ✅ https://16-178-103-126.sslip.io (AWS Free plan, t3.small): 22/22 checks, 14/14 scenarios; token in `notes/aws_demo.env` (git-ignored) for the Submission Form |
 | Clarification email sent to the hiring team | ⬜ draft ready in `notes/clarification_email.md` (*you send*) |
 | Git repo with real commit history | 🟡 Private repo https://github.com/akash0312-dot/long-tail-destination-network, one commit per step of work. Reviewer invite ⬜ (username comes in the invitation email) |
 | Submission Form filled | ⬜ |
@@ -154,6 +155,7 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 | 10-22 | SSRF guard on every user-supplied URL; `ALLOW_INTERNAL_HOSTS` only for the local stack | Catalogue, rules and CSV URLs make the server fetch arbitrary URLs |
 | 10-23 | Live demo = same compose + Caddy overlay; download links proxied through the API (`STORAGE_LINKS=proxy`); `/mock` behind the API token | One stack to test and to demo; only 80/443 public, object storage and platforms stay private |
 | 10-23 | Cloud metadata hosts refused even with `ALLOW_INTERNAL_HOSTS=true` | The demo needs internal hosts for its mocks; metadata endpoints are the real SSRF prize on a VM |
+| 10-25 | Live demo on AWS's Free plan (t3.small + 2 GB swap, Elastic IP, sslip.io + Let's Encrypt) | Oracle needs a credit card, Hugging Face Docker Spaces need a paid plan; AWS accepts a debit card and does not charge on the Free plan; the stack needs ~1.1 GB |
 | 10-22 | Local-only default passwords for Lemmy/Postgres stay in `.env.example` for now | Only open containers we own on 127.0.0.1; revisit before submission |
 
 ## Daily log
@@ -195,6 +197,12 @@ Ordered by risk: a single failed must-have means "not selected", so those come f
 - Rehearsed on this machine with `DEMO_DOMAIN=localhost`: 401 without / with a wrong token, 200 with it; HTTP→HTTPS;
   HSTS; 9/9 seeds certified; batch 14/14 through HTTPS and `/mock`.
 - **Your action:** create the VM and follow `deploy/DEPLOY.md`; then I run the batch against the public URL.
+
+### Day 6 — Live demo on AWS — 2026-10-25
+- Hosting checks: every image has amd64/arm64 builds; every Python package has a ready-built Linux wheel; the stack idles at ~0.75 GB. Oracle (card), Hugging Face (paid Docker Spaces) ruled out; AWS Free plan chosen.
+- Deployed to a t3.small in Mumbai: `deploy/server_setup.sh` (Docker, log rotation, swap), code copied over SSH (no GitHub access on the server), secrets generated into a git-ignored file. Cold start 118 s; Let's Encrypt certificate on the first try.
+- Verified from outside: 22/22 checks; 14/14 scenarios against https://16-178-103-126.sslip.io in 101 s.
+- **Your actions:** set the callback header name on the server; add an uptime monitor on `/health`.
 
 ### Day 6 — Documents and metrics — 2026-10-25
 - README brought up to date; REPORT.md, SOURCES.md (licences read from package metadata), AI_USE.md (draft for your

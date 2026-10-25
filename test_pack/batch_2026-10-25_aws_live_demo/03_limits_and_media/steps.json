@@ -1,0 +1,419 @@
+{
+  "name": "03_limits_and_media",
+  "description": "Hard case 3: title longer than allowed and media the destination does not accept; field-level reasons, nothing posted",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "72ce2fb3f50e4b91965812702d59b029"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "6a2fe7b1ab9145f3bbc2d0dbcdca914f",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-25T05:45:41.284753Z"
+      },
+      "ms": 484
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-03 af1e4f6e",
+          "url": "http://mock:9000/batch/forum-03-af1e4f6e",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "6a2fe7b1ab9145f3bbc2d0dbcdca914f"
+        },
+        "idempotency_key": "91789dfb755b49be88c75ea1e8dc9116"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "5954f22d323243139e0fde4d0ba9cdaf",
+        "name": "batch-03 af1e4f6e",
+        "url": "http://mock:9000/batch/forum-03-af1e4f6e",
+        "normalized_url": "https://mock:9000/batch/forum-03-af1e4f6e",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-03-af1e4f6e"
+        },
+        "connection_id": "6a2fe7b1ab9145f3bbc2d0dbcdca914f",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:45:41.765966Z"
+      },
+      "ms": 391
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/certifications",
+        "body": {
+          "destination_id": "5954f22d323243139e0fde4d0ba9cdaf"
+        },
+        "idempotency_key": "9c5772accbce4bb497ea1a27b1ea9c71"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "631880bb8a4d47d1b07df2cb2aa37779",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "631880bb8a4d47d1b07df2cb2aa37779",
+          "destination_id": "5954f22d323243139e0fde4d0ba9cdaf",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.09,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 12,
+              "result": {
+                "platform_post_id": "18",
+                "live_url": "http://mock:9000/batch/forum-03-af1e4f6e/t/connector-certification-test-631880bb-please-ignore/18",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-03-af1e4f6e/t/connector-certification-test-631880bb-please-ignore/18"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "views": 120,
+                "likes": 9,
+                "comments": 3,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": 9
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/5954f22d323243139e0fde4d0ba9cdaf/631880bb8a4d47d1b07df2cb2aa37779/run.json",
+            "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/5954f22d323243139e0fde4d0ba9cdaf/631880bb8a4d47d1b07df2cb2aa37779/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/631880bb8a4d47d1b07df2cb2aa37779",
+          "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/5954f22d323243139e0fde4d0ba9cdaf/631880bb8a4d47d1b07df2cb2aa37779/run.json",
+          "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/5954f22d323243139e0fde4d0ba9cdaf/631880bb8a4d47d1b07df2cb2aa37779/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:42.175913Z",
+        "started_at": "2026-10-25T05:45:42.303787Z",
+        "finished_at": "2026-10-25T05:45:42.413356Z"
+      },
+      "ms": 1984
+    },
+    {
+      "name": "long_title",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "5954f22d323243139e0fde4d0ba9cdaf",
+          "rendition": {
+            "title": "This title goes on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on and on",
+            "body": "A body that is long enough to pass."
+          }
+        },
+        "idempotency_key": "f80c381ca1c840e69d4d1c1fa7826e7c"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "a154bfcd1c8a41ca99e36fbcc0f08425",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 20,
+        "result": null,
+        "error": {
+          "code": "DEST_SPEC_VIOLATION",
+          "message": "Content breaks the destination's format limits",
+          "retryable": false,
+          "details": {
+            "violations": [
+              {
+                "field": "title",
+                "code": "TITLE_TOO_LONG",
+                "limit": 255,
+                "actual": 256,
+                "message": "Title is 256 characters; limit is 255"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/a154bfcd1c8a41ca99e36fbcc0f08425"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:44.149760Z",
+        "started_at": "2026-10-25T05:45:44.425382Z",
+        "finished_at": "2026-10-25T05:45:44.441066Z"
+      },
+      "ms": 1906
+    },
+    {
+      "name": "bad_media",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "5954f22d323243139e0fde4d0ba9cdaf",
+          "rendition": {
+            "title": "A question with a photo attached",
+            "body": "A body that is long enough to pass.",
+            "content_type": "image",
+            "media": [
+              {
+                "url": "https://cdn.example/photo.heic",
+                "type": "image"
+              }
+            ]
+          }
+        },
+        "idempotency_key": "e10f13f45473400c9ccc368e6747e899"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "a8fb9ed7fdb540a786466618b4c64f0f",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 20,
+        "result": null,
+        "error": {
+          "code": "DEST_SPEC_VIOLATION",
+          "message": "Content breaks the destination's format limits",
+          "retryable": false,
+          "details": {
+            "violations": [
+              {
+                "field": "media[0]",
+                "code": "MEDIA_TYPE_UNSUPPORTED",
+                "actual": "image/heic",
+                "limit": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif",
+                  "image/webp"
+                ],
+                "message": "Media type 'image/heic' is not accepted by this destination"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/a8fb9ed7fdb540a786466618b4c64f0f"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:45:46.250473Z",
+        "started_at": "2026-10-25T05:45:46.452676Z",
+        "finished_at": "2026-10-25T05:45:46.468742Z"
+      },
+      "ms": 2063
+    }
+  ],
+  "checks": [
+    {
+      "step": "long_title",
+      "path": "error.code",
+      "equals": "DEST_SPEC_VIOLATION",
+      "actual": "DEST_SPEC_VIOLATION",
+      "ok": true
+    },
+    {
+      "step": "long_title",
+      "path": "error.details.violations.0.code",
+      "equals": "TITLE_TOO_LONG",
+      "actual": "TITLE_TOO_LONG",
+      "ok": true
+    },
+    {
+      "step": "bad_media",
+      "path": "error.code",
+      "equals": "DEST_SPEC_VIOLATION",
+      "actual": "DEST_SPEC_VIOLATION",
+      "ok": true
+    },
+    {
+      "step": "bad_media",
+      "path": "error.details.violations.0.code",
+      "equals": "MEDIA_TYPE_UNSUPPORTED",
+      "actual": "MEDIA_TYPE_UNSUPPORTED",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

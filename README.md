@@ -177,6 +177,8 @@ All errors: `{"error": {"code", "message", "retryable", "details"}}`.
 
 ## Live demo
 
+**https://16-178-103-126.sslip.io/docs** (AWS Free plan). The API token is given in the Submission Form; rate limit 120 requests a minute per token; cold start 118 s after a full rebuild (it runs continuously).
+
 The same stack plus Caddy for HTTPS: `docker compose -f docker-compose.yml -f deploy/docker-compose.demo.yml up -d`.
 Only `/docs`, `/health`, `/ready`, `/openapi.json` and the MRSS feeds are public; everything else needs the API token
 (use **Authorize** in `/docs`), and object storage, Ghost, Lemmy and Postgres are never exposed. Step-by-step server

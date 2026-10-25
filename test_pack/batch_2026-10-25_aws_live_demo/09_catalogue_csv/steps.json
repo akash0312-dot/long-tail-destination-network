@@ -1,0 +1,157 @@
+{
+  "name": "09_catalogue_csv",
+  "description": "Hard case 6a: a CSV with duplicates, bad URLs, a major platform, mixed languages and a dead site; row-by-row report, nothing silently dropped",
+  "steps": [
+    {
+      "name": "step1",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/mock/__admin/pages",
+        "body": {
+          "path": "pages/batch-af1e4f6e/catalogue.csv",
+          "body": "name,url,connector_key,language,description,audience_tags\nAI video creators af1e4f6e,http://mock:9000/pages/batch-af1e4f6e/lem/c/aivideo,lemmy,en,Creators using AI for video,ai;video\nSame community again,http://mock:9000/pages/batch-af1e4f6e/lem/c/AIVideo/?utm_source=newsletter,lemmy,en,,\nNot a URL,definitely not a url,,,,\nBig platform,https://www.youtube.com/@channel,,,,\nComunidad de creadores af1e4f6e,http://mock:9000/pages/batch-af1e4f6e/es,assisted,es,Comunidad de creadores de video para la gente,\nJapanese community af1e4f6e,http://mock:9000/pages/batch-af1e4f6e/ja,assisted,en,\u52d5\u753b\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u306e\u305f\u3081\u306e\u30b3\u30df\u30e5\u30cb\u30c6\u30a3,\nGone forum af1e4f6e,http://mock:9000/pages/dead/batch-af1e4f6e,discourse,en,,\n"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "pages": 1
+      },
+      "ms": 422
+    },
+    {
+      "name": "import",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/catalogue/imports",
+        "body": null,
+        "idempotency_key": "9cd03bfb3e3f441dad721930ced5630d"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "2f43667b8c9c439ab25c70745575c583",
+        "kind": "catalogue_import",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "summary": {
+            "rows": 7,
+            "imported": 4,
+            "updated": 0,
+            "existing": 0,
+            "invalid": 2,
+            "duplicates_in_file": 1,
+            "unreachable": 1,
+            "rows_with_warnings": 3,
+            "seconds": 0.28
+          },
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "2f43667b8c9c439ab25c70745575c583",
+            "kind": "catalogue_import",
+            "created_at": "2026-10-25T05:46:25.959544+00:00",
+            "connectors": [],
+            "providers": [
+              {
+                "task": "relevance",
+                "provider": "mock",
+                "model": "heuristics-v1",
+                "calls": 4,
+                "cost_usd": 0.0
+              }
+            ],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo",
+              "check_reachability": true,
+              "score_relevance": true,
+              "update_existing": false
+            },
+            "seed": null,
+            "timings_ms": {
+              "validate_ms": 103,
+              "reachability_ms": 145,
+              "total_ms": 290
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "report_csv": "https://16-178-103-126.sslip.io/api/v1/files/imports/2f43667b8c9c439ab25c70745575c583/report.csv",
+            "summary": "https://16-178-103-126.sslip.io/api/v1/files/imports/2f43667b8c9c439ab25c70745575c583/summary.json"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/2f43667b8c9c439ab25c70745575c583",
+          "report_csv": "https://16-178-103-126.sslip.io/api/v1/files/imports/2f43667b8c9c439ab25c70745575c583/report.csv",
+          "summary": "https://16-178-103-126.sslip.io/api/v1/files/imports/2f43667b8c9c439ab25c70745575c583/summary.json"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:24.899402Z",
+        "started_at": "2026-10-25T05:46:25.667115Z",
+        "finished_at": "2026-10-25T05:46:25.968352Z"
+      },
+      "ms": 1828
+    }
+  ],
+  "checks": [
+    {
+      "step": "import",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.rows",
+      "equals": 7,
+      "actual": 7,
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.imported",
+      "equals": 4,
+      "actual": 4,
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.duplicates_in_file",
+      "equals": 1,
+      "actual": 1,
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.invalid",
+      "equals": 2,
+      "actual": 2,
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.summary.unreachable",
+      "equals": 1,
+      "actual": 1,
+      "ok": true
+    },
+    {
+      "step": "import",
+      "path": "result.links.report_csv",
+      "actual": "https://16-178-103-126.sslip.io/api/v1/files/imports/2f43667b8c9c439ab25c70745575c583/report.csv",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

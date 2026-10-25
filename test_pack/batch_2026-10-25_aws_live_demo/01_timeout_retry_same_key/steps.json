@@ -1,0 +1,590 @@
+{
+  "name": "01_timeout_retry_same_key",
+  "description": "Hard case 1: publish times out (post created, answer lost); job retries with the same key; no duplicate; client retry returns the same job",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/connections",
+        "body": {
+          "connector_key": "discourse",
+          "name": "batch bot",
+          "secret_refs": {
+            "api_key": "env:MOCK_API_KEY"
+          },
+          "params": {
+            "api_username": "batch_bot"
+          }
+        },
+        "idempotency_key": "b7c375c043224f57b493035d407c4b27"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "f3abfb6eadea42ea9f7059b8d8f5a21f",
+        "connector_key": "discourse",
+        "name": "batch bot",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "api_key": "env:***"
+        },
+        "params": {
+          "api_username": "batch_bot"
+        },
+        "status": "active",
+        "created_at": "2026-10-25T05:44:51.196681Z"
+      },
+      "ms": 1469
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-01 af1e4f6e",
+          "url": "http://mock:9000/batch/forum-01-af1e4f6e",
+          "connector_key": "discourse",
+          "params": {
+            "category_id": 1
+          },
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "connection_id": "f3abfb6eadea42ea9f7059b8d8f5a21f"
+        },
+        "idempotency_key": "af20c1a054c742a39b6ff0bdea0b361a"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "513456f9894942e4ba8699ceaa2ae0ab",
+        "name": "batch-01 af1e4f6e",
+        "url": "http://mock:9000/batch/forum-01-af1e4f6e",
+        "normalized_url": "https://mock:9000/batch/forum-01-af1e4f6e",
+        "platform_key": "discourse",
+        "connector_key": "discourse",
+        "surface": "post",
+        "params": {
+          "category_id": 1,
+          "base_url": "http://mock:9000/batch/forum-01-af1e4f6e"
+        },
+        "connection_id": "f3abfb6eadea42ea9f7059b8d8f5a21f",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:44:51.651469Z"
+      },
+      "ms": 453
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/certifications",
+        "body": {
+          "destination_id": "513456f9894942e4ba8699ceaa2ae0ab"
+        },
+        "idempotency_key": "2763e193ea6b4fe498143514ba122c0f"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "752d4984823640b18017bef03ae68163",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "752d4984823640b18017bef03ae68163",
+          "destination_id": "513456f9894942e4ba8699ceaa2ae0ab",
+          "passed": true,
+          "level": "L4",
+          "duration_s": 0.09,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "topic",
+                "content_types": [
+                  "text",
+                  "image",
+                  "video_link",
+                  "article"
+                ],
+                "spec": {
+                  "title_max_chars": 255,
+                  "title_min_chars": 15,
+                  "body_max_chars": 31900,
+                  "body_min_chars": 20,
+                  "max_tags": 5,
+                  "links_allowed": true,
+                  "title_required": true,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                  ],
+                  "max_media": 4,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 12,
+              "result": {
+                "platform_post_id": "8",
+                "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/connector-certification-test-752d4984-please-ignore/8",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 238,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/connector-certification-test-752d4984-please-ignore/8"
+              }
+            },
+            {
+              "step": "fetch_metrics",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "views": 120,
+                "likes": 9,
+                "comments": 3,
+                "shares": null,
+                "saves": null,
+                "watch_time_s": null,
+                "clicks": 9
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/513456f9894942e4ba8699ceaa2ae0ab/752d4984823640b18017bef03ae68163/run.json",
+            "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/513456f9894942e4ba8699ceaa2ae0ab/752d4984823640b18017bef03ae68163/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/752d4984823640b18017bef03ae68163",
+          "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/513456f9894942e4ba8699ceaa2ae0ab/752d4984823640b18017bef03ae68163/run.json",
+          "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/513456f9894942e4ba8699ceaa2ae0ab/752d4984823640b18017bef03ae68163/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:44:52.087292Z",
+        "started_at": "2026-10-25T05:44:53.088708Z",
+        "finished_at": "2026-10-25T05:44:53.200200Z"
+      },
+      "ms": 1859
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/mock/__admin/faults",
+        "body": {
+          "platform": "discourse",
+          "instance": "batch/forum-01-af1e4f6e",
+          "op": "publish",
+          "kind": "timeout",
+          "delay_s": 12
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "discourse",
+          "op": "publish",
+          "kind": "timeout",
+          "instance": "batch/forum-01-af1e4f6e",
+          "times": 1,
+          "delay_s": 12.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 453
+    },
+    {
+      "name": "pub",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "513456f9894942e4ba8699ceaa2ae0ab",
+          "rendition": {
+            "title": "How do small teams plan weekly video?",
+            "body": "We batch-record on Mondays. What works for you?"
+          }
+        },
+        "idempotency_key": "batch-01-af1e4f6e"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "7b476e28ba964411ae5ec39c10a5c3c2",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "012c36b4f70745ea9d8b61b6b46a3eb9",
+          "destination_id": "513456f9894942e4ba8699ceaa2ae0ab",
+          "platform_post_id": "10",
+          "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/how-do-small-teams-plan-weekly-video/10",
+          "status": "published",
+          "warnings": [
+            "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+            "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+          ],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/5 posts in the last 1 day, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "7b476e28ba964411ae5ec39c10a5c3c2",
+            "kind": "publication",
+            "created_at": "2026-10-25T05:45:07.289600+00:00",
+            "connectors": [
+              {
+                "key": "discourse",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 9,
+              "validate": 12,
+              "publish": 12048,
+              "total": 12072
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [
+              "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+              "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+            ],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "https://16-178-103-126.sslip.io/api/v1/files/publications/012c36b4f70745ea9d8b61b6b46a3eb9/result.json",
+            "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/how-do-small-teams-plan-weekly-video/10"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/7b476e28ba964411ae5ec39c10a5c3c2",
+          "manifest": "https://16-178-103-126.sslip.io/api/v1/files/publications/012c36b4f70745ea9d8b61b6b46a3eb9/result.json",
+          "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/how-do-small-teams-plan-weekly-video/10"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:44:54.411401Z",
+        "started_at": "2026-10-25T05:44:55.215311Z",
+        "finished_at": "2026-10-25T05:45:07.299736Z"
+      },
+      "ms": 13703
+    },
+    {
+      "name": "client_retry",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "513456f9894942e4ba8699ceaa2ae0ab",
+          "rendition": {
+            "title": "How do small teams plan weekly video?",
+            "body": "We batch-record on Mondays. What works for you?"
+          }
+        },
+        "idempotency_key": "batch-01-af1e4f6e"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "7b476e28ba964411ae5ec39c10a5c3c2",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "012c36b4f70745ea9d8b61b6b46a3eb9",
+          "destination_id": "513456f9894942e4ba8699ceaa2ae0ab",
+          "platform_post_id": "10",
+          "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/how-do-small-teams-plan-weekly-video/10",
+          "status": "published",
+          "warnings": [
+            "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+            "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+          ],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/5 posts in the last 1 day, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "0 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "7b476e28ba964411ae5ec39c10a5c3c2",
+            "kind": "publication",
+            "created_at": "2026-10-25T05:45:07.289600+00:00",
+            "connectors": [
+              {
+                "key": "discourse",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo"
+            },
+            "seed": null,
+            "timings_ms": {
+              "rules": 9,
+              "validate": 12,
+              "publish": 12048,
+              "total": 12072
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [
+              "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+              "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+            ],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "https://16-178-103-126.sslip.io/api/v1/files/publications/012c36b4f70745ea9d8b61b6b46a3eb9/result.json",
+            "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/how-do-small-teams-plan-weekly-video/10"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/7b476e28ba964411ae5ec39c10a5c3c2",
+          "manifest": "https://16-178-103-126.sslip.io/api/v1/files/publications/012c36b4f70745ea9d8b61b6b46a3eb9/result.json",
+          "live_url": "http://mock:9000/batch/forum-01-af1e4f6e/t/how-do-small-teams-plan-weekly-video/10"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:44:54.411401Z",
+        "started_at": "2026-10-25T05:44:55.215311Z",
+        "finished_at": "2026-10-25T05:45:07.299736Z"
+      },
+      "ms": 1860
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "result.warnings",
+      "contains": "RETRIED_AFTER_TIMEOUT",
+      "actual": [
+        "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+        "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+      ],
+      "ok": true
+    },
+    {
+      "step": "pub",
+      "path": "result.warnings",
+      "contains": "IDEMPOTENT_REPLAY",
+      "actual": [
+        "RETRIED_AFTER_TIMEOUT: attempt 2 with the same idempotency key",
+        "IDEMPOTENT_REPLAY: a post for this idempotency key already exists; returned it instead of publishing again"
+      ],
+      "ok": true
+    },
+    {
+      "step": "client_retry",
+      "path": "job_id",
+      "equals": "7b476e28ba964411ae5ec39c10a5c3c2",
+      "actual": "7b476e28ba964411ae5ec39c10a5c3c2",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

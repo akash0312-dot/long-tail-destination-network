@@ -1,0 +1,362 @@
+{
+  "name": "10_rules_capture_confirm",
+  "description": "Advanced: the AI step reads a community's rules page and proposes rules; nothing changes until a person confirms them",
+  "steps": [
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-10 af1e4f6e",
+          "url": "http://mock:9000/pages/batch-af1e4f6e/c/creators",
+          "connector_key": "lemmy",
+          "rules_url": "http://mock:9000/pages/batch-af1e4f6e/rules"
+        },
+        "idempotency_key": "957a1bfd7bd94f96acc836e7deb5c6f2"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "4d8f94bb800a400aa3df5ab34538656b",
+        "name": "batch-10 af1e4f6e",
+        "url": "http://mock:9000/pages/batch-af1e4f6e/c/creators",
+        "normalized_url": "https://mock:9000/pages/batch-af1e4f6e/c/creators",
+        "platform_key": "lemmy",
+        "connector_key": "lemmy",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/pages/batch-af1e4f6e/c/creators"
+        },
+        "connection_id": null,
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": "http://mock:9000/pages/batch-af1e4f6e/rules",
+        "frequency_cap": null,
+        "self_promo_allowed": false,
+        "link_policy": null,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:46:26.744221Z"
+      },
+      "ms": 469
+    },
+    {
+      "name": "step2",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/mock/__admin/pages",
+        "body": {
+          "path": "pages/batch-af1e4f6e/rules",
+          "body": "<html><body><h1>Rules</h1><ol><li>No self-promotion. Do not advertise your products.</li><li>Post at most once per week.</li><li>No external links.</li><li>AI-generated content must be labelled with the AI flair.</li><li>No bots or automated posting.</li></ol></body></html>"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "pages": 2
+      },
+      "ms": 422
+    },
+    {
+      "name": "capture",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations/4d8f94bb800a400aa3df5ab34538656b/rules/capture",
+        "body": {},
+        "idempotency_key": "f6767002afad4db980175e49addf74fc"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "66f12e7cfe3a4ee79d3fe8b2e7c8c426",
+        "kind": "rules_capture",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "proposal_id": "b34019a1dd6e44eda9015dc25ce3fbf0",
+          "status": "proposed",
+          "destination_id": "4d8f94bb800a400aa3df5ab34538656b",
+          "proposed": {
+            "frequency_cap": {
+              "posts": 1,
+              "per_days": 7
+            },
+            "self_promo_allowed": false,
+            "link_policy": {
+              "allowed": false,
+              "max_links": 0
+            },
+            "disclosure_required": true,
+            "automation_allowed": false,
+            "language": null
+          },
+          "evidence": [
+            {
+              "field": "frequency_cap",
+              "quote": "Post at most once per week."
+            },
+            {
+              "field": "self_promo_allowed",
+              "quote": "No self-promotion."
+            },
+            {
+              "field": "link_policy",
+              "quote": "No external links."
+            },
+            {
+              "field": "disclosure_required",
+              "quote": "AI-generated content must be labelled with the AI flair."
+            },
+            {
+              "field": "automation_allowed",
+              "quote": "No bots or automated posting."
+            }
+          ],
+          "notes": "5 of 6 rule fields found in the page; unknown fields stay empty for the reviewer.",
+          "next_step": "POST /api/v1/rule-proposals/b34019a1dd6e44eda9015dc25ce3fbf0/confirm after review",
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "66f12e7cfe3a4ee79d3fe8b2e7c8c426",
+            "kind": "rules_capture",
+            "created_at": "2026-10-25T05:46:28.018450+00:00",
+            "connectors": [],
+            "providers": [
+              {
+                "task": "rules",
+                "provider": "mock",
+                "model": "heuristics-v1",
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "cost_usd": 0.0
+              }
+            ],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo"
+            },
+            "seed": null,
+            "timings_ms": {},
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "page_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/rules/4d8f94bb800a400aa3df5ab34538656b/66f12e7cfe3a4ee79d3fe8b2e7c8c426/page.txt"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/66f12e7cfe3a4ee79d3fe8b2e7c8c426",
+          "page_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/rules/4d8f94bb800a400aa3df5ab34538656b/66f12e7cfe3a4ee79d3fe8b2e7c8c426/page.txt"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:27.621005Z",
+        "started_at": "2026-10-25T05:46:27.981739Z",
+        "finished_at": "2026-10-25T05:46:28.020188Z"
+      },
+      "ms": 1968
+    },
+    {
+      "name": "before",
+      "request": {
+        "method": "GET",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations/4d8f94bb800a400aa3df5ab34538656b",
+        "body": null,
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "id": "4d8f94bb800a400aa3df5ab34538656b",
+        "name": "batch-10 af1e4f6e",
+        "url": "http://mock:9000/pages/batch-af1e4f6e/c/creators",
+        "normalized_url": "https://mock:9000/pages/batch-af1e4f6e/c/creators",
+        "platform_key": "lemmy",
+        "connector_key": "lemmy",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/pages/batch-af1e4f6e/c/creators"
+        },
+        "connection_id": null,
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": "http://mock:9000/pages/batch-af1e4f6e/rules",
+        "frequency_cap": null,
+        "self_promo_allowed": false,
+        "link_policy": null,
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:46:26.744221Z"
+      },
+      "ms": 391
+    },
+    {
+      "name": "confirm",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/rule-proposals/b34019a1dd6e44eda9015dc25ce3fbf0/confirm",
+        "body": {
+          "reviewed_by": "batch reviewer"
+        },
+        "idempotency_key": "d088f17293ac42748e17972a88c73fbd"
+      },
+      "http_status": 200,
+      "response": {
+        "proposal_id": "b34019a1dd6e44eda9015dc25ce3fbf0",
+        "status": "confirmed",
+        "destination_id": "4d8f94bb800a400aa3df5ab34538656b",
+        "applied": {
+          "frequency_cap": {
+            "posts": 1,
+            "per_days": 7
+          },
+          "self_promo_allowed": false,
+          "link_policy": {
+            "allowed": false,
+            "max_links": 0
+          },
+          "disclosure_required": true,
+          "automation_allowed": false
+        },
+        "reviewed_by": "batch reviewer"
+      },
+      "ms": 437
+    },
+    {
+      "name": "after",
+      "request": {
+        "method": "GET",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations/4d8f94bb800a400aa3df5ab34538656b",
+        "body": null,
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "id": "4d8f94bb800a400aa3df5ab34538656b",
+        "name": "batch-10 af1e4f6e",
+        "url": "http://mock:9000/pages/batch-af1e4f6e/c/creators",
+        "normalized_url": "https://mock:9000/pages/batch-af1e4f6e/c/creators",
+        "platform_key": "lemmy",
+        "connector_key": "lemmy",
+        "surface": "post",
+        "params": {
+          "base_url": "http://mock:9000/pages/batch-af1e4f6e/c/creators"
+        },
+        "connection_id": null,
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": "http://mock:9000/pages/batch-af1e4f6e/rules",
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 7
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": false,
+          "max_links": 0
+        },
+        "disclosure_required": true,
+        "automation_allowed": false,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:46:26.744221Z"
+      },
+      "ms": 391
+    }
+  ],
+  "checks": [
+    {
+      "step": "capture",
+      "path": "result.status",
+      "equals": "proposed",
+      "actual": "proposed",
+      "ok": true
+    },
+    {
+      "step": "capture",
+      "path": "result.proposed.self_promo_allowed",
+      "equals": false,
+      "actual": false,
+      "ok": true
+    },
+    {
+      "step": "capture",
+      "path": "result.proposed.automation_allowed",
+      "equals": false,
+      "actual": false,
+      "ok": true
+    },
+    {
+      "step": "before",
+      "path": "frequency_cap",
+      "equals": null,
+      "actual": null,
+      "ok": true
+    },
+    {
+      "step": "confirm",
+      "path": "status",
+      "equals": "confirmed",
+      "actual": "confirmed",
+      "ok": true
+    },
+    {
+      "step": "after",
+      "path": "frequency_cap.per_days",
+      "equals": 7,
+      "actual": 7,
+      "ok": true
+    },
+    {
+      "step": "after",
+      "path": "link_policy.allowed",
+      "equals": false,
+      "actual": false,
+      "ok": true
+    },
+    {
+      "step": "after",
+      "path": "automation_allowed",
+      "equals": false,
+      "actual": false,
+      "ok": true
+    }
+  ],
+  "passed": true
+}

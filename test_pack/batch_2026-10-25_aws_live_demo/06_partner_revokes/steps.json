@@ -1,0 +1,404 @@
+{
+  "name": "06_partner_revokes",
+  "description": "Hard case 6b: a partner revokes permission (403); the connection is paused and later posts ask for a reconnect",
+  "steps": [
+    {
+      "name": "conn",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/connections",
+        "body": {
+          "connector_key": "webhook",
+          "name": "batch partner",
+          "secret_refs": {
+            "signing_secret": "env:PARTNER_WEBHOOK_SECRET"
+          }
+        },
+        "idempotency_key": "d5744ed5020845d1a666742a649f7f21"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "e7bbee1b3df84d599157b7885513acde",
+        "connector_key": "webhook",
+        "name": "batch partner",
+        "auth_type": "api_key",
+        "secret_refs": {
+          "signing_secret": "env:***"
+        },
+        "params": {},
+        "status": "active",
+        "created_at": "2026-10-25T05:46:06.818060Z"
+      },
+      "ms": 437
+    },
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-06 af1e4f6e",
+          "url": "http://mock:9000/partner/partner-06-af1e4f6e",
+          "connector_key": "webhook",
+          "frequency_cap": {
+            "posts": 5,
+            "per_days": 1
+          },
+          "link_policy": {
+            "allowed": true
+          },
+          "self_promo_allowed": true,
+          "connection_id": "e7bbee1b3df84d599157b7885513acde"
+        },
+        "idempotency_key": "427a6eece1e0430ab40f21d7e090e7af"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "c06a45644b004453b8c96a5374017843",
+        "name": "batch-06 af1e4f6e",
+        "url": "http://mock:9000/partner/partner-06-af1e4f6e",
+        "normalized_url": "https://mock:9000/partner/partner-06-af1e4f6e",
+        "platform_key": "webhook",
+        "connector_key": "webhook",
+        "surface": "post",
+        "params": {
+          "endpoint_url": "http://mock:9000/partner/partner-06-af1e4f6e"
+        },
+        "connection_id": "e7bbee1b3df84d599157b7885513acde",
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": null,
+        "frequency_cap": {
+          "posts": 5,
+          "per_days": 1
+        },
+        "self_promo_allowed": true,
+        "link_policy": {
+          "allowed": true
+        },
+        "disclosure_required": false,
+        "automation_allowed": true,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:46:07.241427Z"
+      },
+      "ms": 438
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/certifications",
+        "body": {
+          "destination_id": "c06a45644b004453b8c96a5374017843"
+        },
+        "idempotency_key": "5b6bdf3a221746308004ea3bf1b3282a"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "2ec5e88cc19d49cca8780392645805b0",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "2ec5e88cc19d49cca8780392645805b0",
+          "destination_id": "c06a45644b004453b8c96a5374017843",
+          "passed": true,
+          "level": "L3",
+          "duration_s": 0.07,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 5,
+                  "per_days": 1
+                },
+                "link_policy": {
+                  "allowed": true
+                },
+                "self_promo_allowed": true,
+                "disclosure_required": false,
+                "automation_allowed": true,
+                "language": "en",
+                "rules_url": null
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "post",
+                "content_types": [
+                  "text",
+                  "article",
+                  "image",
+                  "video",
+                  "video_link"
+                ],
+                "spec": {
+                  "title_max_chars": 250,
+                  "title_min_chars": null,
+                  "body_max_chars": 100000,
+                  "body_min_chars": null,
+                  "max_tags": null,
+                  "links_allowed": true,
+                  "title_required": false,
+                  "media_types": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp",
+                    "video/mp4",
+                    "video/webm"
+                  ],
+                  "max_media": 10,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "connection_active",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "status": "active"
+              }
+            },
+            {
+              "step": "publish_test_post",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "platform_post_id": "30",
+                "live_url": "http://mock:9000/__live/partner/partner/partner-06-af1e4f6e/30",
+                "status": "published",
+                "warnings": []
+              }
+            },
+            {
+              "step": "confirm_live_url",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "status": 200,
+                "accept": "text/html,application/xhtml+xml",
+                "content_type": "text/html; charset=utf-8",
+                "bytes": 88,
+                "attempts": [
+                  {
+                    "accept": "text/html,application/xhtml+xml",
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            {
+              "step": "status_published",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "published",
+                "live_url": "http://mock:9000/__live/partner/partner/partner-06-af1e4f6e/30"
+              }
+            },
+            {
+              "step": "delete_test_post",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "deleted": true
+              }
+            },
+            {
+              "step": "status_deleted",
+              "ok": true,
+              "ms": 11,
+              "result": {
+                "status": "deleted",
+                "live_url": null
+              }
+            },
+            {
+              "step": "cleaned_within_limit",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "seconds": 0.1,
+                "limit_s": 600
+              }
+            }
+          ],
+          "links": {
+            "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/c06a45644b004453b8c96a5374017843/2ec5e88cc19d49cca8780392645805b0/run.json",
+            "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/c06a45644b004453b8c96a5374017843/2ec5e88cc19d49cca8780392645805b0/live_snapshot.html"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/2ec5e88cc19d49cca8780392645805b0",
+          "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/c06a45644b004453b8c96a5374017843/2ec5e88cc19d49cca8780392645805b0/run.json",
+          "live_snapshot": "https://16-178-103-126.sslip.io/api/v1/files/certifications/c06a45644b004453b8c96a5374017843/2ec5e88cc19d49cca8780392645805b0/live_snapshot.html"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:07.670474Z",
+        "started_at": "2026-10-25T05:46:08.182122Z",
+        "finished_at": "2026-10-25T05:46:08.272755Z"
+      },
+      "ms": 1937
+    },
+    {
+      "name": "step4",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/mock/__admin/faults",
+        "body": {
+          "platform": "webhook",
+          "instance": "partner/partner-06-af1e4f6e",
+          "op": "publish",
+          "kind": "auth_expired"
+        },
+        "idempotency_key": null
+      },
+      "http_status": 200,
+      "response": {
+        "armed": {
+          "platform": "webhook",
+          "op": "publish",
+          "kind": "auth_expired",
+          "instance": "partner/partner-06-af1e4f6e",
+          "times": 1,
+          "delay_s": 3.0,
+          "reset_s": 2.0,
+          "message": null
+        },
+        "active": 1
+      },
+      "ms": 391
+    },
+    {
+      "name": "revoked",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "c06a45644b004453b8c96a5374017843",
+          "rendition": {
+            "title": "Partner feature: creator spotlight",
+            "body": "Spotlight text."
+          }
+        },
+        "idempotency_key": "29d80c697cee4f6388def62701cb8ca3"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "8ae0643e94a348fc9a041ae3df1f3e7b",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 40,
+        "result": null,
+        "error": {
+          "code": "CONNECTION_AUTH_EXPIRED",
+          "message": "permission_revoked",
+          "retryable": false,
+          "details": {
+            "op": "publish",
+            "status": 403,
+            "platform_message": "permission_revoked"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/8ae0643e94a348fc9a041ae3df1f3e7b"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:09.984761Z",
+        "started_at": "2026-10-25T05:46:10.284859Z",
+        "finished_at": "2026-10-25T05:46:10.317160Z"
+      },
+      "ms": 1843
+    },
+    {
+      "name": "paused",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "c06a45644b004453b8c96a5374017843",
+          "rendition": {
+            "title": "Partner feature: second spotlight",
+            "body": "Spotlight text."
+          }
+        },
+        "idempotency_key": "f8236d86b6d94684b6d2f9eba57be181"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "7b053ac6cd424ad1b5fd97c420ae8c37",
+        "kind": "publication",
+        "status": "failed",
+        "progress": 0,
+        "result": null,
+        "error": {
+          "code": "CONNECTION_AUTH_EXPIRED",
+          "message": "Connection is expired; the owner must reconnect before posting",
+          "retryable": false,
+          "details": {
+            "connection_id": "e7bbee1b3df84d599157b7885513acde",
+            "connection_status": "expired"
+          }
+        },
+        "links": {
+          "self": "/api/v1/jobs/7b053ac6cd424ad1b5fd97c420ae8c37"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:11.840559Z",
+        "started_at": "2026-10-25T05:46:12.329794Z",
+        "finished_at": "2026-10-25T05:46:12.339465Z"
+      },
+      "ms": 1844
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "status",
+      "equals": "succeeded",
+      "actual": "succeeded",
+      "ok": true
+    },
+    {
+      "step": "revoked",
+      "path": "error.code",
+      "equals": "CONNECTION_AUTH_EXPIRED",
+      "actual": "CONNECTION_AUTH_EXPIRED",
+      "ok": true
+    },
+    {
+      "step": "revoked",
+      "path": "error.details.platform_message",
+      "equals": "permission_revoked",
+      "actual": "permission_revoked",
+      "ok": true
+    },
+    {
+      "step": "paused",
+      "path": "error.message",
+      "contains": "reconnect",
+      "actual": "Connection is expired; the owner must reconnect before posting",
+      "ok": true
+    }
+  ],
+  "passed": true
+}

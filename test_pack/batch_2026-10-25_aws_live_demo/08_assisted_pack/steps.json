@@ -1,0 +1,386 @@
+{
+  "name": "08_assisted_pack",
+  "description": "Assisted tier: a community that bans automation gets a ready-to-post pack (caption, deep link, rules checklist) and nothing is posted",
+  "steps": [
+    {
+      "name": "dest",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/destinations",
+        "body": {
+          "name": "batch-08 af1e4f6e",
+          "url": "https://news-af1e4f6e.example/submit",
+          "connector_key": "assisted",
+          "params": {
+            "submit_url_template": "https://news-af1e4f6e.example/submit?url={url}&title={title}"
+          },
+          "automation_allowed": false,
+          "self_promo_allowed": false,
+          "rules_url": "https://news-af1e4f6e.example/guidelines",
+          "frequency_cap": {
+            "posts": 1,
+            "per_days": 30
+          },
+          "link_policy": {
+            "allowed": true,
+            "max_links": 1
+          }
+        },
+        "idempotency_key": "a3fbcb97a0594c73a1503175e9a81d5c"
+      },
+      "http_status": 201,
+      "response": {
+        "id": "a05c9493fb584cb8a6d93062c5326373",
+        "name": "batch-08 af1e4f6e",
+        "url": "https://news-af1e4f6e.example/submit",
+        "normalized_url": "https://news-af1e4f6e.example/submit",
+        "platform_key": "assisted",
+        "connector_key": "assisted",
+        "surface": "post",
+        "params": {
+          "submit_url_template": "https://news-af1e4f6e.example/submit?url={url}&title={title}",
+          "url": "https://news-af1e4f6e.example/submit"
+        },
+        "connection_id": null,
+        "category": null,
+        "audience_tags": [],
+        "language": "en",
+        "geo": null,
+        "est_audience": null,
+        "rules_url": "https://news-af1e4f6e.example/guidelines",
+        "frequency_cap": {
+          "posts": 1,
+          "per_days": 30
+        },
+        "self_promo_allowed": false,
+        "link_policy": {
+          "allowed": true,
+          "max_links": 1
+        },
+        "disclosure_required": false,
+        "automation_allowed": false,
+        "relevance_score": null,
+        "relevance_reason": null,
+        "description": null,
+        "checks": null,
+        "level": "L0",
+        "certification_status": "uncertified",
+        "last_certified_at": null,
+        "enabled": true,
+        "created_at": "2026-10-25T05:46:20.361439Z"
+      },
+      "ms": 438
+    },
+    {
+      "name": "setup_cert",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/certifications",
+        "body": {
+          "destination_id": "a05c9493fb584cb8a6d93062c5326373"
+        },
+        "idempotency_key": "a3f471b042c0435dabe43351a7b160fe"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "f320639b0a8a439fa784b02a10f87b2f",
+        "kind": "certification",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "certification_run_id": "f320639b0a8a439fa784b02a10f87b2f",
+          "destination_id": "a05c9493fb584cb8a6d93062c5326373",
+          "passed": true,
+          "level": "L1",
+          "duration_s": 0.02,
+          "steps": [
+            {
+              "step": "rules_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "frequency_cap": {
+                  "posts": 1,
+                  "per_days": 30
+                },
+                "link_policy": {
+                  "allowed": true,
+                  "max_links": 1
+                },
+                "self_promo_allowed": false,
+                "disclosure_required": false,
+                "automation_allowed": false,
+                "language": "en",
+                "rules_url": "https://news-af1e4f6e.example/guidelines"
+              }
+            },
+            {
+              "step": "format_limits_recorded",
+              "ok": true,
+              "ms": 0,
+              "result": {
+                "key": "post",
+                "content_types": [
+                  "text",
+                  "article",
+                  "image",
+                  "video",
+                  "video_link"
+                ],
+                "spec": {
+                  "title_max_chars": null,
+                  "title_min_chars": null,
+                  "body_max_chars": null,
+                  "body_min_chars": null,
+                  "max_tags": null,
+                  "links_allowed": true,
+                  "title_required": false,
+                  "media_types": null,
+                  "max_media": null,
+                  "min_video": null
+                }
+              }
+            },
+            {
+              "step": "build_assist_pack",
+              "ok": true,
+              "ms": 10,
+              "result": {
+                "files": [
+                  {
+                    "name": "post.md",
+                    "mime_type": "text/markdown",
+                    "kind": "caption",
+                    "storage_key": "assist-packs/a05c9493fb584cb8a6d93062c5326373/de88d3f4d66d8d4f/post.md",
+                    "url": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/de88d3f4d66d8d4f/post.md"
+                  },
+                  {
+                    "name": "pack.json",
+                    "mime_type": "application/json",
+                    "kind": "pack",
+                    "storage_key": "assist-packs/a05c9493fb584cb8a6d93062c5326373/de88d3f4d66d8d4f/pack.json",
+                    "url": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/de88d3f4d66d8d4f/pack.json"
+                  }
+                ],
+                "caption": "Connector certification test f320639b - please ignore\n\nAutomated connectivity test from the Long-Tail Destination Network. This post is deleted within seconds.",
+                "deep_link": "https://news-af1e4f6e.example/submit?url=&title=Connector%20certification%20test%20f320639b%20-%20please%20ignore",
+                "checklist": [
+                  "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+                  "Read the community rules first: https://news-af1e4f6e.example/guidelines",
+                  "Post at most 1 time(s) per 30 day(s) here.",
+                  "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+                  "Use at most 1 link(s).",
+                  "Write in the community's language (en).",
+                  "After posting, paste the live URL back so the post is tracked."
+                ],
+                "warnings": []
+              }
+            },
+            {
+              "step": "pack_files_downloadable",
+              "ok": true,
+              "ms": 6,
+              "result": [
+                "post.md",
+                "pack.json"
+              ]
+            }
+          ],
+          "links": {
+            "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/a05c9493fb584cb8a6d93062c5326373/f320639b0a8a439fa784b02a10f87b2f/run.json"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/f320639b0a8a439fa784b02a10f87b2f",
+          "evidence": "https://16-178-103-126.sslip.io/api/v1/files/certifications/a05c9493fb584cb8a6d93062c5326373/f320639b0a8a439fa784b02a10f87b2f/run.json"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:20.790143Z",
+        "started_at": "2026-10-25T05:46:21.561871Z",
+        "finished_at": "2026-10-25T05:46:21.607950Z"
+      },
+      "ms": 1812
+    },
+    {
+      "name": "pack",
+      "request": {
+        "method": "POST",
+        "url": "https://16-178-103-126.sslip.io/api/v1/publications",
+        "body": {
+          "destination_id": "a05c9493fb584cb8a6d93062c5326373",
+          "rendition": {
+            "title": "Show: a free checklist for planning video weeks",
+            "body": "Feedback welcome.",
+            "link_url": "https://example.org/checklist"
+          }
+        },
+        "idempotency_key": "e91b93de3b20446db073fde36acd0ed8"
+      },
+      "http_status": 202,
+      "response": {
+        "job_id": "911ae89f7a374b99a75ee0beeb8c8bf9",
+        "kind": "publication",
+        "status": "succeeded",
+        "progress": 100,
+        "result": {
+          "publication_id": "47353048e0704c1e9db52f14a14d0d67",
+          "destination_id": "a05c9493fb584cb8a6d93062c5326373",
+          "status": "awaiting_human",
+          "platform_post_id": null,
+          "live_url": null,
+          "assist_pack": {
+            "files": [
+              {
+                "name": "post.md",
+                "mime_type": "text/markdown",
+                "kind": "caption",
+                "storage_key": "assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/post.md",
+                "url": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/post.md"
+              },
+              {
+                "name": "pack.json",
+                "mime_type": "application/json",
+                "kind": "pack",
+                "storage_key": "assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/pack.json",
+                "url": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/pack.json"
+              }
+            ],
+            "caption": "Show: a free checklist for planning video weeks\n\nFeedback welcome.\n\nhttps://example.org/checklist",
+            "deep_link": "https://news-af1e4f6e.example/submit?url=https%3A%2F%2Fexample.org%2Fchecklist&title=Show%3A%20a%20free%20checklist%20for%20planning%20video%20weeks",
+            "checklist": [
+              "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+              "Read the community rules first: https://news-af1e4f6e.example/guidelines",
+              "Post at most 1 time(s) per 30 day(s) here.",
+              "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+              "Use at most 1 link(s).",
+              "Write in the community's language (en).",
+              "After posting, paste the live URL back so the post is tracked."
+            ],
+            "warnings": []
+          },
+          "warnings": [],
+          "rule_checks": [
+            {
+              "rule": "frequency_cap",
+              "passed": true,
+              "detail": "0/1 posts in the last 30 days, 0:00:00",
+              "code": null
+            },
+            {
+              "rule": "self_promotion",
+              "passed": true,
+              "detail": "No promotion detected (score 0.00)",
+              "code": null
+            },
+            {
+              "rule": "link_policy",
+              "passed": true,
+              "detail": "1 link(s) within policy",
+              "code": null
+            },
+            {
+              "rule": "ai_disclosure",
+              "passed": true,
+              "detail": "Disclosure not required for this content",
+              "code": null
+            },
+            {
+              "rule": "language",
+              "passed": true,
+              "detail": "Language matches (en)",
+              "code": null
+            }
+          ],
+          "manifest": {
+            "manifest_version": "1",
+            "service": {
+              "name": "longtail-network",
+              "version": "0.1.0"
+            },
+            "job_id": "911ae89f7a374b99a75ee0beeb8c8bf9",
+            "kind": "assist_pack",
+            "created_at": "2026-10-25T05:46:23.645590+00:00",
+            "connectors": [
+              {
+                "key": "assisted",
+                "version": "1.0.0"
+              }
+            ],
+            "providers": [],
+            "settings": {
+              "simulation_mode": false,
+              "environment": "demo"
+            },
+            "seed": null,
+            "timings_ms": {
+              "total": 12
+            },
+            "cost_estimate_usd": 0.0,
+            "warnings": [],
+            "rights": {
+              "licence": "Content supplied by the requesting creator; service output is commercially usable.",
+              "ai_generated": false
+            }
+          },
+          "links": {
+            "manifest": "https://16-178-103-126.sslip.io/api/v1/files/publications/47353048e0704c1e9db52f14a14d0d67/result.json",
+            "post.md": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/post.md",
+            "pack.json": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/pack.json"
+          }
+        },
+        "error": null,
+        "links": {
+          "self": "/api/v1/jobs/911ae89f7a374b99a75ee0beeb8c8bf9",
+          "manifest": "https://16-178-103-126.sslip.io/api/v1/files/publications/47353048e0704c1e9db52f14a14d0d67/result.json",
+          "post.md": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/post.md",
+          "pack.json": "https://16-178-103-126.sslip.io/api/v1/files/assist-packs/a05c9493fb584cb8a6d93062c5326373/5311a0a3ffe3f7dc/pack.json"
+        },
+        "run_after": null,
+        "created_at": "2026-10-25T05:46:22.622774Z",
+        "started_at": "2026-10-25T05:46:23.625221Z",
+        "finished_at": "2026-10-25T05:46:23.651716Z"
+      },
+      "ms": 1875
+    }
+  ],
+  "checks": [
+    {
+      "step": "setup_cert",
+      "path": "result.level",
+      "equals": "L1",
+      "actual": "L1",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.status",
+      "equals": "awaiting_human",
+      "actual": "awaiting_human",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.deep_link",
+      "contains": "submit?url=https%3A%2F%2Fexample.org%2Fchecklist",
+      "actual": "https://news-af1e4f6e.example/submit?url=https%3A%2F%2Fexample.org%2Fchecklist&title=Show%3A%20a%20free%20checklist%20for%20planning%20video%20weeks",
+      "ok": true
+    },
+    {
+      "step": "pack",
+      "path": "result.assist_pack.checklist",
+      "contains": "guidelines",
+      "actual": [
+        "Post from the creator's own account, by hand. Do not automate or schedule this post.",
+        "Read the community rules first: https://news-af1e4f6e.example/guidelines",
+        "Post at most 1 time(s) per 30 day(s) here.",
+        "Self-promotion is banned: frame it as a question or discussion, not an announcement.",
+        "Use at most 1 link(s).",
+        "Write in the community's language (en).",
+        "After posting, paste the live URL back so the post is tracked."
+      ],
+      "ok": true
+    }
+  ],
+  "passed": true
+}
