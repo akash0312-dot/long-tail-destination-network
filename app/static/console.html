@@ -182,6 +182,16 @@
   .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
   .summary { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
   .note { background: var(--info-soft); color: var(--info); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+  code { font: 12.5px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; background: var(--bg);
+    border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; word-break: break-all; }
+  .keyline { margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+  .logbtn { position: fixed; right: 18px; bottom: 18px; z-index: 15; border-radius: 999px; padding: 10px 16px;
+    box-shadow: 0 4px 14px rgba(16, 24, 40, .18); }
+  .logbtn .count { background: var(--accent); }
+  .layers { margin: 10px 0 16px; padding-left: 20px; font-size: 14px; }
+  .layers li { margin-bottom: 6px; }
+  .drawer table td, .drawer table th { padding: 8px 6px; font-size: 13px; }
+  .drawer tbody tr { cursor: default; }
 
   @media (max-width: 860px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
@@ -311,12 +321,40 @@
           <div class="step-title"><span class="num">4</span><h2>Results</h2></div>
           <div id="results" class="muted">Upload a video, then press Publish. Each destination's result appears here.</div>
         </div>
+        <div class="card wide">
+          <div class="step-title"><span class="num">5</span><h2>Prove it never posts twice</h2></div>
+          <p class="muted small">Networks drop, people double-click, clients retry. Every post above was sent with an
+            Idempotency-Key, so sending the same request again returns the first answer instead of posting again.</p>
+          <div class="actions">
+            <button id="againBtn" disabled>Send the same posts again</button>
+            <button id="conflictBtn" disabled>Reuse a key with changed text</button>
+          </div>
+          <div id="twiceOut" class="muted small" style="margin-top:10px">Publish first, then try these.</div>
+        </div>
       </div>
     </section>
   </div>
 </main>
 
 <aside id="drawer" class="drawer" hidden></aside>
+<button id="logBtn" class="logbtn" hidden>Idempotency log<span class="count" id="logCount"></span></button>
+<aside id="logPanel" class="drawer" hidden>
+  <button class="close" aria-label="Close">&times;</button>
+  <h2>Every change carries an Idempotency-Key</h2>
+  <p class="muted small">Each request that changes something (upload, check, publish, live test) is sent with a unique key.
+    The same key protects the post at three levels:</p>
+  <ol class="layers">
+    <li><b>API:</b> the same key with the same content returns the stored first answer, marked
+      <code>Idempotent-Replayed: true</code>. The same key with different content is refused (409).</li>
+    <li><b>Platform:</b> a fingerprint of the key goes inside the post (<code>ltn-&hellip;</code>), so after a lost
+      response the service finds the post it already made instead of posting again. Partner sites receive the key itself.</li>
+    <li><b>Ledger:</b> a post already recorded as published for that key is returned, never sent again.</li>
+  </ol>
+  <table>
+    <thead><tr><th>Time</th><th>Request</th><th>Idempotency-Key</th><th>Result</th></tr></thead>
+    <tbody id="logRows"></tbody>
+  </table>
+</aside>
 <div id="modal" class="modal" hidden><div class="box"><button class="close" aria-label="Close">&times;</button><div id="modalBody"></div></div></div>
 
 <script>
@@ -342,7 +380,8 @@ const FORMAT_LABEL = {video: 'Video upload', video_link: 'Link post', article: '
 
 let TOKEN = '';
 try { TOKEN = sessionStorage.getItem('ltn_token') || ''; } catch (e) { /* storage blocked */ }
-const state = {connectors: {}, dests: [], tickets: [], upload: null, filter: 'all', search: '', selected: null};
+const state = {connectors: {}, dests: [], tickets: [], upload: null, filter: 'all', search: '', selected: null,
+  log: [], lastRun: null};
 
 function authHeaders() { return TOKEN ? {Authorization: 'Bearer ' + TOKEN} : {}; }
 function sameOrigin(url) { try { return new URL(url, location.href).origin === location.origin; } catch (e) { return false; } }
@@ -356,12 +395,14 @@ async function api(path, {method = 'GET', body, key} = {}) {
     const res = await fetch(path, {method, headers: h, body: body === undefined ? undefined : JSON.stringify(body)});
     if (res.status === 429) { await sleep(1000 * Number(res.headers.get('Retry-After') || 2)); continue; }
     const data = await res.json().catch(() => ({}));
+    const replayed = res.headers.get('Idempotent-Replayed') === 'true';
+    if (idem) logCall({method, path, key: idem, status: res.status, replayed, code: data?.error?.code});
     if (!res.ok) {
       const err = new Error(data?.error?.message || res.statusText || 'Request failed');
       Object.assign(err, {status: res.status, code: data?.error?.code, data});
       throw err;
     }
-    if (res.headers.get('Idempotent-Replayed') === 'true') data.__replayed = true;
+    if (replayed) data.__replayed = true;
     return data;
   }
   throw new Error('The service is busy; try again in a minute');
@@ -389,6 +430,47 @@ function statusPill(s) {
   return `<span class="pill ${cls}"><span class="dot"></span>${esc(text)}</span>`;
 }
 const working = text => `<div class="working"><span class="spin"></span>${esc(text)}</div>`;
+const short = k => (k && k.length > 30 ? k.slice(0, 18) + '…' + k.slice(-8) : k || '');
+
+// ---------------------------------------------------------------- idempotency log
+function logCall(entry) {
+  state.log.unshift({at: new Date(), ...entry});
+  state.log.length = Math.min(state.log.length, 80);
+  $('#logCount').textContent = state.log.length;
+  if (!$('#logPanel').hidden) renderLog();
+}
+function logResult(e) {
+  if (e.replayed) return '<span class="pill info">Replayed: first answer returned, nothing redone</span>';
+  if (e.status === 409 && e.code === 'IDEMPOTENCY_KEY_CONFLICT') return '<span class="pill bad">409: key reused with different content</span>';
+  if (e.status >= 200 && e.status < 300) return `<span class="pill ok">${esc(e.status)} new</span>`;
+  return `<span class="pill bad">${esc(e.status)} ${esc(e.code || '')}</span>`;
+}
+function renderLog() {
+  $('#logRows').innerHTML = state.log.map(e => `<tr>
+      <td class="muted">${esc(e.at.toLocaleTimeString())}</td><td><code>${esc(e.method)} ${esc(e.path.replace('/api/v1', ''))}</code></td>
+      <td><code title="${esc(e.key)}">${esc(short(e.key))}</code></td><td>${logResult(e)}</td></tr>`).join('') ||
+    '<tr><td colspan="4" class="muted">Nothing sent yet. Upload, check or publish, and each request appears here.</td></tr>';
+}
+$('#logBtn').addEventListener('click', () => { $('#drawer').hidden = true; renderLog(); $('#logPanel').hidden = false; });
+$('#logPanel').addEventListener('click', e => { if (e.target.closest('.close')) $('#logPanel').hidden = true; });
+
+async function fingerprint(key, destId) {
+  // the connector receives "<Idempotency-Key>:<destination id>" and writes sha256(...)[:20] into the post
+  if (!(window.crypto && crypto.subtle)) return null;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${key}:${destId}`));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 20);
+}
+async function keyLine(r) {
+  let where = '';
+  const res = (r.job && r.job.result) || {};
+  if (r.d.connector_key === 'webhook') where = ' &middot; passed on to the partner as its own Idempotency-Key';
+  else if (res.status === 'published') {
+    const fp = await fingerprint(r.key, r.d.id).catch(() => null);
+    if (fp) where = ` &middot; fingerprint inside the post <code>ltn-${fp}</code>` +
+      ((res.live_url || '').includes(fp) ? ' (it is in the post\'s address)' : '');
+  }
+  return `<div class="keyline">Idempotency-Key <code title="${esc(r.key)}">${esc(short(r.key))}</code>${where}</div>`;
+}
 const errBox = e => `<div class="pill bad">${esc(e.code ? e.code + ': ' : '')}${esc(e.message)}</div>`;
 
 // ---------------------------------------------------------------- connect
@@ -399,13 +481,14 @@ async function connect(token, quiet) {
     const c = await api('/api/v1/connectors');
     state.connectors = Object.fromEntries(c.connectors.map(x => [x.key, x]));
     try { TOKEN ? sessionStorage.setItem('ltn_token', TOKEN) : sessionStorage.removeItem('ltn_token'); } catch (e) {}
-    $('#login').hidden = true; $('#app').hidden = false; $('#disconnect').hidden = !TOKEN;
+    $('#login').hidden = true; $('#app').hidden = false; $('#disconnect').hidden = !TOKEN; $('#logBtn').hidden = false;
     const h = await fetch('/health').then(r => r.json()).catch(() => ({}));
     $('#status').className = 'pill ok';
     $('#status').innerHTML = `<span class="dot"></span>Connected${h.version ? ' &middot; v' + esc(h.version) : ''}`;
     await refreshAll();
   } catch (e) {
-    $('#app').hidden = true; $('#login').hidden = false; $('#disconnect').hidden = true;
+    $('#app').hidden = true; $('#login').hidden = false; $('#disconnect').hidden = true; $('#logBtn').hidden = true;
+    $('#logPanel').hidden = true;
     $('#status').className = 'pill neutral'; $('#status').innerHTML = '<span class="dot"></span>Not connected';
     if (!quiet) $('#loginErr').textContent = e.status === 401 ? 'That token was not accepted.' : e.message;
   }
@@ -497,6 +580,7 @@ function runCard({passed, inconclusive, when, duration, steps, title, evidence, 
 
 async function openDest(id) {
   const d = state.dests.find(x => x.id === id); if (!d) return;
+  $('#logPanel').hidden = true;
   const dr = $('#drawer');
   dr.innerHTML = `<button class="close" aria-label="Close">&times;</button>
     <div class="muted small">${esc(PLATFORM[d.connector_key] || d.connector_key)}</div>
@@ -552,7 +636,9 @@ async function runCert(d) {
 // ---------------------------------------------------------------- evidence viewers
 function openModal(html) { $('#modalBody').innerHTML = html; $('#modal').hidden = false; }
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('.close')) $('#modal').hidden = true; });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#modal').hidden = true; $('#drawer').hidden = true; } });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { $('#modal').hidden = true; $('#drawer').hidden = true; $('#logPanel').hidden = true; }
+});
 
 async function fetchFile(url) {
   const res = await fetch(url, {headers: sameOrigin(url) ? authHeaders() : {}});
@@ -635,7 +721,8 @@ function uploadFile(file) {
   const xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/v1/uploads');
   Object.entries(authHeaders()).forEach(([k, v]) => xhr.setRequestHeader(k, v));
-  xhr.setRequestHeader('Idempotency-Key', newKey());
+  const upKey = newKey();
+  xhr.setRequestHeader('Idempotency-Key', upKey);
   xhr.upload.onprogress = e => {
     if (!e.lengthComputable) return;
     const pct = Math.round(e.loaded / e.total * 100);
@@ -643,6 +730,8 @@ function uploadFile(file) {
   };
   xhr.onload = () => {
     let data = {}; try { data = JSON.parse(xhr.responseText); } catch (e) {}
+    logCall({method: 'POST', path: '/api/v1/uploads', key: upKey, status: xhr.status, code: data?.error?.code,
+             replayed: xhr.getResponseHeader('Idempotent-Replayed') === 'true'});
     if (xhr.status !== 201) { box.innerHTML = `<p class="err">${esc(data?.error?.message || 'Upload failed (' + xhr.status + ')')}</p>`; return; }
     state.upload = data;
     box.innerHTML = `<div class="row-between small"><span><b>${esc(file.name)}</b> &middot; ${mb} MB</span><span class="pill ok">Uploaded</span></div>
@@ -760,9 +849,9 @@ $('#publishBtn').addEventListener('click', async () => {
     out(d.id).innerHTML = working('Sending');
     try {
       const job = await api('/api/v1/publications', {method: 'POST', key, body});
-      runs.push({d, job_id: job.job_id, replayed: !!job.__replayed});
+      runs.push({d, key, body, job_id: job.job_id, replayed: !!job.__replayed});
       out(d.id).innerHTML = working('Publishing');
-    } catch (e) { out(d.id).innerHTML = errBox(e); runs.push({d, done: true, kind: 'bad'}); }
+    } catch (e) { out(d.id).innerHTML = errBox(e); runs.push({d, key, body, done: true, kind: 'bad'}); }
   }
   const t0 = Date.now();
   while (runs.some(r => !r.done) && Date.now() - t0 < 240000) {
@@ -770,12 +859,16 @@ $('#publishBtn').addEventListener('click', async () => {
       try {
         const job = await api('/api/v1/jobs/' + r.job_id);
         if (job.status === 'succeeded' || job.status === 'failed') {
-          r.done = true; r.job = job; const o = outcome(r); r.kind = o.kind; out(r.d.id).innerHTML = o.html;
+          r.done = true; r.job = job; const o = outcome(r); r.kind = o.kind;
+          out(r.d.id).innerHTML = o.html + await keyLine(r);
         }
       } catch (e) { r.done = true; r.kind = 'bad'; out(r.d.id).innerHTML = errBox(e); }
       await sleep(700);
     }
   }
+  state.lastRun = runs.filter(r => r.job_id);
+  $('#againBtn').disabled = $('#conflictBtn').disabled = !state.lastRun.length;
+  $('#twiceOut').textContent = 'Ready: try sending the same posts again.';
   const n = k => runs.filter(r => r.kind === k).length;
   const feed = runs.find(r => r.d.connector_key === 'mrss' && r.kind === 'ok');
   $('#sum').innerHTML = `<span class="pill ok">${n('ok')} published</span>` +
@@ -785,6 +878,41 @@ $('#publishBtn').addEventListener('click', async () => {
   btn.disabled = false; $('#checkBtn').disabled = false;
   refreshAll().catch(() => {});
 });
+// ---------------------------------------------------------------- publish: prove it never posts twice
+$('#againBtn').addEventListener('click', async () => {
+  const btn = $('#againBtn'); btn.disabled = true;
+  $('#twiceOut').innerHTML = working(`Sending the same ${state.lastRun.length} requests again, with the same keys`);
+  const rows = [];
+  for (const r of state.lastRun) {
+    try {
+      const j = await api('/api/v1/publications', {method: 'POST', key: r.key, body: r.body});
+      rows.push({r, job_id: j.job_id, replayed: !!j.__replayed});
+    } catch (e) { rows.push({r, err: e}); }
+  }
+  const fresh = rows.filter(x => x.job_id && x.job_id !== x.r.job_id).length;
+  $('#twiceOut').innerHTML = `<p><b>${rows.length} requests sent again &rarr; ${fresh} new posts.</b>
+      Each one got back the job it started the first time.</p>
+    <div class="card flush" style="box-shadow:none"><table><thead><tr><th>Destination</th><th>First time</th><th>Again</th><th>Result</th></tr></thead><tbody>
+    ${rows.map(x => `<tr><td>${esc(x.r.d.name)}</td><td><code>${esc(short(x.r.job_id))}</code></td>
+      <td>${x.err ? errBox(x.err) : `<code>${esc(short(x.job_id))}</code>`}</td>
+      <td>${x.err ? '' : x.job_id === x.r.job_id ? '<span class="pill info">Same job: replayed, nothing posted</span>'
+        : '<span class="pill bad">New job</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  btn.disabled = false;
+});
+$('#conflictBtn').addEventListener('click', async () => {
+  const r = state.lastRun[0];
+  const changed = {...r.body, rendition: {...r.body.rendition, title: r.body.rendition.title + ' (edited)'}};
+  $('#twiceOut').innerHTML = working('Sending a changed post with an already-used key');
+  try {
+    await api('/api/v1/publications', {method: 'POST', key: r.key, body: changed});
+    $('#twiceOut').innerHTML = '<span class="pill bad">Unexpected: the changed post was accepted</span>';
+  } catch (e) {
+    $('#twiceOut').innerHTML = `<p><b>Refused with ${esc(e.status)} ${esc(e.code)}.</b> ${esc(e.message)}.</p>
+      <p class="muted">Key <code>${esc(short(r.key))}</code> already belongs to the post for ${esc(r.d.name)}, so different content
+      under the same key is rejected rather than guessed at. A real edit is sent with a new key.</p>`;
+  }
+});
+
 $('#targets').addEventListener('click', async e => {
   const b = e.target.closest('[data-file]'); if (!b) return;
   e.preventDefault();
