@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
 from app import __version__
-from app.api import health, routes
+from app.api import console, health, routes
 from app.config import get_settings
 from app.connectors import router as connector_router
 from app.connectors.registry import all_connectors
@@ -64,6 +64,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(routes.router)
     app.include_router(connector_router.router)
+    app.include_router(console.router)
     app.openapi = openapi_with_auth(app)
     return app
 

@@ -21,7 +21,8 @@ from app.models import IdempotencyRecord
 
 log = logging.getLogger("app.access")
 PROTECTED_PREFIXES = ("/api/v1/", "/connector/v1")
-PUBLIC_PREFIXES = ("/api/v1/feeds/",)  # MRSS feeds are pulled by aggregators that cannot send our token
+# MRSS feeds and uploaded media are pulled by aggregators and platforms that cannot send our token
+PUBLIC_PREFIXES = ("/api/v1/feeds/", "/api/v1/media/")
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
@@ -122,6 +123,11 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
             return JSONResponse(error_body(ErrorCode.IDEMPOTENCY_KEY_REQUIRED,
                                            "POST requests need an Idempotency-Key header (1-200 chars)"),
                                 status_code=400)
+        max_mb = get_settings().max_upload_mb
+        size = request.headers.get("content-length", "")
+        if size.isdigit() and int(size) > max_mb * 1_048_576 + 65_536:  # refuse before the body is read into memory
+            return JSONResponse(error_body(ErrorCode.PAYLOAD_TOO_LARGE, f"Request is larger than {max_mb} MB",
+                                           {"max_mb": max_mb}), status_code=413)
         body = await request.body()
         scope = f"POST {request.url.path}"
         hashed = body

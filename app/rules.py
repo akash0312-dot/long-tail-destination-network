@@ -87,10 +87,11 @@ def _domain_matches(domain: str, allowed: list[str]) -> bool:
 
 
 def links_in(rendition: dict) -> list[str]:
+    """Distinct links: a URL in link_url that the body repeats (tailoring adds "Source: <url>") is one link."""
     links = URL_RE.findall(rendition.get("body") or "")
     if rendition.get("link_url"):
         links.append(rendition["link_url"])
-    return links
+    return list(dict.fromkeys(links))
 
 
 def promo_score(rendition: dict, own_domains: list[str]) -> tuple[float, list[str]]:

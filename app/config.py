@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     # idempotency
     idempotency_ttl_hours: int = 72
 
+    # uploads (POST /api/v1/uploads): kept in object storage and served at a public link platforms can fetch
+    max_upload_mb: int = 100
+
     # AI provider (rules capture, relevance): mock = deterministic heuristics, no key needed
     ai_provider: str = "mock"  # mock | anthropic
     ai_model: str = "claude-opus-5-5"

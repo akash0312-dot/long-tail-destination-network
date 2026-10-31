@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo console · Long-Tail Destination Network</title>
+<style>
+  :root {
+    --bg: #f5f6fa; --panel: #ffffff; --text: #151a28; --muted: #5d6478; --line: #e3e6ee;
+    --accent: #4f46e5; --accent-ink: #ffffff; --accent-soft: #eef0ff;
+    --ok: #0b8a4f; --ok-soft: #e5f5ec; --warn: #a35f00; --warn-soft: #fff3dd;
+    --bad: #c62828; --bad-soft: #fdecec; --info: #0b6aa8; --info-soft: #e6f1fa;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 2px 6px rgba(16, 24, 40, .06);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1016; --panel: #171a23; --text: #e9ebf1; --muted: #9ba2b4; --line: #2a2f3d;
+      --accent: #8f89ff; --accent-ink: #11122a; --accent-soft: #24224a;
+      --ok: #4ad295; --ok-soft: #14301f; --warn: #f2b552; --warn-soft: #382a10;
+      --bad: #ff7373; --bad-soft: #3a1b1b; --info: #66b6f2; --info-soft: #13273a;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  h1, h2, h3 { margin: 0 0 .4em; line-height: 1.25; }
+  h1 { font-size: 26px; } h2 { font-size: 18px; } h3 { font-size: 15px; }
+  p { margin: 0 0 .8em; }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 1px solid var(--line); background: var(--panel); border-radius: 8px;
+    padding: 8px 14px; font-weight: 600; }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: .55; cursor: default; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  button.link { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 600; }
+  input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px;
+    background: var(--panel); }
+  input:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  a { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px;
+    background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: var(--accent-ink);
+    display: grid; place-items: center; font-weight: 800; letter-spacing: .5px; }
+  .brand .name { font-weight: 700; }
+  .brand .sub { color: var(--muted); font-size: 13px; }
+  .conn { display: flex; align-items: center; gap: 10px; }
+
+  main { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+  .card.flush { padding: 0; overflow-x: auto; }
+  .login { max-width: 460px; margin: 60px auto; }
+  .login form { display: flex; gap: 8px; margin-top: 12px; }
+  .err { color: var(--bad); min-height: 1.5em; margin-top: 8px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 18px; overflow-x: auto; }
+  .tabs button { border-radius: 999px; background: transparent; border-color: transparent; color: var(--muted);
+    white-space: nowrap; }
+  .tabs button.active { background: var(--panel); border-color: var(--line); color: var(--text); box-shadow: var(--shadow); }
+  .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px;
+    background: var(--bad); color: #fff; font-size: 12px; }
+  .count:empty { display: none; }
+
+  .hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .hero p { color: var(--muted); max-width: 640px; margin: 0; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px;
+    box-shadow: var(--shadow); }
+  .stat .v { font-size: 28px; font-weight: 750; }
+  .stat .l { color: var(--muted); font-size: 13px; }
+  .flow { list-style: none; padding: 0; margin: 8px 0 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .flow li { position: relative; background: var(--accent-soft); border-radius: 10px; padding: 12px; }
+  .flow li b { display: block; }
+  .flow li span { color: var(--muted); font-size: 13px; }
+  .flow li:not(:last-child)::after { content: "\2192"; position: absolute; right: -10px; top: 50%;
+    transform: translate(50%, -50%); color: var(--muted); font-weight: 700; }
+  .levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .levels div { font-size: 13px; color: var(--muted); }
+
+  .badge { display: inline-block; min-width: 34px; text-align: center; padding: 2px 8px; border-radius: 6px;
+    font-weight: 700; font-size: 12px; }
+  .L0 { background: var(--bad-soft); color: var(--bad); }
+  .L1 { background: var(--warn-soft); color: var(--warn); }
+  .L2 { background: var(--info-soft); color: var(--info); }
+  .L3 { background: var(--accent-soft); color: var(--accent); }
+  .L4 { background: var(--ok-soft); color: var(--ok); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.info { background: var(--info-soft); color: var(--info); }
+  .pill.neutral { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  .toolbar { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    margin-bottom: 12px; }
+  .toolbar input { max-width: 300px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+  .chip.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .chip.static { display: inline-block; border: 1px solid var(--line); background: var(--bg); font-weight: 500;
+    cursor: default; margin: 0 6px 6px 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: var(--accent-soft); }
+  tbody tr:last-child td { border-bottom: 0; }
+  .hint { color: var(--muted); font-size: 13px; }
+
+  .drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(560px, 100%); background: var(--panel);
+    border-left: 1px solid var(--line); box-shadow: -8px 0 24px rgba(0, 0, 0, .12); z-index: 20;
+    overflow-y: auto; padding: 22px; }
+  .drawer .close, .modal .close { position: absolute; top: 14px; right: 14px; border: 0; font-size: 22px;
+    line-height: 1; padding: 4px 10px; background: none; }
+  .section { margin-top: 20px; }
+  .row-between { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .run { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 10px; }
+  .run.pass { border-left: 4px solid var(--ok); }
+  .run.fail { border-left: 4px solid var(--bad); }
+  .run.wait { border-left: 4px solid var(--warn); }
+  .run-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .steps { list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { display: grid; grid-template-columns: 22px 1fr auto; gap: 6px; padding: 3px 0; font-size: 14px; }
+  .steps .ico { font-weight: 800; }
+  .steps li.ok .ico { color: var(--ok); }
+  .steps li.bad .ico { color: var(--bad); }
+  .steps .ms { color: var(--muted); font-size: 12px; }
+  .step-err { grid-column: 2 / 4; color: var(--bad); font-size: 13px; }
+  .run-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .run-actions button { font-size: 13px; padding: 5px 10px; }
+  .working { display: flex; align-items: center; gap: 10px; color: var(--muted); padding: 10px 0; }
+  .spin { width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .modal { position: fixed; inset: 0; background: rgba(10, 12, 20, .55); z-index: 30; display: grid;
+    place-items: center; padding: 16px; }
+  .modal .box { position: relative; background: var(--panel); border-radius: var(--radius); padding: 22px;
+    width: min(900px, 100%); max-height: 90vh; overflow: auto; }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto;
+    font-size: 12.5px; max-height: 55vh; }
+  iframe.snap { width: 100%; height: 60vh; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .kv { display: grid; grid-template-columns: 180px 1fr; gap: 6px 14px; margin: 10px 0 14px; font-size: 14px; }
+  .kv div:nth-child(odd) { color: var(--muted); }
+
+  .pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pgrid .wide { grid-column: 1 / -1; }
+  .step-title { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+    display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
+  .step-title h2 { margin: 0; }
+  label.field { display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px; }
+  label.field input, label.field textarea { margin-top: 4px; font-weight: 400; }
+  .drop { display: block; border: 2px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center;
+    cursor: pointer; }
+  .drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 10px 0 4px; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  video { width: 100%; max-height: 260px; border-radius: 10px; background: #000; margin-top: 10px; }
+  .target { display: grid; grid-template-columns: 24px 1fr auto; gap: 4px 10px; align-items: start;
+    padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .target:last-child { border-bottom: 0; }
+  .target input { width: auto; margin-top: 4px; }
+  .target label { cursor: pointer; }
+  .target .meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .target .out { grid-column: 2 / 4; font-size: 13px; }
+  .target .out ul { margin: 4px 0 0; padding-left: 18px; color: var(--muted); }
+  .fmt { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 6px; background: var(--bg);
+    border: 1px solid var(--line); color: var(--text); }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 600; margin: 8px 0; }
+  .toggle { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 4px; font-size: 14px; }
+  .toggle input { width: auto; margin-top: 4px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .summary { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .note { background: var(--info-soft); color: var(--info); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+
+  @media (max-width: 860px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .flow, .levels { grid-template-columns: 1fr; }
+    .flow li:not(:last-child)::after { content: none; }
+    .pgrid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr; }
+    .top { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo">LT</div>
+    <div><div class="name">Long-Tail Destination Network</div><div class="sub">Demo console</div></div>
+  </div>
+  <div class="conn">
+    <span id="status" class="pill neutral"><span class="dot"></span>Not connected</span>
+    <button id="disconnect" hidden>Disconnect</button>
+  </div>
+</header>
+
+<main>
+  <section id="login" class="card login" hidden>
+    <h1>Connect</h1>
+    <p class="muted">Paste the API token. It is kept in this browser tab only and is never shown on screen.</p>
+    <form id="loginForm">
+      <input id="token" type="password" placeholder="API token" autocomplete="off" aria-label="API token">
+      <button class="primary">Connect</button>
+    </form>
+    <div id="loginErr" class="err"></div>
+  </section>
+
+  <div id="app" hidden>
+    <nav class="tabs" id="tabs">
+      <button data-tab="overview" class="active">Overview</button>
+      <button data-tab="destinations">Destinations</button>
+      <button data-tab="alerts">Alerts<span class="count" id="alertCount"></span></button>
+      <button data-tab="publish">Publish a video</button>
+    </nav>
+
+    <section id="tab-overview">
+      <div class="card hero">
+        <div>
+          <h1>One video in. Many communities out, safely.</h1>
+          <p>The service keeps a catalogue of niche communities, records each one's posting rules, proves it can post
+            there with a real test, and then publishes your content in the format each platform accepts.</p>
+        </div>
+        <button class="primary" data-goto="publish">Publish a video &rarr;</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="card">
+        <h2>How it works</h2>
+        <ol class="flow">
+          <li><b>1 &middot; Catalogue</b><span>Communities to post to, imported and checked</span></li>
+          <li><b>2 &middot; Rules</b><span>Each one's limits: how often, links, self-promotion</span></li>
+          <li><b>3 &middot; Certify</b><span>A real test post: publish, check it is live, delete it</span></li>
+          <li><b>4 &middot; Publish</b><span>Shaped for each platform, never posted twice</span></li>
+          <li><b>5 &middot; Measure</b><span>Views and likes read back where supported</span></li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>Trust levels</h2>
+        <p class="muted">Only certified destinations receive posts. The level says what the service may do there.</p>
+        <div class="levels" id="levels"></div>
+      </div>
+    </section>
+
+    <section id="tab-destinations" hidden>
+      <div class="toolbar">
+        <div class="chips" id="destFilters">
+          <button class="chip active" data-f="all">All</button>
+          <button class="chip" data-f="certified">Certified</button>
+          <button class="chip" data-f="failed">Failed</button>
+          <button class="chip" data-f="uncertified">Not certified</button>
+        </div>
+        <input id="destSearch" type="search" placeholder="Search name or platform" aria-label="Search destinations">
+      </div>
+      <div class="card flush">
+        <table>
+          <thead><tr><th>Destination</th><th>Platform</th><th>Level</th><th>Status</th><th>Last certified</th></tr></thead>
+          <tbody id="destRows"></tbody>
+        </table>
+      </div>
+      <p class="hint">Click a destination to see its rules and the proof that it works, or to run a live test.</p>
+    </section>
+
+    <section id="tab-alerts" hidden>
+      <div id="alerts"></div>
+    </section>
+
+    <section id="tab-publish" hidden>
+      <div class="pgrid">
+        <div class="card">
+          <div class="step-title"><span class="num">1</span><h2>Choose a video</h2></div>
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept="video/mp4,video/webm,video/quicktime" hidden>
+            <div><b>Drop a video here</b> or click to choose</div>
+            <div class="muted small">MP4, WebM or MOV, up to 100 MB. A short clip uploads fastest.</div>
+          </label>
+          <div id="uploadState"></div>
+        </div>
+        <div class="card">
+          <div class="step-title"><span class="num">2</span><h2>Describe it</h2></div>
+          <label class="field">Title
+            <input id="title" value="How I edit a 60-second creator video in 10 minutes"></label>
+          <label class="field">Description
+            <textarea id="desc" rows="3">A short walkthrough of my editing workflow: rough cut, captions, music and export settings.</textarea></label>
+          <label class="field">Tags <span class="muted small">(comma separated)</span>
+            <input id="tags" value="video, editing"></label>
+        </div>
+        <div class="card wide">
+          <div class="step-title"><span class="num">3</span><h2>Choose where it goes</h2></div>
+          <p class="muted small">Only certified destinations are listed; one per platform is ticked. The format column shows how the
+            video is sent: an upload where the platform hosts video, a link post on blogs and forums, an article on developer sites.</p>
+          <div id="targets"></div>
+          <label class="toggle"><input type="checkbox" id="isTest" checked>
+            <span>Practice post: marked as a test, so it does not use up a community's posting limit.
+              Untick for a real post.</span></label>
+          <div class="actions">
+            <button id="checkBtn">Check before posting</button>
+            <button id="publishBtn" class="primary">Publish</button>
+          </div>
+        </div>
+        <div class="card wide">
+          <div class="step-title"><span class="num">4</span><h2>Results</h2></div>
+          <div id="results" class="muted">Upload a video, then press Publish. Each destination's result appears here.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<aside id="drawer" class="drawer" hidden></aside>
+<div id="modal" class="modal" hidden><div class="box"><button class="close" aria-label="Close">&times;</button><div id="modalBody"></div></div></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const newKey = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+
+const PLATFORM = {ghost: 'Ghost blog', lemmy: 'Lemmy community', discourse: 'Discourse forum', devto: 'Dev.to',
+  hashnode: 'Hashnode', peertube: 'PeerTube channel', mrss: 'Video feed (MRSS)', webhook: 'Partner website',
+  assisted: 'Assisted (a person posts)'};
+const LEVEL = {L0: 'Receives no posts', L1: 'A person posts from a ready pack', L2: 'Feed the platform pulls',
+  L3: 'Posts, checks and deletes by itself', L4: 'L3 plus views and likes measured'};
+const STEP = {rules_recorded: 'Posting rules are on record', format_limits_recorded: 'Format limits are known',
+  connection_active: 'Login to the platform works', publish_test_post: 'Published a real test post',
+  confirm_live_url: 'The public link answered', status_published: 'Platform confirms it is published',
+  fetch_metrics: 'Views and likes can be read', delete_test_post: 'Deleted the test post',
+  status_deleted: 'Platform confirms it is gone', cleaned_within_limit: 'Cleaned up within the time limit',
+  cleanup: 'Safety cleanup removed the test post', build_assist_pack: 'Built the ready-to-post pack',
+  pack_files_downloadable: 'Pack files can be downloaded'};
+const FORMAT_LABEL = {video: 'Video upload', video_link: 'Link post', article: 'Article'};
+
+let TOKEN = '';
+try { TOKEN = sessionStorage.getItem('ltn_token') || ''; } catch (e) { /* storage blocked */ }
+const state = {connectors: {}, dests: [], tickets: [], upload: null, filter: 'all', search: '', selected: null};
+
+function authHeaders() { return TOKEN ? {Authorization: 'Bearer ' + TOKEN} : {}; }
+function sameOrigin(url) { try { return new URL(url, location.href).origin === location.origin; } catch (e) { return false; } }
+
+async function api(path, {method = 'GET', body, key} = {}) {
+  const idem = method === 'POST' ? (key || newKey()) : null;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const h = authHeaders();
+    if (body !== undefined) h['Content-Type'] = 'application/json';
+    if (idem) h['Idempotency-Key'] = idem;
+    const res = await fetch(path, {method, headers: h, body: body === undefined ? undefined : JSON.stringify(body)});
+    if (res.status === 429) { await sleep(1000 * Number(res.headers.get('Retry-After') || 2)); continue; }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const err = new Error(data?.error?.message || res.statusText || 'Request failed');
+      Object.assign(err, {status: res.status, code: data?.error?.code, data});
+      throw err;
+    }
+    if (res.headers.get('Idempotent-Replayed') === 'true') data.__replayed = true;
+    return data;
+  }
+  throw new Error('The service is busy; try again in a minute');
+}
+
+async function waitForJob(jobId, maxMs = 180000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < maxMs) {
+    const job = await api('/api/v1/jobs/' + jobId);
+    if (job.status === 'succeeded' || job.status === 'failed') return job;
+    await sleep(1500);
+  }
+  throw new Error('Still running after ' + Math.round(maxMs / 60000) + ' minutes');
+}
+
+function fmtDate(s) {
+  if (!s) return '';
+  const d = new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + 'Z');
+  return isNaN(d) ? s : d.toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'});
+}
+const badge = l => `<span class="badge ${esc(l)}">${esc(l)}</span>`;
+function statusPill(s) {
+  const map = {certified: ['ok', 'Certified'], failed: ['bad', 'Failed'], uncertified: ['neutral', 'Not certified']};
+  const [cls, text] = map[s] || ['neutral', s || 'Unknown'];
+  return `<span class="pill ${cls}"><span class="dot"></span>${esc(text)}</span>`;
+}
+const working = text => `<div class="working"><span class="spin"></span>${esc(text)}</div>`;
+const errBox = e => `<div class="pill bad">${esc(e.code ? e.code + ': ' : '')}${esc(e.message)}</div>`;
+
+// ---------------------------------------------------------------- connect
+async function connect(token, quiet) {
+  TOKEN = token;
+  $('#loginErr').textContent = '';
+  try {
+    const c = await api('/api/v1/connectors');
+    state.connectors = Object.fromEntries(c.connectors.map(x => [x.key, x]));
+    try { TOKEN ? sessionStorage.setItem('ltn_token', TOKEN) : sessionStorage.removeItem('ltn_token'); } catch (e) {}
+    $('#login').hidden = true; $('#app').hidden = false; $('#disconnect').hidden = !TOKEN;
+    const h = await fetch('/health').then(r => r.json()).catch(() => ({}));
+    $('#status').className = 'pill ok';
+    $('#status').innerHTML = `<span class="dot"></span>Connected${h.version ? ' &middot; v' + esc(h.version) : ''}`;
+    await refreshAll();
+  } catch (e) {
+    $('#app').hidden = true; $('#login').hidden = false; $('#disconnect').hidden = true;
+    $('#status').className = 'pill neutral'; $('#status').innerHTML = '<span class="dot"></span>Not connected';
+    if (!quiet) $('#loginErr').textContent = e.status === 401 ? 'That token was not accepted.' : e.message;
+  }
+}
+$('#loginForm').addEventListener('submit', ev => { ev.preventDefault(); connect($('#token').value.trim()); });
+$('#disconnect').addEventListener('click', () => {
+  try { sessionStorage.removeItem('ltn_token'); } catch (e) {}
+  $('#token').value = ''; connect('', true);
+});
+
+async function refreshAll() {
+  const [d, t] = await Promise.all([api('/api/v1/destinations'), api('/api/v1/tickets')]);
+  state.dests = d.items; state.tickets = t.items;
+  renderOverview(); renderDests(); renderAlerts();
+  if (!state.selected) renderTargets();  // drawn once, so a refresh never wipes the publish results
+}
+
+// ---------------------------------------------------------------- tabs
+function showTab(name) {
+  $$('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  ['overview', 'destinations', 'alerts', 'publish'].forEach(t => { $('#tab-' + t).hidden = t !== name; });
+  window.scrollTo({top: 0});
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) showTab(b.dataset.tab); });
+document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showTab(g.dataset.goto); });
+
+// ---------------------------------------------------------------- overview
+function renderOverview() {
+  const certified = state.dests.filter(d => d.certification_status === 'certified').length;
+  const open = state.tickets.filter(t => t.status === 'open').length;
+  const platforms = Object.keys(state.connectors).length;
+  $('#stats').innerHTML = [
+    [state.dests.length, 'Destinations in the catalogue'], [certified, 'Certified and receiving posts'],
+    [platforms, 'Platform types supported'], [open, 'Open alerts']]
+    .map(([v, l]) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  $('#levels').innerHTML = Object.entries(LEVEL).map(([l, t]) => `<div>${badge(l)}<br>${esc(t)}</div>`).join('');
+  $('#alertCount').textContent = open || '';
+}
+
+// ---------------------------------------------------------------- destinations
+function renderDests() {
+  const q = state.search.toLowerCase();
+  const rows = state.dests.filter(d => (state.filter === 'all' || d.certification_status === state.filter) &&
+    (!q || (d.name + ' ' + d.connector_key + ' ' + (PLATFORM[d.connector_key] || '')).toLowerCase().includes(q)));
+  $('#destRows').innerHTML = rows.map(d => `<tr data-id="${esc(d.id)}">
+      <td><b>${esc(d.name)}</b></td><td>${esc(PLATFORM[d.connector_key] || d.connector_key)}</td>
+      <td>${badge(d.level)}</td><td>${statusPill(d.certification_status)}</td>
+      <td class="muted">${esc(fmtDate(d.last_certified_at)) || '&mdash;'}</td></tr>`).join('') ||
+    '<tr><td colspan="5" class="muted">No destinations match.</td></tr>';
+}
+$('#destFilters').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.filter = b.dataset.f; $$('#destFilters .chip').forEach(c => c.classList.toggle('active', c === b)); renderDests();
+});
+$('#destSearch').addEventListener('input', e => { state.search = e.target.value; renderDests(); });
+$('#destRows').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (tr) openDest(tr.dataset.id); });
+
+function ruleChips(d) {
+  const out = [];
+  const fc = d.frequency_cap;
+  if (fc && fc.posts) out.push(`At most ${fc.posts} post${fc.posts > 1 ? 's' : ''} every ${fc.per_days} day${fc.per_days > 1 ? 's' : ''}`);
+  const lp = d.link_policy || {};
+  if (lp.allowed === false) out.push('No links');
+  else if (lp.max_links != null) out.push(`Up to ${lp.max_links} link${lp.max_links > 1 ? 's' : ''}`);
+  if (d.self_promo_allowed === false) out.push('No self-promotion');
+  if (d.automation_allowed === false) out.push('A person must post');
+  if (d.disclosure_required) out.push('AI use must be disclosed');
+  if (d.language) out.push('Language: ' + d.language);
+  return out.length ? out.map(c => `<span class="chip static">${esc(c)}</span>`).join('')
+    : '<span class="muted">No rules recorded yet, so certification refuses to post here.</span>';
+}
+
+function stepLi(s) {
+  const err = s.error ? `<div class="step-err">${esc(s.error.code)}: ${esc(s.error.message)}</div>` : '';
+  return `<li class="${s.ok ? 'ok' : 'bad'}"><span class="ico">${s.ok ? '&#10003;' : '&#10005;'}</span>
+    <span>${esc(STEP[s.step] || s.step)}</span><span class="ms">${s.ms != null ? esc(s.ms) + ' ms' : ''}</span>${err}</li>`;
+}
+function runCard({passed, inconclusive, when, duration, steps, title, evidence, jobId}) {
+  const cls = inconclusive ? 'wait' : passed ? 'pass' : 'fail';
+  const pill = inconclusive ? '<span class="pill warn">Inconclusive, retry queued</span>'
+    : passed ? '<span class="pill ok">Passed</span>' : '<span class="pill bad">Failed</span>';
+  return `<div class="run ${cls}"><div class="run-head">${pill}<b>${esc(title || '')}</b>
+      <span class="muted small">${esc(fmtDate(when))}${duration != null ? ' &middot; ' + esc(duration) + ' s' : ''}</span></div>
+    <ul class="steps">${(steps || []).map(stepLi).join('')}</ul>
+    <div class="run-actions">
+      ${evidence ? `<button data-evidence="${esc(evidence)}">Evidence file</button>` : ''}
+      ${jobId ? `<button data-snapshot="${esc(jobId)}">Page while it was live</button>` : ''}</div></div>`;
+}
+
+async function openDest(id) {
+  const d = state.dests.find(x => x.id === id); if (!d) return;
+  const dr = $('#drawer');
+  dr.innerHTML = `<button class="close" aria-label="Close">&times;</button>
+    <div class="muted small">${esc(PLATFORM[d.connector_key] || d.connector_key)}</div>
+    <h2>${esc(d.name)}</h2>
+    <div class="run-head">${badge(d.level)} ${statusPill(d.certification_status)}
+      <span class="muted small">${d.last_certified_at ? 'Last certified ' + esc(fmtDate(d.last_certified_at)) : ''}</span></div>
+    <div class="section"><h3>Posting rules</h3>${ruleChips(d)}</div>
+    <div class="section"><div class="row-between"><h3>Proof it works</h3>
+      <button class="primary" id="certBtn">Run a live test now</button></div>
+      <p class="muted small">A live test publishes a real test post, checks its public link, confirms the status, then deletes it and saves the evidence.</p>
+      <div id="certLive"></div><div id="certRuns">${working('Loading certification history')}</div></div>`;
+  dr.hidden = false;
+  $('#certBtn').addEventListener('click', () => runCert(d));
+  loadRuns(d);
+}
+$('#drawer').addEventListener('click', e => {
+  if (e.target.closest('.close')) $('#drawer').hidden = true;
+  const ev = e.target.closest('[data-evidence]'); if (ev) showEvidence(ev.dataset.evidence);
+  const sn = e.target.closest('[data-snapshot]'); if (sn) showSnapshot(sn.dataset.snapshot);
+});
+
+async function loadRuns(d) {
+  try {
+    const runs = (await api('/api/v1/certifications?destination_id=' + encodeURIComponent(d.id))).items;
+    $('#certRuns').innerHTML = runs.length ? '<h3 class="section">History</h3>' + runs.map(r => runCard({
+      passed: r.passed, when: r.created_at, duration: r.duration_s, steps: r.steps, evidence: r.evidence_url,
+      jobId: r.job_id})).join('') : '<p class="muted">No certification runs yet.</p>';
+  } catch (e) { $('#certRuns').innerHTML = errBox(e); }
+}
+
+async function runCert(d) {
+  const btn = $('#certBtn'); btn.disabled = true;
+  $('#certLive').innerHTML = working('Publishing a test post, checking it is live, then deleting it...');
+  try {
+    const started = await api('/api/v1/certifications', {method: 'POST', body: {destination_id: d.id}});
+    const job = await waitForJob(started.job_id);
+    const det = (job.error && job.error.details) || {};
+    const res = job.result || {};
+    $('#certLive').innerHTML = runCard({
+      passed: job.status === 'succeeded', inconclusive: !!det.inconclusive, when: job.finished_at,
+      duration: res.duration_s, steps: res.steps || det.steps,
+      title: job.status === 'succeeded' ? 'Now level ' + res.level : (job.error ? job.error.message : ''),
+      evidence: (res.links || det.links || {}).evidence, jobId: job.job_id});
+    await refreshAll();
+    const fresh = state.dests.find(x => x.id === d.id);
+    if (fresh) $('#drawer .run-head').innerHTML = `${badge(fresh.level)} ${statusPill(fresh.certification_status)}
+      <span class="muted small">Last certified ${esc(fmtDate(fresh.last_certified_at))}</span>`;
+    loadRuns(d);
+  } catch (e) { $('#certLive').innerHTML = errBox(e); }
+  finally { btn.disabled = false; }
+}
+
+// ---------------------------------------------------------------- evidence viewers
+function openModal(html) { $('#modalBody').innerHTML = html; $('#modal').hidden = false; }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('.close')) $('#modal').hidden = true; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#modal').hidden = true; $('#drawer').hidden = true; } });
+
+async function fetchFile(url) {
+  const res = await fetch(url, {headers: sameOrigin(url) ? authHeaders() : {}});
+  if (!res.ok) throw Object.assign(new Error('Could not open the file (' + res.status + ')'), {status: res.status});
+  return {text: await res.text(), type: res.headers.get('content-type') || ''};
+}
+
+async function showEvidence(url) {
+  openModal(working('Opening the evidence file'));
+  try {
+    const {text} = await fetchFile(url);
+    const ev = JSON.parse(text); const m = ev.manifest || {};
+    const conn = (m.connectors || [])[0] || {};
+    const failed = (ev.steps || []).find(s => !s.ok);
+    openModal(`<h2>Evidence file</h2><p class="muted small">Saved in object storage when the run finished. This is the permanent proof.</p>
+      <div class="kv">
+        <div>Result</div><div>${ev.passed ? '<span class="pill ok">Passed</span>' : '<span class="pill bad">Failed</span>'}</div>
+        <div>Destination</div><div>${esc(ev.destination || ev.destination_id)}</div>
+        <div>Connector</div><div>${esc(conn.key || ev.connector || '')} ${esc(conn.version || '')}</div>
+        <div>Against a real platform</div><div>${(m.settings || {}).simulation_mode === false ? 'Yes (simulation off)' : 'Simulation'}</div>
+        <div>Took</div><div>${esc((m.timings_ms || {}).total ?? Math.round((ev.duration_s || 0) * 1000))} ms</div>
+        <div>AI cost</div><div>$${esc(m.cost_estimate_usd ?? 0)}</div>
+        ${failed ? `<div>Failed at</div><div>${esc(STEP[failed.step] || failed.step)}: ${esc((failed.error || {}).message || '')}</div>` : ''}
+      </div>
+      <ul class="steps">${(ev.steps || []).map(stepLi).join('')}</ul>
+      <details><summary>Show the full file</summary><pre>${esc(JSON.stringify(ev, null, 2))}</pre></details>`);
+  } catch (e) { openModal(errBox(e)); }
+}
+
+async function showSnapshot(jobId) {
+  openModal(working('Opening the captured page'));
+  try {
+    const job = await api('/api/v1/jobs/' + jobId);
+    const links = (job.result && job.result.links) || (job.error && job.error.details && job.error.details.links) || {};
+    if (!links.live_snapshot) return openModal('<h2>Page while it was live</h2><p class="muted">No page was captured for this run. Assisted destinations have no live page, and a run that failed before publishing has nothing to capture.</p>');
+    const {text, type} = await fetchFile(links.live_snapshot);
+    const head = '<h2>Page while it was live</h2><p class="muted small">Captured from the post\'s public link a few seconds before the test post was deleted.</p>';
+    openModal(head + (type.includes('html') ? `<iframe class="snap" sandbox srcdoc="${esc(text)}"></iframe>` : `<pre>${esc(text)}</pre>`));
+  } catch (e) { openModal(errBox(e)); }
+}
+
+// ---------------------------------------------------------------- alerts
+function renderAlerts() {
+  const list = [...state.tickets].sort((a, b) => (a.status === 'open' ? 0 : 1) - (b.status === 'open' ? 0 : 1));
+  $('#alerts').innerHTML = list.length ? list.map(t => {
+    const det = t.details || {};
+    return `<div class="card"><div class="row-between"><h2>${esc(t.title)}</h2>
+        ${t.status === 'open' ? '<span class="pill bad">Open</span>' : '<span class="pill ok">Resolved</span>'}</div>
+      <div class="kv">
+        <div>What happened</div><div>${esc(det.reason || '')}</div>
+        <div>Next action</div><div>${esc(det.action || '')}</div>
+        <div>Opened</div><div>${esc(fmtDate(t.created_at))}${t.occurrences > 1 ? ' &middot; seen ' + esc(t.occurrences) + ' times' : ''}</div>
+        ${t.resolved_at ? `<div>Resolved</div><div>${esc(fmtDate(t.resolved_at))} (passed again)</div>` : ''}
+      </div>
+      <div class="run-actions">${det.evidence ? `<button data-evidence="${esc(det.evidence)}">Evidence file</button>` : ''}
+        <button data-dest="${esc(t.destination_id)}">Open the destination</button></div></div>`;
+  }).join('') : '<div class="card"><h2>No alerts</h2><p class="muted">Every destination that was tested is working.</p></div>';
+}
+$('#alerts').addEventListener('click', e => {
+  const ev = e.target.closest('[data-evidence]'); if (ev) showEvidence(ev.dataset.evidence);
+  const de = e.target.closest('[data-dest]'); if (de) openDest(de.dataset.dest);
+});
+
+// ---------------------------------------------------------------- publish: upload
+const MAX_MB = 100;
+const drop = $('#drop');
+$('#file').addEventListener('change', e => { if (e.target.files[0]) uploadFile(e.target.files[0]); });
+['dragover', 'dragenter'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) uploadFile(f); });
+
+function uploadFile(file) {
+  const box = $('#uploadState');
+  const mb = (file.size / 1048576).toFixed(1);
+  if (file.size > MAX_MB * 1048576) {
+    box.innerHTML = `<p class="err">This file is ${mb} MB; the limit is ${MAX_MB} MB. Trim a short clip and try again.</p>`; return;
+  }
+  state.upload = null;
+  box.innerHTML = `<div class="small"><b>${esc(file.name)}</b> &middot; ${mb} MB</div><div class="bar"><div id="upBar"></div></div><div class="muted small" id="upText">Uploading...</div>`;
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/v1/uploads');
+  Object.entries(authHeaders()).forEach(([k, v]) => xhr.setRequestHeader(k, v));
+  xhr.setRequestHeader('Idempotency-Key', newKey());
+  xhr.upload.onprogress = e => {
+    if (!e.lengthComputable) return;
+    const pct = Math.round(e.loaded / e.total * 100);
+    $('#upBar').style.width = pct + '%'; $('#upText').textContent = `Uploading... ${pct}%`;
+  };
+  xhr.onload = () => {
+    let data = {}; try { data = JSON.parse(xhr.responseText); } catch (e) {}
+    if (xhr.status !== 201) { box.innerHTML = `<p class="err">${esc(data?.error?.message || 'Upload failed (' + xhr.status + ')')}</p>`; return; }
+    state.upload = data;
+    box.innerHTML = `<div class="row-between small"><span><b>${esc(file.name)}</b> &middot; ${mb} MB</span><span class="pill ok">Uploaded</span></div>
+      <video controls preload="metadata" src="${esc(data.url)}"></video>
+      <p class="muted small">Public link that platforms fetch it from: <a href="${esc(data.url)}" target="_blank" rel="noopener">${esc(data.url)}</a></p>`;
+  };
+  xhr.onerror = () => { box.innerHTML = '<p class="err">Upload failed: the connection dropped.</p>'; };
+  xhr.send((() => { const fd = new FormData(); fd.append('file', file); return fd; })());
+}
+
+// ---------------------------------------------------------------- publish: targets
+function formatFor(d) {
+  const types = (state.connectors[d.connector_key] || {}).content_types || [];
+  return types.includes('video') ? 'video' : types.includes('video_link') ? 'video_link' : 'article';
+}
+function targetRow(d) {
+  const checked = state.selected.has(d.id) ? 'checked' : '';
+  return `<div class="target" data-id="${esc(d.id)}"><input type="checkbox" id="cb-${esc(d.id)}" value="${esc(d.id)}" ${checked}>
+    <label for="cb-${esc(d.id)}"><b>${esc(d.name)}</b><div class="meta">${esc(PLATFORM[d.connector_key] || d.connector_key)} ${badge(d.level)}</div></label>
+    <span class="fmt">${esc(FORMAT_LABEL[formatFor(d)])}</span><div class="out" id="out-${esc(d.id)}"></div></div>`;
+}
+function renderTargets() {
+  const certified = state.dests.filter(d => d.certification_status === 'certified' && d.enabled !== false);
+  const seen = new Set(), main = [], more = [];
+  certified.forEach(d => { if (seen.has(d.connector_key)) more.push(d); else { seen.add(d.connector_key); main.push(d); } });
+  if (!state.selected) state.selected = new Set(main.map(d => d.id));
+  $('#targets').innerHTML = (main.map(targetRow).join('') || '<p class="muted">No certified destinations yet.</p>') +
+    (more.length ? `<details><summary>${more.length} more certified destinations on the same platforms</summary>${more.map(targetRow).join('')}</details>` : '');
+}
+$('#targets').addEventListener('change', e => {
+  if (e.target.type !== 'checkbox') return;
+  e.target.checked ? state.selected.add(e.target.value) : state.selected.delete(e.target.value);
+});
+function selectedDests() { return state.dests.filter(d => state.selected && state.selected.has(d.id)); }
+
+function renditionFor(fmt) {
+  const up = state.upload;
+  const title = $('#title').value.trim(), desc = $('#desc').value.trim();
+  const tags = $('#tags').value.split(',').map(s => s.trim()).filter(Boolean);
+  const base = {title, body: desc, tags, language: 'en', is_promotional: false};
+  if (fmt === 'video') return {...base, content_type: 'video', link_url: up.url, media: [{type: 'video', url: up.url, mime_type: up.mime_type}]};
+  if (fmt === 'video_link') return {...base, content_type: 'video_link', link_url: up.url};
+  return {...base, content_type: 'article', body: `${desc}\n\nWatch the video: ${up.url}`};
+}
+function ready() {
+  if (!state.upload) { $('#results').innerHTML = '<p class="err">Upload a video first (step 1).</p>'; return false; }
+  if (!selectedDests().length) { $('#results').innerHTML = '<p class="err">Tick at least one destination (step 3).</p>'; return false; }
+  if ($('#title').value.trim().length < 3) { $('#results').innerHTML = '<p class="err">Give the video a title (step 2).</p>'; return false; }
+  return true;
+}
+const out = id => document.getElementById('out-' + id);
+
+$('#checkBtn').addEventListener('click', async () => {
+  if (!ready()) return;
+  const btn = $('#checkBtn'); btn.disabled = true;
+  $('#results').innerHTML = working('Checking each destination\'s format and rules (nothing is posted)');
+  const groups = {};
+  selectedDests().forEach(d => (groups[formatFor(d)] = groups[formatFor(d)] || []).push(d.id));
+  let okCount = 0, total = 0;
+  try {
+    for (const [fmt, ids] of Object.entries(groups)) {
+      const res = await api('/api/v1/tailor', {method: 'POST', body: {content: renditionFor(fmt), destination_ids: ids}});
+      res.items.forEach(it => {
+        total++; if (it.validation.ok) okCount++;
+        const changes = it.changes.length ? `<ul>${it.changes.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : '';
+        out(it.destination_id).innerHTML = it.validation.ok
+          ? `<span class="pill ok">Ready</span>${changes}`
+          : `<span class="pill bad">Would be refused</span><ul>${it.validation.violations.map(v => `<li>${esc(v.message)}</li>`).join('')}</ul>`;
+      });
+    }
+    $('#results').innerHTML = `<p>${okCount} of ${total} destinations are ready. The notes under each one show how the post was adapted for it.</p>`;
+  } catch (e) { $('#results').innerHTML = errBox(e); }
+  finally { btn.disabled = false; }
+});
+
+// ---------------------------------------------------------------- publish: send and follow
+function hash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); }
+function isPrivate(u) {
+  if (sameOrigin(u)) return false;
+  try { const h = new URL(u).hostname; return !h.includes('.') || /^(localhost|127\.|10\.|192\.168\.)/.test(h); } catch (e) { return true; }
+}
+
+function outcome(r) {
+  const j = r.job;
+  if (j.status === 'succeeded') {
+    const res = j.result || {};
+    if (res.status === 'awaiting_human') {
+      const files = Object.entries(res.links || {}).filter(([k]) => k !== 'manifest');
+      return {kind: 'warn', text: 'Ready for a person to post',
+        html: `<span class="pill warn">Ready for a person to post</span> <span class="muted">this community is posted to by hand, so a ready-to-post pack was built</span>
+          <div class="run-actions" style="margin-top:6px">${files.map(([k, u]) => `<button data-file="${esc(u)}">${esc(k)}</button>`).join('')}</div>`};
+    }
+    const link = res.live_url ? (isPrivate(res.live_url)
+      ? `<span class="muted" title="${esc(res.live_url)}">on the server's private network</span>`
+      : `<a href="${esc(res.live_url)}" target="_blank" rel="noopener">open it</a>`) : '';
+    return {kind: 'ok', text: 'Published',
+      html: `<span class="pill ok">Published</span> <span class="muted">post ${esc(res.platform_post_id)}</span> ${link}${r.replayed ? ' <span class="pill info">Already sent earlier: same post, not duplicated</span>' : ''}`};
+  }
+  const e = j.error || {}, det = e.details || {};
+  if (e.code === 'DEST_RULE_FREQUENCY_CAP' && det.rescheduled_job_id)
+    return {kind: 'warn', text: 'Scheduled', html: `<span class="pill warn">Scheduled</span> <span class="muted">posting limit reached; it goes out ${esc(fmtDate(det.retry_at))}</span>`};
+  return {kind: 'bad', text: 'Not posted', html: `<span class="pill bad">Not posted</span> <span class="muted">${esc(e.message || '')} (${esc(e.code || '')})</span>`};
+}
+
+$('#publishBtn').addEventListener('click', async () => {
+  if (!ready()) return;
+  const btn = $('#publishBtn'); btn.disabled = true; $('#checkBtn').disabled = true;
+  const isTest = $('#isTest').checked;
+  const dests = selectedDests();
+  $('#results').innerHTML = `<div id="sum" class="summary"></div><div class="note">${dests.length} posts are going out, one per destination, each in its own format. Every post carries an Idempotency-Key, so pressing Publish again cannot post twice.</div>`;
+  const runs = [];
+  for (const d of dests) {
+    const body = {destination_id: d.id, rendition: renditionFor(formatFor(d)), is_test: isTest, tailor: true};
+    const key = `console-${state.upload.key}-${d.id}-${hash(JSON.stringify(body))}`;
+    out(d.id).innerHTML = working('Sending');
+    try {
+      const job = await api('/api/v1/publications', {method: 'POST', key, body});
+      runs.push({d, job_id: job.job_id, replayed: !!job.__replayed});
+      out(d.id).innerHTML = working('Publishing');
+    } catch (e) { out(d.id).innerHTML = errBox(e); runs.push({d, done: true, kind: 'bad'}); }
+  }
+  const t0 = Date.now();
+  while (runs.some(r => !r.done) && Date.now() - t0 < 240000) {
+    for (const r of runs.filter(x => !x.done)) {
+      try {
+        const job = await api('/api/v1/jobs/' + r.job_id);
+        if (job.status === 'succeeded' || job.status === 'failed') {
+          r.done = true; r.job = job; const o = outcome(r); r.kind = o.kind; out(r.d.id).innerHTML = o.html;
+        }
+      } catch (e) { r.done = true; r.kind = 'bad'; out(r.d.id).innerHTML = errBox(e); }
+      await sleep(700);
+    }
+  }
+  const n = k => runs.filter(r => r.kind === k).length;
+  const feed = runs.find(r => r.d.connector_key === 'mrss' && r.kind === 'ok');
+  $('#sum').innerHTML = `<span class="pill ok">${n('ok')} published</span>` +
+    (n('warn') ? `<span class="pill warn">${n('warn')} waiting (person or schedule)</span>` : '') +
+    (n('bad') ? `<span class="pill bad">${n('bad')} not posted</span>` : '') +
+    (feed ? `<a class="pill info" href="${esc(feed.job.result.live_url)}" target="_blank" rel="noopener">Open the public video feed</a>` : '');
+  btn.disabled = false; $('#checkBtn').disabled = false;
+  refreshAll().catch(() => {});
+});
+$('#targets').addEventListener('click', async e => {
+  const b = e.target.closest('[data-file]'); if (!b) return;
+  e.preventDefault();
+  openModal(working('Opening the pack file'));
+  try {
+    const {text, type} = await fetchFile(b.dataset.file);
+    let body = text; if (type.includes('json')) { try { body = JSON.stringify(JSON.parse(text), null, 2); } catch (x) {} }
+    openModal(`<h2>${esc(b.textContent)}</h2><p class="muted small">What the person receives to post by hand.</p><pre>${esc(body)}</pre>`);
+  } catch (err) { openModal(errBox(err)); }
+});
+
+connect(TOKEN, true);
+</script>
+</body>
+</html>

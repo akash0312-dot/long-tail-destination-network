@@ -1,4 +1,5 @@
 """/api/v1 routes: catalogue (connections, destinations), publications, jobs, files."""
+import re
 import uuid
 
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
@@ -46,7 +47,8 @@ def _connection_view(c: Connection) -> dict:
 def list_connectors() -> dict:
     disabled = get_settings().disabled_connector_set()
     return {"connectors": [{"key": k, "version": c.manifest.version, "tier": c.manifest.tier,
-                            "capabilities": c.manifest.capabilities, "enabled": k not in disabled}
+                            "capabilities": c.manifest.capabilities, "enabled": k not in disabled,
+                            "content_types": sorted({t for s in c.manifest.surfaces for t in s.content_types})}
                            for k, c in sorted(all_connectors().items())]}
 
 
@@ -349,6 +351,47 @@ def get_feed(feed_key: str):
     except Exception:
         raise AppError(ErrorCode.NOT_FOUND, "Feed not found", {"feed_key": feed_key})
     return Response(content=data, media_type="application/rss+xml")
+
+
+# ---------------------------------------------------------------- uploads (served publicly: platforms fetch them)
+UPLOAD_TYPES = {"video/mp4": "mp4", "video/webm": "webm", "video/quicktime": "mov", "image/jpeg": "jpg",
+                "image/png": "png"}
+MEDIA_KEY_RE = re.compile(r"[0-9a-f]{32}\.(mp4|webm|mov|jpg|png)")
+
+
+@router.post("/uploads", status_code=201, tags=["media"],
+             summary="Upload a video or image; returns the public link that platforms and feeds fetch it from")
+def upload_media(file: UploadFile = File(...)):
+    s = get_settings()
+    mime = (file.content_type or "").split(";")[0].strip().lower()
+    if mime not in UPLOAD_TYPES:
+        raise AppError(ErrorCode.VALIDATION_ERROR, f"File type '{mime or 'unknown'}' is not accepted",
+                       {"accepted": sorted(UPLOAD_TYPES)})
+    limit = s.max_upload_mb * 1_048_576
+    data = file.file.read(limit + 1)
+    if len(data) > limit:
+        raise AppError(ErrorCode.PAYLOAD_TOO_LARGE, f"File is larger than {s.max_upload_mb} MB",
+                       {"max_mb": s.max_upload_mb})
+    if not data:
+        raise AppError(ErrorCode.VALIDATION_ERROR, "The file is empty")
+    key = f"{uuid.uuid4().hex}.{UPLOAD_TYPES[mime]}"
+    get_storage().put_bytes(f"media/{key}", data, mime)
+    return JSONResponse({"key": key, "url": f"{s.public_base_url.rstrip('/')}/api/v1/media/{key}",
+                         "mime_type": mime, "size_bytes": len(data), "filename": file.filename}, status_code=201)
+
+
+@router.get("/media/{key}", tags=["media"], summary="An uploaded video or image (public, like the feeds)",
+            response_class=Response)
+def get_media(key: str):
+    match = MEDIA_KEY_RE.fullmatch(key)
+    if match is None:
+        raise AppError(ErrorCode.NOT_FOUND, "Media not found")
+    try:
+        data = get_storage().get_bytes(f"media/{key}")
+    except Exception:
+        raise AppError(ErrorCode.NOT_FOUND, "Media not found")
+    mime = next(t for t, ext in UPLOAD_TYPES.items() if ext == match.group(1))
+    return Response(content=data, media_type=mime, headers={"Cache-Control": "public, max-age=86400"})
 
 
 # ---------------------------------------------------------------- files (local storage backend only)

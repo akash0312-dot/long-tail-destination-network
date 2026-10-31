@@ -67,6 +67,14 @@ def test_test_posts_are_exempt_from_cap_only():
     assert evaluate({**NEUTRAL, "is_promotional": True}, NO_PROMO, [], NOW, OWN, is_test=True).action == "block"
 
 
+def test_a_link_repeated_in_the_body_counts_once():
+    """Tailoring for forums appends "Source: <link_url>" to the body; that is still one link, not two."""
+    url = "https://example.org/clip.mp4"
+    d = evaluate({**NEUTRAL, "body": f"Watch it.\n\nSource: {url}", "link_url": url},
+                 {"link_policy": {"allowed": True, "max_links": 1}}, [], NOW, OWN)
+    assert d.action == "allow", d.reason
+
+
 def test_disclosure_uses_destination_language():
     d = evaluate({**NEUTRAL, "language": "de", "ai_generated": True},
                  {"disclosure_required": True, "language": "de"}, [], NOW, OWN)

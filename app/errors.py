@@ -35,6 +35,7 @@ class ErrorCode(StrEnum):
     # API codes
     VALIDATION_ERROR = "VALIDATION_ERROR"
     NOT_FOUND = "NOT_FOUND"
+    PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE"
     UNAUTHORIZED = "UNAUTHORIZED"
     RATE_LIMITED = "RATE_LIMITED"
     IDEMPOTENCY_KEY_REQUIRED = "IDEMPOTENCY_KEY_REQUIRED"
@@ -70,6 +71,7 @@ ERROR_SPEC: dict[ErrorCode, tuple[int, bool]] = {
     ErrorCode.METHOD_NOT_SUPPORTED: (405, False),
     ErrorCode.VALIDATION_ERROR: (400, False),
     ErrorCode.NOT_FOUND: (404, False),
+    ErrorCode.PAYLOAD_TOO_LARGE: (413, False),
     ErrorCode.UNAUTHORIZED: (401, False),
     ErrorCode.RATE_LIMITED: (429, True),
     ErrorCode.IDEMPOTENCY_KEY_REQUIRED: (400, False),

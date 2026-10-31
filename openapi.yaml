@@ -825,6 +825,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/uploads:
+    post:
+      tags:
+      - media
+      summary: Upload a video or image; returns the public link that platforms and feeds fetch it from
+      operationId: upload_media_api_v1_uploads_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_media_api_v1_uploads_post'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+  /api/v1/media/{key}:
+    get:
+      tags:
+      - media
+      summary: An uploaded video or image (public, like the feeds)
+      operationId: get_media_api_v1_media__key__get
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Key
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/files/{key}:
     get:
       tags:
@@ -972,6 +1022,16 @@ components:
           default: false
       type: object
       title: Body_import_catalogue_api_v1_catalogue_imports_post
+    Body_upload_media_api_v1_uploads_post:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_upload_media_api_v1_uploads_post
     CertificationCreate:
       properties:
         destination_id:

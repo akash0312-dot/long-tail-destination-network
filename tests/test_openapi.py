@@ -18,7 +18,8 @@ def test_docs_has_bearer_authorize_on_protected_routes_only(client):
         "type": "http", "scheme": "bearer", "description": spec["components"]["securitySchemes"]["bearerAuth"]
         ["description"]}
     for path, ops in spec["paths"].items():
-        protected = path.startswith(("/api/v1/", "/connector/v1")) and not path.startswith("/api/v1/feeds/")
+        protected = path.startswith(("/api/v1/", "/connector/v1")) and not path.startswith(("/api/v1/feeds/",
+                                                                                              "/api/v1/media/"))
         for op in ops.values():
             assert (op.get("security") == [{"bearerAuth": []}]) is protected, path
     page = client.get("/docs")

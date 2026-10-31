@@ -16,9 +16,17 @@ cp .env.example .env
 docker compose up -d --build          # api, worker, postgres, S3 (SeaweedFS), mock platforms, Ghost, Lemmy, bootstrap
 docker compose wait bootstrap         # test accounts, 9 seeded destinations (one per connector), certifies them
 curl http://localhost:8000/ready
-# then open http://localhost:8000/docs in a browser: interactive API docs (the service has no other UI)
+# then open http://localhost:8000/console (demo console) or http://localhost:8000/docs (interactive API docs)
 ```
 The first build and start take a few minutes (image downloads); later starts take about a minute.
+
+The **demo console** (`/console`, also where `/` points) is one static page over the same API: the catalogue with
+trust levels, each destination's rules and certification evidence (run a live test from there), open alerts, and
+**Publish a video**: upload a clip (`POST /api/v1/uploads`, up to `MAX_UPLOAD_MB`, served publicly at
+`/api/v1/media/...` so platforms and feed readers can fetch it), check it against every certified destination
+(`/api/v1/tailor`), then publish one post per destination in the format each accepts (an upload where the platform
+hosts video, a link post on blogs and forums, an article on developer sites). It asks for the API token and keeps it
+in the browser tab only.
 
 ## Tests (one command, no API keys)
 
@@ -181,7 +189,8 @@ All errors: `{"error": {"code", "message", "retryable", "details"}}`.
 **https://16-178-103-126.sslip.io/docs** (AWS Free plan). The API token is given in the Submission Form; rate limit 120 requests a minute per token; cold start 118 s after a full rebuild (it runs continuously).
 
 The same stack plus Caddy for HTTPS: `docker compose -f docker-compose.yml -f deploy/docker-compose.demo.yml up -d`.
-Only `/docs`, `/health`, `/ready`, `/openapi.json` and the MRSS feeds are public; everything else needs the API token
+Only `/console` (which asks for the token), `/docs`, `/health`, `/ready`, `/openapi.json`, the MRSS feeds and uploaded
+media are public; everything else needs the API token
 (use **Authorize** in `/docs`), and object storage, Ghost, Lemmy and Postgres are never exposed. Step-by-step server
 setup, settings and checks: [deploy/DEPLOY.md](deploy/DEPLOY.md).
 
